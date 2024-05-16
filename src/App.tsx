@@ -7,6 +7,7 @@ import { HomePage } from "./pages/HomePage";
 import { Contacto } from "./components/Contacto/Contacto";
 import ArticulosPage from "./components/ArticulosPage";
 import ArticuloDetalle from "./components/ArticuloDetalle";
+import InsumoPage from "./components/InsumoPage";
 
 
 function App() {
@@ -19,6 +20,7 @@ function App() {
         <Route path="/contacto" Component={Contacto} />
         <Route path="/articulos" Component={ArticulosPage} />
         <Route path="/articulos/:id" element={<ArticuloDetalle />} />
+        <Route path="/insumos" Component={InsumoPage} />
       </Routes>
     </BrowserRouter>
   )

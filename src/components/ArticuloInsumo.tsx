@@ -1,10 +1,9 @@
 import React from 'react';
-import { ArticuloManufacturado } from '../types/ArticuloManufacturado';
-import { Link } from 'react-router-dom';
+import { ArticuloInsumo } from '../types/ArticuloInsumo';
 import '../styles/Articulo.css';
 
 
-const Articulo: React.FC<{ articulo: ArticuloManufacturado }> = ({ articulo }) => {
+const Insumo: React.FC<{ articulo: ArticuloInsumo }> = ({ articulo }) => {
     const imagenesArray = Array.from(articulo.imagenesArticulo);
     const primeraImagen = imagenesArray[0]?.url;
   
@@ -17,21 +16,19 @@ const Articulo: React.FC<{ articulo: ArticuloManufacturado }> = ({ articulo }) =
           {primeraImagen && <img className="img" src={primeraImagen} alt={articulo.denominacion} />}
         </div>
         <div className="col">
-          <p>{articulo.descripcion}</p>
+          <p>$ {articulo.precioCompra}</p>
         </div>
         <div className="col">
-          <p>${articulo.precioVenta}</p>
+          <p>{articulo.stockActual}</p>
         </div>
         <div className="col">
-          <p>{articulo.tiempoEstimadoMinutos} minutos</p>
+          <p>{articulo.stockMaximo}</p>
         </div>
         <div className="col">
-          <Link to={`/articulos/${articulo.id}`}>
-              <button>Detalles</button>
-          </Link>
+        <p>{articulo.esParaElaborar ? "Sí" : "No"}</p>
         </div>
       </li>
     );
   };
   
-  export default Articulo;
+  export default Insumo;
