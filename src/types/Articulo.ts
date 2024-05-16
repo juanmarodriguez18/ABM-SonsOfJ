@@ -4,10 +4,10 @@ import { UnidadMedida } from './UnidadMedida';
 
 // Definición de la clase Articulo extendiendo de Base
 export abstract class Articulo extends Base {
-    protected denominacion: string;
-    protected precioVenta: number;
-    protected imagenesArticulo: Set<ImagenArticulo>;
-    protected unidadMedida: UnidadMedida;
+    public denominacion: string;
+    public precioVenta: number;
+    public imagenesArticulo: Set<ImagenArticulo>;
+    public unidadMedida: UnidadMedida;
 
     constructor(
         id: number = 0,

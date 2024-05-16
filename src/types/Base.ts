@@ -1,5 +1,5 @@
 export abstract class Base {
-    protected id: number;
+    public id: number;
     protected eliminado: boolean;
 
     constructor(id: number = 0, eliminado: boolean = false) {

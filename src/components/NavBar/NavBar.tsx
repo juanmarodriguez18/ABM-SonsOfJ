@@ -1,19 +1,20 @@
-import { Link, useLocation } from "react-router-dom"
-import './NavBar.css'
+import React from 'react';
+import { Link } from 'react-router-dom';
+import { Navbar, Nav } from 'react-bootstrap';
 
-export const NavBar = () => {
-  const location = useLocation()
-  console.log(location)
+export const NavBar: React.FC = () => {
   return (
-    <div className="NavBar">
+    <Navbar bg="light" expand="lg">
+      <Navbar.Brand as={Link} to="/">Mi App</Navbar.Brand>
+      <Navbar.Toggle aria-controls="basic-navbar-nav" />
+      <Navbar.Collapse id="basic-navbar-nav">
+        <Nav className="mr-auto">
+          <Nav.Link as={Link} to="/">Inicio</Nav.Link>
+          <Nav.Link as={Link} to="/contacto">Contacto</Nav.Link>
+          <Nav.Link as={Link} to="/articulos">Artículos</Nav.Link> {/* Nueva ruta */}
+        </Nav>
+      </Navbar.Collapse>
+    </Navbar>
+  );
+};
 
-      <Link to="" style={{ textDecoration: "none", color: location.pathname === '/' ? 'black' : 'grey' }} className="links">
-        Inicio
-      </Link>
-      <Link to="/contacto" style={{ textDecoration: "none", color: location.pathname === '/contacto' ? 'black' : 'grey' }} className="links">
-        Contacto
-      </Link>
-    </div>
-
-  )
-}
