@@ -6,6 +6,8 @@ import { getImagenesArticulo } from '../services/ImagenArticuloService';
 import { getUnidadesMedida } from '../services/UnidadMedidaService';
 import { useNavigate, useParams } from 'react-router-dom';
 import { actualizarInsumo, crearInsumo, getInsumoById } from '../services/ArticuloInsumoService';
+import AgregarImagenModal from './AgregarImagenModal';
+import '../styles/AgregarImagenModal.css';
 
 function InsumoFormulario(){
     const navigate = useNavigate();
@@ -15,6 +17,7 @@ function InsumoFormulario(){
     const [imagenes, setImagenes] = useState<ImagenArticulo[]>([]);
     const [unidadesMedida, setUnidadesMedida] = useState<UnidadMedida[]>([]);
     const [txtValidacion, setTxtValidacion] = useState<string>("");
+    const [showAgregarImagenModal, setShowAgregarImagenModal] = useState<boolean>(false); // Estado para controlar la visibilidad del modal
 
     useEffect(() => {
         async function cargarInsumo() {
@@ -89,6 +92,8 @@ function InsumoFormulario(){
                 await actualizarInsumo(insumo.id, insumoParaGuardar);
             } else {
                 await crearInsumo(insumoParaGuardar);
+                alert(`El insumo se guardó correctamente.`);
+                window.location.reload();
             }
             navigate('/insumos');
         } catch (error) {
@@ -101,6 +106,10 @@ function InsumoFormulario(){
         const selectedIds = Array.from(e.target.selectedOptions, option => parseInt(option.value));
         const selectedImagenes = imagenes.filter(imagen => selectedIds.includes(imagen.id));
         setInsumo({ ...insumo, imagenesArticulo: new Set(selectedImagenes) });
+    };
+
+    const toggleAgregarImagenModal = () => {
+        setShowAgregarImagenModal(!showAgregarImagenModal);
     };
 
     return (
@@ -118,6 +127,9 @@ function InsumoFormulario(){
                 <select id="cmbImagenes" className="form-select" multiple value={Array.from(insumo.imagenesArticulo).map(img => img.id.toString())} onChange={handleImagenChange}>
                     {[...imagenes].map(imagen => ( <option key={imagen.id} value={imagen.id.toString()}> {imagen.url}</option>))}
                 </select>
+            </div>
+            <div>
+                <button className="btn btn-primary" onClick={toggleAgregarImagenModal}>Agregar Imagen</button>
             </div>
             <div className="mb-3">
                 <label htmlFor="cmbUnidadMedida" className="form-label">Unidad de Medida</label>
@@ -154,6 +166,16 @@ function InsumoFormulario(){
                 <a href={`/insumos`} style={{ marginLeft: 25 }}>
                     <button type="button" className="btn btn-warning">Volver</button>
                 </a>
+            </div>
+            <div>
+                {/* Modal para agregar imagen */}
+                {showAgregarImagenModal && (
+                    <AgregarImagenModal
+                        imagenes={imagenes}
+                        setImagenes={setImagenes}
+                        toggleModal={toggleAgregarImagenModal}
+                    />
+                )}
             </div>
         </div>
     );
