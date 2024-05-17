@@ -21,6 +21,7 @@
     max-width: 600px; /* Limita el ancho máximo */
     border-radius: 8px; /* Bordes redondeados */
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3); /* Sombra */
+    overflow-y: auto; /* Agrega desplazamiento vertical si el contenido excede el tamaño */
 }
 
 /* Close button */

@@ -5,6 +5,7 @@ import '../styles/Articulo.css';
 import Insumo from './ArticuloInsumo';
 import { getInsumos } from '../services/ArticuloInsumoService';
 import InsumoFormulario from './InsumoFormulario';
+import '../styles/AgregarImagenModal.css';
 
 const InsumoList: React.FC = () => {
   const [insumos, setInsumos] = useState<ArticuloInsumo[]>([]);
@@ -44,7 +45,13 @@ const InsumoList: React.FC = () => {
     <div>
       <SearchBar onSearch={setQuery} />
       <button onClick={() => setShowForm(true)}>Agregar Insumo</button>
-      {showForm && <InsumoFormulario />}
+      {showForm && (
+        <InsumoFormulario
+          show={showForm}
+          handleClose={handleCancel}
+          onSave={handleSaveInsumo}
+        />
+      )}
       <li className="row">
         <div className="col">
           <b>Denominacion:</b>

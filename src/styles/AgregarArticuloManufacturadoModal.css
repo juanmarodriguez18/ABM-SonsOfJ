@@ -1,0 +1,72 @@
+/* Estilos para el modal */
+.agregar-articulo-modal {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+/* Estilos para el encabezado del modal */
+.agregar-articulo-modal .modal-header {
+    background-color: #007bff;
+    color: #fff;
+    border-bottom: none;
+}
+
+/* Estilos para el cuerpo del modal */
+.agregar-articulo-modal .modal-body {
+    padding: 20px;
+}
+
+/* Estilos para el formulario dentro del modal */
+.agregar-articulo-modal form {
+    margin-bottom: 20px;
+}
+
+/* Estilos para las etiquetas del formulario */
+.agregar-articulo-modal form label {
+    font-weight: bold;
+}
+
+/* Estilos para los controles de formulario */
+.agregar-articulo-modal form input[type="text"],
+.agregar-articulo-modal form input[type="number"],
+.agregar-articulo-modal form textarea {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.agregar-articulo-modal form select {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+/* Estilos para los botones dentro del modal */
+.agregar-articulo-modal .modal-footer button {
+    margin-right: 10px;
+}
+
+/* Estilos para el botón de cerrar el modal */
+.agregar-articulo-modal .modal-header .close {
+    color: #fff;
+}
+
+/* Estilos para el título del modal */
+.agregar-articulo-modal .modal-title {
+    color: #fff;
+}
+
+/* Estilos para los enlaces */
+.agregar-articulo-modal a {
+    color: #007bff;
+    text-decoration: none;
+}
+
+/* Estilos para los enlaces cuando están en estado de hover */
+.agregar-articulo-modal a:hover {
+    text-decoration: underline;
+}

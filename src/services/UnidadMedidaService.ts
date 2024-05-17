@@ -25,13 +25,17 @@ export const getUnidadMedidaById = async (id: number) => {
   
   export const crearUnidadMedida = async (nuevaUnidadMedida: any) => {
     try {
-      const response = await axios.post(API_URL, nuevaUnidadMedida);
-      return response.data;
+        const response = await axios.post(API_URL, JSON.stringify(nuevaUnidadMedida), {
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        });
+        return response.data;
     } catch (error) {
-      console.error("Error al crear una unidad de medida:", error);
-      throw error;
+        console.error("Error al crear una unidad de medida:", error);
+        throw error;
     }
-  };
+};
   
   export const eliminarUnidadMedida = async (id: number) => {
     try {

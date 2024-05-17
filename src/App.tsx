@@ -9,6 +9,7 @@ import ArticuloDetalle from "./components/ArticuloDetalle";
 import InsumoPage from "./components/InsumoPage";
 
 
+
 function App() {
   //Rutas de nuestra aplicacion 
   return (
