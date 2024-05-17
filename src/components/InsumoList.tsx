@@ -4,11 +4,13 @@ import { ArticuloInsumo } from '../types/ArticuloInsumo';
 import '../styles/Articulo.css';
 import Insumo from './ArticuloInsumo';
 import { getInsumos } from '../services/ArticuloInsumoService';
+import InsumoFormulario from './InsumoFormulario';
 
 const InsumoList: React.FC = () => {
   const [insumos, setInsumos] = useState<ArticuloInsumo[]>([]);
   const [filteredInsumos, setFilteredInsumos] = useState<ArticuloInsumo[]>([]);
   const [query, setQuery] = useState<string>('');
+  const [showForm, setShowForm] = useState<boolean>(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -28,9 +30,21 @@ const InsumoList: React.FC = () => {
     );
   }, [query, insumos]);
 
+  const handleSaveInsumo = (newInsumo: ArticuloInsumo) => {
+    setInsumos([...insumos, newInsumo]);
+    setFilteredInsumos([...insumos, newInsumo]);
+    setShowForm(false);
+  };
+
+  const handleCancel = () => {
+    setShowForm(false);
+  };
+
   return (
     <div>
       <SearchBar onSearch={setQuery} />
+      <button onClick={() => setShowForm(true)}>Agregar Insumo</button>
+      {showForm && <InsumoFormulario />}
       <li className="row">
         <div className="col">
           <b>Denominacion:</b>
