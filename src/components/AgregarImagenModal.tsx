@@ -8,31 +8,44 @@ interface AgregarImagenModalProps {
     setImagenes: (imagenes: ImagenArticulo[]) => void;
     toggleModal: () => void;
     show: boolean;
+    onSave: (imagen: ImagenArticulo) => void; // Agregamos onSave como prop
 }
 
-const AgregarImagenModal: React.FC<AgregarImagenModalProps> = ({ imagenes, setImagenes, toggleModal }) => {
+const AgregarImagenModal: React.FC<AgregarImagenModalProps> = ({ imagenes, setImagenes, toggleModal, onSave }) => {
     const [nuevaImagen, setNuevaImagen] = useState<any>({
         url: '',
         eliminado: false
     });
+    const [archivo, setArchivo] = useState<File | null>(null);
     const [txtValidacion, setTxtValidacion] = useState<string>('');
 
-    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setNuevaImagen({
-            ...nuevaImagen,
-            [e.target.name]: e.target.value
+    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (e.target.files && e.target.files[0]) {
+            setArchivo(e.target.files[0]);
+            setNuevaImagen({ ...nuevaImagen, eliminado: false }); // Reiniciar el estado de nuevaImagen
+        }
+    };
+
+    const convertirArchivoABase64 = (file: File): Promise<string> => {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = () => resolve(reader.result as string);
+            reader.onerror = error => reject(error);
         });
     };
 
     const guardarImagen = async () => {
-        try {
-            if (!nuevaImagen.url || nuevaImagen.url.trim() === '') {
-                setTxtValidacion('Ingrese la URL de la imagen');
-                return;
-            }
+        if (!archivo) {
+            setTxtValidacion('Seleccione un archivo de imagen');
+            return;
+        }
 
-            const imagenCreada = await crearImagenArticulo(nuevaImagen);
+        try {
+            const imagenBase64 = await convertirArchivoABase64(archivo);
+            const imagenCreada = await crearImagenArticulo({ ...nuevaImagen, url: imagenBase64 });
             setImagenes([...imagenes, imagenCreada]);
+            onSave(imagenCreada); // Llamar a onSave con la imagen creada
             toggleModal(); // Cerrar el modal después de guardar la imagen
         } catch (error) {
             console.error('Error al crear la imagen:', error);
@@ -46,10 +59,8 @@ const AgregarImagenModal: React.FC<AgregarImagenModalProps> = ({ imagenes, setIm
                 <span className="close" onClick={toggleModal}>&times;</span>
                 <h2>Agregar Nueva Imagen</h2>
                 <div className="mb-3">
-                    <label htmlFor="txtUrl" className="form-label">URL</label>
-                    <input type="text" id="txtUrl" name="url" className="form-control" placeholder="Ingrese la URL de la imagen" value={nuevaImagen.url} onChange={handleInputChange} />
-                </div>
-                <div className="mb-3">
+                    <label htmlFor="fileInput" className="form-label">Seleccionar imagen</label>
+                    <input type="file" id="fileInput" className="form-control" onChange={handleFileChange} />
                 </div>
                 <div>
                     <p style={{ color: 'red', lineHeight: 5, padding: 5 }}>{txtValidacion}</p>

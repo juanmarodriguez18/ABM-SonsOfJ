@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import  { useState, useEffect } from 'react';
 import { ArticuloInsumo } from '../types/ArticuloInsumo';
 import { ImagenArticulo } from '../types/ImagenArticulo';
 import { UnidadMedida } from '../types/UnidadMedida';
@@ -16,7 +16,6 @@ interface InsumoFormularioProps {
     handleClose: () => void;
     onSave: (insumo: ArticuloInsumo) => void;
 }
-
 
 function InsumoFormulario({ show, handleClose, onSave }: InsumoFormularioProps) {
     const navigate = useNavigate();
@@ -92,19 +91,17 @@ function InsumoFormulario({ show, handleClose, onSave }: InsumoFormularioProps) 
         }
 
         try {
-            // Convertimos el Set de imágenes a un array para enviar al backend
             const imagenesArticuloArray = Array.from(insumo.imagenesArticulo);
             const insumoParaGuardar = {
-            ...insumo,
-            imagenesArticulo: imagenesArticuloArray
+                ...insumo,
+                imagenesArticulo: imagenesArticuloArray
             };
-
+    
             if (insumo.id) {
                 await actualizarInsumo(insumo.id, insumoParaGuardar);
             } else {
                 await crearInsumo(insumoParaGuardar);
                 alert(`El insumo se guardó correctamente.`);
-                //window.location.reload();
             }
             onSave(insumo);
             handleClose();
@@ -115,11 +112,10 @@ function InsumoFormulario({ show, handleClose, onSave }: InsumoFormularioProps) 
         }
     };
 
-    const handleImagenChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-        const selectedIds = Array.from(e.target.selectedOptions, option => parseInt(option.value));
-        const selectedImagenes = imagenes.filter(imagen => selectedIds.includes(imagen.id));
-        setInsumo({ ...insumo, imagenesArticulo: new Set(selectedImagenes) });
+    const handleImagenSeleccionada = (imagen: ImagenArticulo) => {
+        setInsumo({ ...insumo, imagenesArticulo: new Set([imagen]) }); // Asignar la imagen seleccionada al insumo
     };
+    
 
     const handleNuevaUnidadMedida = async (denominacion: string) => {
         try {
@@ -155,12 +151,14 @@ function InsumoFormulario({ show, handleClose, onSave }: InsumoFormularioProps) 
                     <input type="number" id="txtPrecioVenta" className="form-control" placeholder="Ingrese el precio de venta" value={insumo.precioVenta || 0} onChange={e => setInsumo({ ...insumo, precioVenta: parseFloat(e.target.value) })} />
                 </div>
                 <div className="mb-3">
-                    <label htmlFor="cmbImagenes" className="form-label">Imágenes</label>
-                    <select id="cmbImagenes" className="form-select" multiple value={Array.from(insumo.imagenesArticulo).map(img => img.id.toString())} onChange={handleImagenChange}>
-                        {[...imagenes].map(imagen => ( <option key={imagen.id} value={imagen.id.toString()}> {imagen.url}</option>))}
-                    </select>
-                </div>
-                <div>
+                    <label htmlFor="cmbImagenes" className="form-label">Imagen</label>
+                    {insumo.imagenesArticulo.size > 0 ? (
+                        <div className="selected-image">
+                            <img src={Array.from(insumo.imagenesArticulo)[0].url} alt="Imagen seleccionada" />
+                        </div>
+                    ) : (
+                        <div>No hay imagen seleccionada</div>
+                    )}
                     <button className="btn btn-primary" onClick={toggleAgregarImagenModal}>Nueva Imagen</button>
                 </div>
                 <div className="mb-3">
@@ -208,9 +206,10 @@ function InsumoFormulario({ show, handleClose, onSave }: InsumoFormularioProps) 
                 {showAgregarImagenModal && (
                     <AgregarImagenModal
                         show={showAgregarImagenModal}
+                        onSave={handleImagenSeleccionada}
+                        toggleModal={toggleAgregarImagenModal}
                         imagenes={imagenes}
                         setImagenes={setImagenes}
-                        toggleModal={toggleAgregarImagenModal}
                     />
                 )}
             </div>
@@ -227,4 +226,3 @@ function InsumoFormulario({ show, handleClose, onSave }: InsumoFormularioProps) 
 }
 
 export default InsumoFormulario;
-
