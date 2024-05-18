@@ -158,24 +158,29 @@ const InsumoFormulario: React.FC<InsumoFormularioProps> = ({ show, handleClose, 
                     <label htmlFor="cmbImagenes" className="form-label">Imagen</label>
                     {insumo.imagenesArticulo.size > 0 ? (
                         <div className="selected-image">
-                            <img src={Array.from(insumo.imagenesArticulo)[0].url} alt="Imagen seleccionada" />
+                            <img className = "img" src={Array.from(insumo.imagenesArticulo)[0].url} alt="Imagen seleccionada" />
                         </div>
                     ) : (
                         <div>No hay imagen seleccionada</div>
                     )}
-                    <button className="btn btn-primary" onClick={toggleAgregarImagenModal}>Nueva Imagen</button>
+                    <button className="btn-Guardar" onClick={toggleAgregarImagenModal}>Nueva Imagen</button>
                 </div>
                 <div className="mb-3">
                     <label htmlFor="cmbUnidadMedida" className="form-label">Unidad de Medida</label>
-                    <select id="cmbUnidadMedida" className="form-select" value={insumo.unidadMedida?.id || ''} onChange={e => setInsumo({ ...insumo, unidadMedida: { id: parseInt(e.target.value), denominacion: "", eliminado: false } })}>
-                        <option value="">Seleccione una unidad de medida</option>
+                    <select
+                        id="cmbUnidadMedida"
+                        className="form-select"
+                        value={insumo.unidadMedida.id || ''}
+                        onChange={e => setInsumo({ ...insumo, unidadMedida: { id: parseInt(e.target.value), denominacion: "", eliminado: false } })}
+                    >
+                        <option className="form-select-option" value="">Seleccione una unidad de medida</option>
                         {unidadesMedida.map(unidad => (
-                            <option key={unidad.id} value={unidad.id}>{unidad.denominacion}</option>
+                            <option className="form-select-option" key={unidad.id} value={unidad.id}>{unidad.denominacion}</option>
                         ))}
                     </select>
                 </div>
                 <div>
-                    <button className="btn btn-primary" onClick={toggleNuevaUnidadModal}>Nueva Unidad Medida</button>
+                    <button className="btn-Guardar" onClick={toggleNuevaUnidadModal}>Nueva Unidad Medida</button>
                 </div>
                 <div className="mb-3">
                     <label htmlFor="txtPrecioCompra" className="form-label">Precio de Compra</label>
@@ -198,10 +203,10 @@ const InsumoFormulario: React.FC<InsumoFormularioProps> = ({ show, handleClose, 
                 </div>
             </Modal.Body>
             <Modal.Footer>
-                <Button variant="secondary" onClick={handleClose}>
+                <Button className="btn-Cancelar" variant="secondary" onClick={handleClose}>
                     Cancelar
                 </Button>
-                <Button variant="primary" onClick={guardarInsumo}>
+                <Button className ="btn-Guardar" variant="primary" onClick={guardarInsumo}>
                     Guardar
                 </Button>
             </Modal.Footer>
