@@ -15,30 +15,21 @@
 
 /* Modal content */
 .modal-content {
-    background-color: #fefefe;
+    background-color: #f8f2ab;
     margin: 5% auto; /* Centramos el modal */
     padding: 20px;
-    border: 1px solid #888;
+    border: 1px solid #e35115;;
     width: 90%; /* Ajusta el ancho del modal según sea necesario */
     max-width: 800px; /* Limita el ancho máximo */
-    border-radius: 8px; /* Bordes redondeados */
+    border-radius: 15px; /* Bordes redondeados */
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3); /* Sombra */
 }
-
-/* Close button */
-.close {
-    color: #aaa;
-    float: right;
-    font-size: 28px;
-    font-weight: bold;
-    cursor: pointer; /* Añade un cursor pointer */
-}
-
-.close:hover,
-.close:focus {
-    color: black;
-    text-decoration: none;
-}
+.modal-title {
+    font-family: 'Broadway';
+    font-size: 2rem;
+    color: #c93232;
+    /* Otros estilos según sea necesario */
+  }
 
 /* Optional: Fade in animation */
 @keyframes fadeIn {
@@ -56,11 +47,16 @@
     overflow-y: auto; /* Añade una barra de desplazamiento vertical si el contenido es más largo que el modal */
 }
 
+.modal-header {
+    border-bottom-color: #e35115;
+}
+
 /* Opcional: Estilo para los botones del modal */
 .modal-footer {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    border-top-color: #e35115;
 }
 
 .modal-footer .btn {
@@ -72,8 +68,95 @@
     z-index: 1060; /* Asegúrate de que el z-index sea superior al modal principal */
 }
 
-.form-control-no-arrows {
-    -moz-appearance: textfield;
-    -webkit-appearance: textfield;
-    appearance: textfield;
-  }
+.btn-Cancelar {
+    color: #f8efc8;
+    background-color: #c93232; 
+    border: #f8efc8;
+    padding: 10px 20px; /* Ajusta el padding según sea necesario */
+    font-size: 16px; /* Ajusta el tamaño de fuente según sea necesario */
+    /* Otros estilos... */
+}
+
+.btn-Cancelar:hover {
+    background-color: #740e0e;
+}
+
+.btn-Guardar {
+    color: #f8efc8;
+    background-color: #e38c15; 
+    border:#f8efc8;
+    border-radius: 8px;
+    margin-bottom: 15px;
+    padding: 10px 20px; /* Ajusta el padding según sea necesario */
+    font-size: 16px; /* Ajusta el tamaño de fuente según sea necesario */
+    /* Otros estilos... */
+}
+
+.btn-Guardar:hover {
+    background-color: #aa6a10;
+}
+
+/* Labels */
+.form-label {
+    font-family: 'Broadway'; /* Cambia la fuente */
+    color: #740e0e; /* Cambia el color del texto */
+    font-size: 24px; /* Tamaño de fuente */
+}
+
+/* Campos de inputs */
+.form-control {
+    background-color: #f8f3df;
+    border-color: #e35115;
+}
+
+.form-control:focus{
+    background-color: #f8f3df;
+    border-color: #e35115;
+}
+
+input[type="text"].form-control {
+    background-color: #f8f3df;
+    border-color: #e35115;
+}
+
+.form-select {
+    background-color: #f8f3df;
+    border-color: #e35115;
+}
+
+.form-select:focus {
+    background-color: #f8f3df;
+    border-color: #e35115;
+}
+
+
+.form-check-input {
+    background-color: #f8f3df;
+    border-color: #aa6a10;
+}
+
+.form-check-input:focus {
+    background-color: #f8f3df;
+    border-color: #aa6a10;
+}
+
+.form-check-input:checked {
+    background-color: #e38c15;
+    border-color: #aa6a10;
+}
+
+.img {
+    margin-bottom: 15px;
+    margin-top: 15;
+}
+
+::-webkit-scrollbar {
+    width: 9px; /* Ancho de la barra de desplazamiento */
+    background-color: #f8f2ab; /* Color de fondo */
+}
+
+/* Barra de desplazamiento thumb */
+::-webkit-scrollbar-thumb {
+    background-color: #740e0e; /* Color de la barra de desplazamiento */
+    border-radius: 8px; /* Borde redondeado */
+}

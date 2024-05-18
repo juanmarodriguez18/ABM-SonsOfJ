@@ -57,7 +57,6 @@ const AgregarImagenModal: React.FC<AgregarImagenModalProps> = ({ imagenes, setIm
         <div className="modal">
             <div className="modal-content">
                 <span className="close" onClick={toggleModal}>&times;</span>
-                <h2>Agregar Nueva Imagen</h2>
                 <div className="mb-3">
                     <label htmlFor="fileInput" className="form-label">Seleccionar imagen</label>
                     <input type="file" id="fileInput" className="form-control" onChange={handleFileChange} />
@@ -65,7 +64,7 @@ const AgregarImagenModal: React.FC<AgregarImagenModalProps> = ({ imagenes, setIm
                 <div>
                     <p style={{ color: 'red', lineHeight: 5, padding: 5 }}>{txtValidacion}</p>
                 </div>
-                <button className="btn btn-primary" onClick={guardarImagen}>Guardar Imagen</button>
+                <button className="btn-Guardar" onClick={guardarImagen}>Guardar Imagen</button>
             </div>
         </div>
     );
