@@ -71,3 +71,9 @@
 .agregar-imagen-modal {
     z-index: 1060; /* Asegúrate de que el z-index sea superior al modal principal */
 }
+
+.form-control-no-arrows {
+    -moz-appearance: textfield;
+    -webkit-appearance: textfield;
+    appearance: textfield;
+  }

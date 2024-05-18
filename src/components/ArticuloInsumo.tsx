@@ -63,8 +63,9 @@ const Insumo: React.FC<{ articulo: ArticuloInsumo }> = ({ articulo }) => {
                 show={showForm}
                 handleClose={() => setShowForm(false)}
                 onSave={(insumo: ArticuloInsumo) => {
-                    // Aquí podrías actualizar el estado o hacer cualquier acción después de guardar
+                    
                     console.log('Insumo guardado:', insumo);
+                    
                 }}
                 isEdit={true}
                 insumo={articulo}

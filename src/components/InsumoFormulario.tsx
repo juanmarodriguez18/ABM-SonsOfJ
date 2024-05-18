@@ -101,11 +101,15 @@ const InsumoFormulario: React.FC<InsumoFormularioProps> = ({ show, handleClose, 
     
             if (isEdit && insumo.id) {
                 await actualizarInsumo(insumo.id, insumoParaGuardar); // Actualizar el insumo existente
+                alert('El insumo se modificó correctamente');
+                window.location.reload();
+                
             } else {
                 const nuevoInsumo = await crearInsumo(insumoParaGuardar); // Crear un nuevo insumo
                 alert(`El insumo se guardó correctamente.`);
                 onSave(nuevoInsumo);
             }
+
             handleClose();
         } catch (error) {
             console.error("Error al guardar el insumo:", error);
@@ -148,7 +152,7 @@ const InsumoFormulario: React.FC<InsumoFormularioProps> = ({ show, handleClose, 
                 </div>
                 <div className="mb-3">
                     <label htmlFor="txtPrecioVenta" className="form-label">Precio de Venta</label>
-                    <input type="number" id="txtPrecioVenta" className="form-control" placeholder="Ingrese el precio de venta" value={insumo.precioVenta || 0} onChange={e => setInsumo({ ...insumo, precioVenta: parseFloat(e.target.value) })} />
+                    <input type="number" id="txtPrecioVenta" className="form-control" placeholder="Ingrese el precio de venta" value={insumo.precioVenta || ''} onChange={e => setInsumo({ ...insumo, precioVenta: parseFloat(e.target.value) })} />
                 </div>
                 <div className="mb-3">
                     <label htmlFor="cmbImagenes" className="form-label">Imagen</label>
@@ -175,15 +179,15 @@ const InsumoFormulario: React.FC<InsumoFormularioProps> = ({ show, handleClose, 
                 </div>
                 <div className="mb-3">
                     <label htmlFor="txtPrecioCompra" className="form-label">Precio de Compra</label>
-                    <input type="number" id="txtPrecioCompra" className="form-control" placeholder="Ingrese el precio de compra" value={insumo.precioCompra || 0} onChange={e => setInsumo({ ...insumo, precioCompra: parseFloat(e.target.value) })} />
+                    <input type="number" id="txtPrecioCompra" className="form-control" placeholder="Ingrese el precio de compra" value={insumo.precioCompra || ''} onChange={e => setInsumo({ ...insumo, precioCompra: parseFloat(e.target.value) })} />
                 </div>
                 <div className="mb-3">
                     <label htmlFor="txtStockActual" className="form-label">Stock Actual</label>
-                    <input type="number" id="txtStockActual" className="form-control" placeholder="Ingrese el stock actual" value={insumo.stockActual || 0} onChange={e => setInsumo({ ...insumo, stockActual: parseFloat(e.target.value) })} />
+                    <input type="number" id="txtStockActual" className="form-control" placeholder="Ingrese el stock actual" value={insumo.stockActual || ''} onChange={e => setInsumo({ ...insumo, stockActual: parseFloat(e.target.value) })} />
                 </div>
                 <div className="mb-3">
                     <label htmlFor="txtStockMaximo" className="form-label">Stock Máximo</label>
-                    <input type="number" id="txtStockMaximo" className="form-control" placeholder="Ingrese el stock máximo" value={insumo.stockMaximo || 0} onChange={e => setInsumo({ ...insumo, stockMaximo: parseFloat(e.target.value) })} />
+                    <input type="number" id="txtStockMaximo" className="form-control" placeholder="Ingrese el stock máximo" value={insumo.stockMaximo || ''} onChange={e => setInsumo({ ...insumo, stockMaximo: parseFloat(e.target.value) })} />
                 </div>
                 <div className="mb-3 form-check">
                     <input type="checkbox" id="chkEsParaElaborar" className="form-check-input" checked={insumo.esParaElaborar || false} onChange={e => setInsumo({ ...insumo, esParaElaborar: e.target.checked })} />
