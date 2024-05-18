@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import SearchBar from './SearchBar';
 import { ArticuloInsumo } from '../types/ArticuloInsumo';
-import '../styles/Articulo.css';
 import Insumo from './ArticuloInsumo';
 import { getInsumos } from '../services/ArticuloInsumoService';
 import InsumoFormulario from './InsumoFormulario';
@@ -44,7 +43,7 @@ const InsumoList: React.FC = () => {
   return (
     <div>
       <SearchBar onSearch={setQuery} />
-      <button onClick={() => setShowForm(true)}>Agregar Insumo</button>
+      <button className="boton-agregarInsumo" onClick={() => setShowForm(true)}>Agregar Insumo</button>
       {showForm && (
         <InsumoFormulario
           show={showForm}
@@ -52,7 +51,7 @@ const InsumoList: React.FC = () => {
           onSave={handleSaveInsumo}
         />
       )}
-      <li className="row">
+      <li key="lista1" className="row">
         <div className="col">
           <b>Denominacion:</b>
         </div>
@@ -70,6 +69,9 @@ const InsumoList: React.FC = () => {
         </div>
         <div className="col">
           <b>Es para elaborar:</b>
+        </div>
+        <div className="col">
+          <b>Eliminar/Modificar:</b>
         </div>
       </li>
       <ul>

@@ -35,13 +35,23 @@ export const getInsumoById = async (id: number) => {
   
   export const eliminarInsumo = async (id: number) => {
     try {
-      const response = await axios.patch(`${API_URL}/${id}`, { eliminado: true });
+      const response = await axios.patch(`${API_URL}/${id}/eliminar`, { eliminado: true });
       return response.data;
     } catch (error) {
       console.error("Error al eliminar lógicamente un artículo manufacturado:", error);
       throw error;
     }
   };
+
+  export const recuperarInsumo = async (id: number) => {
+    try {
+        const response = await axios.patch(`${API_URL}/${id}/recuperar`, { eliminado: false });
+        return response.data;
+    } catch (error) {
+        console.error("Error al recuperar un artículo manufacturado:", error);
+        throw error;
+    }
+};
   
   export const actualizarInsumo = async (id: number, datosActualizados: any) => {
     try {

@@ -1,59 +1,61 @@
-import  { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
+import { Modal, Button } from 'react-bootstrap';
 import { ArticuloInsumo } from '../types/ArticuloInsumo';
 import { ImagenArticulo } from '../types/ImagenArticulo';
 import { UnidadMedida } from '../types/UnidadMedida';
 import { getImagenesArticulo } from '../services/ImagenArticuloService';
 import { crearUnidadMedida, getUnidadesMedida } from '../services/UnidadMedidaService';
-import { useNavigate, useParams } from 'react-router-dom';
-import { actualizarInsumo, crearInsumo, getInsumoById } from '../services/ArticuloInsumoService';
+import { actualizarInsumo, crearInsumo} from '../services/ArticuloInsumoService';
 import AgregarImagenModal from './AgregarImagenModal';
-import { Modal, Button } from 'react-bootstrap';
-import '../styles/InsumoFormulario.css';
 import AgregarUnidadMedidaModal from './AgregarUnidadMedidaModal';
+import '../styles/InsumoFormulario.css';
 
 interface InsumoFormularioProps {
     show: boolean;
     handleClose: () => void;
     onSave: (insumo: ArticuloInsumo) => void;
+    isEdit?: boolean; // Indicador de edición
+    insumo?: ArticuloInsumo;
 }
 
-function InsumoFormulario({ show, handleClose, onSave }: InsumoFormularioProps) {
-    const navigate = useNavigate();
-    const { insumo_id } = useParams();
-
+const InsumoFormulario: React.FC<InsumoFormularioProps> = ({ show, handleClose, onSave, isEdit = false, insumo: insumoInicial }) => {
     const [insumo, setInsumo] = useState<ArticuloInsumo>(new ArticuloInsumo());
     const [imagenes, setImagenes] = useState<ImagenArticulo[]>([]);
     const [unidadesMedida, setUnidadesMedida] = useState<UnidadMedida[]>([]);
     const [txtValidacion, setTxtValidacion] = useState<string>("");
-    const [showAgregarImagenModal, setShowAgregarImagenModal] = useState<boolean>(false); // Estado para controlar la visibilidad del modal
-    const [showNuevaUnidadModal, setShowNuevaUnidadModal] = useState<boolean>(false); // Estado para el modal de nueva unidad de medida
+    const [showAgregarImagenModal, setShowAgregarImagenModal] = useState<boolean>(false);
+    const [showNuevaUnidadModal, setShowNuevaUnidadModal] = useState<boolean>(false);
 
     useEffect(() => {
-        async function cargarInsumo() {
-            if (insumo_id) {
-                const insumoCargado = await getInsumoById(parseInt(insumo_id));
-                setInsumo(insumoCargado);
-            } else {
-                setInsumo(new ArticuloInsumo());
-            }
+        if (isEdit && insumoInicial) {
+            setInsumo(insumoInicial); // Cargar los datos del insumo a editar
+        } else {
+            setInsumo(new ArticuloInsumo()); // Limpiar el formulario si no estamos editando
         }
-        cargarInsumo();
-    }, [insumo_id]);
+    }, [show, isEdit, insumoInicial]);
 
     useEffect(() => {
         async function cargarDatosIniciales() {
             try {
                 const imagenes = await getImagenesArticulo();
                 setImagenes(imagenes);
+    
                 const unidadesMedida = await getUnidadesMedida();
                 setUnidadesMedida(unidadesMedida);
+    
+                // Si estamos editando y hay un insumo inicial, configurar las imágenes del insumo
+                if (isEdit && insumoInicial) {
+                    // Convertir el Set de imagenesArticulo a un array de ImagenArticulo
+                    const imagenesInsumo = Array.from(insumoInicial.imagenesArticulo).map(imagen => new ImagenArticulo(imagen.id, imagen.eliminado, imagen.url));
+                    setInsumo({ ...insumoInicial, imagenesArticulo: new Set(imagenesInsumo) });
+                }
             } catch (error) {
                 console.error("Error al cargar datos iniciales:", error);
                 setTxtValidacion("Error al cargar datos iniciales. Por favor, inténtelo de nuevo más tarde.");
             }
         }
         cargarDatosIniciales();
-    }, []);
+    }, [show, isEdit, insumoInicial]);
 
     const guardarInsumo = async () => {
         // Validación de campos
@@ -97,15 +99,14 @@ function InsumoFormulario({ show, handleClose, onSave }: InsumoFormularioProps) 
                 imagenesArticulo: imagenesArticuloArray
             };
     
-            if (insumo.id) {
-                await actualizarInsumo(insumo.id, insumoParaGuardar);
+            if (isEdit && insumo.id) {
+                await actualizarInsumo(insumo.id, insumoParaGuardar); // Actualizar el insumo existente
             } else {
-                await crearInsumo(insumoParaGuardar);
+                const nuevoInsumo = await crearInsumo(insumoParaGuardar); // Crear un nuevo insumo
                 alert(`El insumo se guardó correctamente.`);
+                onSave(nuevoInsumo);
             }
-            onSave(insumo);
             handleClose();
-            navigate('/insumos');
         } catch (error) {
             console.error("Error al guardar el insumo:", error);
             setTxtValidacion("Error al guardar el insumo. Por favor, inténtelo de nuevo más tarde.");
@@ -113,9 +114,8 @@ function InsumoFormulario({ show, handleClose, onSave }: InsumoFormularioProps) 
     };
 
     const handleImagenSeleccionada = (imagen: ImagenArticulo) => {
-        setInsumo({ ...insumo, imagenesArticulo: new Set([imagen]) }); // Asignar la imagen seleccionada al insumo
+        setInsumo({ ...insumo, imagenesArticulo: new Set([imagen]) });
     };
-    
 
     const handleNuevaUnidadMedida = async (denominacion: string) => {
         try {
@@ -139,7 +139,7 @@ function InsumoFormulario({ show, handleClose, onSave }: InsumoFormularioProps) 
     return (
         <Modal show={show} onHide={handleClose} size="lg">
             <Modal.Header closeButton>
-                <Modal.Title>{insumo_id ? "Editar Insumo" : "Agregar Insumo"}</Modal.Title>
+                <Modal.Title>{isEdit ? "Editar Insumo" : "Agregar Insumo"}</Modal.Title>
             </Modal.Header>
             <Modal.Body>
                 <div className="mb-3">

@@ -32,3 +32,65 @@
     margin-right: 10px;
     border-radius: 4px;
 }
+
+.eliminado {
+    background-color: #f8d7da; /* Color de fondo rojo */
+    opacity: 0.6; /* Opcional: Añade opacidad para indicar estado eliminado */
+}
+
+/* Estilos para el botón eliminar */
+.eliminarBtn {
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: #dc3545; /* Rojo */
+    color: white;
+    text-align: center;
+    text-decoration: none;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Sombra suave */
+    transition: background-color 0.3s ease;
+}
+
+.eliminarBtn:hover {
+    background-color: #c82333; /* Cambio de color al pasar el mouse */
+}
+
+/* Estilos para el botón modificar */
+.modificarBtn {
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: #ffc107; /* Amarillo */
+    color: black;
+    text-align: center;
+    text-decoration: none;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Sombra suave */
+    transition: background-color 0.3s ease;
+}
+
+.modificarBtn:hover {
+    background-color: #e0a800; /* Cambio de color al pasar el mouse */
+}
+
+/* Estilos para el botón recuperar */
+.recuperarBtn {
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: #28a745; /* Verde */
+    color: white;
+    text-align: center;
+    text-decoration: none;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Sombra suave */
+    transition: background-color 0.3s ease;
+}
+
+.recuperarBtn:hover {
+    background-color: #218838; /* Cambio de color al pasar el mouse */
+}
