@@ -9,6 +9,9 @@ import { actualizarInsumo, crearInsumo} from '../services/ArticuloInsumoService'
 import AgregarImagenModal from './AgregarImagenModal';
 import AgregarUnidadMedidaModal from './AgregarUnidadMedidaModal';
 import '../styles/InsumoFormulario.css';
+import { Categoria } from '../types/Categoria';
+import AgregarCategoriaModal from './AgregarCategoriaModal';
+import { actualizarCategoria, getCategorias } from '../services/CategoriaService';
 
 interface InsumoFormularioProps {
     show: boolean;
@@ -19,18 +22,21 @@ interface InsumoFormularioProps {
 }
 
 const InsumoFormulario: React.FC<InsumoFormularioProps> = ({ show, handleClose, onSave, isEdit = false, insumo: insumoInicial }) => {
-    const [insumo, setInsumo] = useState<ArticuloInsumo>(new ArticuloInsumo());
+    const [categorias, setCategorias] = useState<Categoria[]>([]);
+    const [insumo, setInsumo] = useState<ArticuloInsumo>(new ArticuloInsumo(0, false, '', 0, new Set<ImagenArticulo>(), new UnidadMedida(), categorias[0], 0, 0, 0, false));
     const [imagenes, setImagenes] = useState<ImagenArticulo[]>([]);
     const [unidadesMedida, setUnidadesMedida] = useState<UnidadMedida[]>([]);
     const [txtValidacion, setTxtValidacion] = useState<string>("");
     const [showAgregarImagenModal, setShowAgregarImagenModal] = useState<boolean>(false);
     const [showNuevaUnidadModal, setShowNuevaUnidadModal] = useState<boolean>(false);
+    const [showAgregarCategoriaModal, setAgregarCategoriaModal] = useState<boolean>(false);
+    
 
     useEffect(() => {
         if (isEdit && insumoInicial) {
             setInsumo(insumoInicial); // Cargar los datos del insumo a editar
         } else {
-            setInsumo(new ArticuloInsumo()); // Limpiar el formulario si no estamos editando
+            setInsumo(new ArticuloInsumo(0, false, '', 0, new Set<ImagenArticulo>(), new UnidadMedida(), categorias[0], 0, 0, 0, false)); // Limpiar el formulario si no estamos editando
         }
     }, [show, isEdit, insumoInicial]);
 
@@ -42,6 +48,9 @@ const InsumoFormulario: React.FC<InsumoFormularioProps> = ({ show, handleClose, 
     
                 const unidadesMedida = await getUnidadesMedida();
                 setUnidadesMedida(unidadesMedida);
+
+                const categorias = await getCategorias();
+                setCategorias(categorias);
     
                 // Si estamos editando y hay un insumo inicial, configurar las imágenes del insumo
                 if (isEdit && insumoInicial) {
@@ -91,6 +100,10 @@ const InsumoFormulario: React.FC<InsumoFormularioProps> = ({ show, handleClose, 
             setTxtValidacion("Indique si es para elaborar");
             return;
         }
+        if (!insumo.categoria || !insumo.categoria.id) {
+            setTxtValidacion("Seleccione una categoría");
+            return;
+        }
 
         try {
             const imagenesArticuloArray = Array.from(insumo.imagenesArticulo);
@@ -132,12 +145,27 @@ const InsumoFormulario: React.FC<InsumoFormularioProps> = ({ show, handleClose, 
         }
     };
 
+    const handleActualizarCategoria = async (id: number, datosActualizados: any) => {
+        try {
+            await actualizarCategoria(id, datosActualizados);
+            const nuevasCategorias = await getCategorias();
+            setCategorias(nuevasCategorias);  // Actualiza las categorías directamente
+        } catch (error) {
+            console.error(`Error al actualizar la categoría con ID ${id}:`, error);
+            // Aquí puedes manejar el error según tus necesidades
+        }
+    };
+
     const toggleAgregarImagenModal = () => {
         setShowAgregarImagenModal(!showAgregarImagenModal);
     };
 
     const toggleNuevaUnidadModal = () => {
         setShowNuevaUnidadModal(!showNuevaUnidadModal);
+    };
+
+    const toggleAgregarCategoria = () => {
+        setAgregarCategoriaModal(!showAgregarCategoriaModal);
     };
 
     return (
@@ -194,6 +222,34 @@ const InsumoFormulario: React.FC<InsumoFormularioProps> = ({ show, handleClose, 
                     <label htmlFor="txtStockMaximo" className="form-label">Stock Máximo</label>
                     <input type="number" id="txtStockMaximo" className="form-control" placeholder="Ingrese el stock máximo" value={insumo.stockMaximo || ''} onChange={e => setInsumo({ ...insumo, stockMaximo: parseFloat(e.target.value) })} />
                 </div>
+                <div className="mb-3">
+                    <label htmlFor="cmbCategoria" className="form-label">Categoría</label>
+                    <select
+                        id="cmbCategoria"
+                        className="form-select"
+                        value={insumo.categoria?.id || ''}
+                        onChange={e => setInsumo({ 
+                            ...insumo, 
+                            categoria: { 
+                                id: parseInt(e.target.value), 
+                                denominacion: categorias.find(c => c.id === parseInt(e.target.value))?.denominacion || '', 
+                                eliminado: false 
+                        } 
+                        })}
+                    >
+                        <option className="form-select-option" value="">Seleccione una categoría</option>
+                        {Array.isArray(categorias) && categorias.length > 0 ? (
+                            categorias.map(categoria => (
+                                <option className="form-select-option" key={categoria.id} value={categoria.id}>{categoria.denominacion}</option>
+                            ))
+                        ) : (
+                            <option className="form-select-option" value="">Cargando categorías...</option>
+                        )}
+                    </select>
+                </div>
+                <div>
+                    <button className="btn-Guardar" onClick={toggleAgregarCategoria}>Nueva Categoria</button>
+                </div>
                 <div className="mb-3 form-check">
                     <input type="checkbox" id="chkEsParaElaborar" className="form-check-input" checked={insumo.esParaElaborar || false} onChange={e => setInsumo({ ...insumo, esParaElaborar: e.target.checked })} />
                     <label htmlFor="chkEsParaElaborar" className="form-check-label">¿Es para elaborar?</label>
@@ -229,6 +285,13 @@ const InsumoFormulario: React.FC<InsumoFormularioProps> = ({ show, handleClose, 
                     onHide={() => setShowNuevaUnidadModal(false)}
                     agregarUnidadMedida={handleNuevaUnidadMedida}
                 />
+            </div>
+            <div>
+            <AgregarCategoriaModal
+                show={showAgregarCategoriaModal}
+                onHide={() => setAgregarCategoriaModal(false)}
+                actualizarCategorias={handleActualizarCategoria}
+            />
             </div>
         </Modal>
     );

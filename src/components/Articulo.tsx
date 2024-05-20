@@ -27,7 +27,7 @@ const Articulo: React.FC<{ articulo: ArticuloManufacturado }> = ({ articulo }) =
         </div>
         <div className="col">
           <Link to={`/articulos/${articulo.id}`}>
-              <button>Detalles</button>
+              <button className='btn-Guardar'>Detalles</button>
           </Link>
         </div>
       </li>

@@ -4,7 +4,7 @@ import { Navbar, Nav } from 'react-bootstrap';
 
 export const NavBar: React.FC = () => {
   return (
-    <Navbar bg="light" expand="lg">
+    <Navbar className="navBar" bg="light" expand="lg">
       <Navbar.Brand as={Link} to="/">Mi App</Navbar.Brand>
       <Navbar.Toggle aria-controls="basic-navbar-nav" />
       <Navbar.Collapse id="basic-navbar-nav">

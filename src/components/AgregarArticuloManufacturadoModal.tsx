@@ -1,19 +1,25 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Modal, Button, Form, Col, Row } from 'react-bootstrap';
-import AgregarArticuloDetalleModal from './AgregarArticuloDetalleModal'; // Asegúrate de importar el modal
+import AgregarArticuloDetalleModal from './AgregarArticuloDetalleModal';
+import AgregarImagenModal from './AgregarImagenModal';
+import AgregarCategoriaModal from './AgregarCategoriaModal';
 import { ArticuloManufacturado } from '../types/ArticuloManufacturado';
 import { ImagenArticulo } from '../types/ImagenArticulo';
 import { ArticuloInsumo } from '../types/ArticuloInsumo';
 import { UnidadMedida } from '../types/UnidadMedida';
 import { ArticuloManufacturadoDetalle } from '../types/ArticuloManufacturadoDetalle';
+import { Categoria } from '../types/Categoria';
+import { getImagenesArticulo } from '../services/ImagenArticuloService';
+import { actualizarCategoria, getCategorias } from '../services/CategoriaService';
+import '../styles/InsumoFormulario.css';
 
 interface AgregarArticuloManufacturadoModalProps {
     show: boolean;
     onHide: () => void;
     agregarArticuloManufacturado: (articulo: ArticuloManufacturado) => void;
-    articulosInsumo: ArticuloInsumo[]; // Lista de artículos insumo disponibles
-    imagenesArticulo: ImagenArticulo[]; // Lista de imágenes de artículos disponibles
-    unidadesMedida: UnidadMedida[]; // Lista de unidades de medida disponibles
+    articulosInsumo: ArticuloInsumo[];
+    unidadesMedida: UnidadMedida[];
+    imagenesArticulo: ImagenArticulo[];
 }
 
 const AgregarArticuloManufacturadoModal: React.FC<AgregarArticuloManufacturadoModalProps> = ({
@@ -21,7 +27,6 @@ const AgregarArticuloManufacturadoModal: React.FC<AgregarArticuloManufacturadoMo
     onHide,
     agregarArticuloManufacturado,
     articulosInsumo,
-    imagenesArticulo,
     unidadesMedida,
 }) => {
     const [denominacion, setDenominacion] = useState<string>('');
@@ -30,52 +35,97 @@ const AgregarArticuloManufacturadoModal: React.FC<AgregarArticuloManufacturadoMo
     const [descripcion, setDescripcion] = useState<string>('');
     const [tiempoEstimado, setTiempoEstimado] = useState<number>(0);
     const [preparacion, setPreparacion] = useState<string>('');
+    const [categoriaId, setCategoriaId] = useState<number>(0);
+    const [imagenId, setImagenId] = useState<number>(0);
     const [articuloManufacturadoDetalles, setArticuloManufacturadoDetalles] = useState<ArticuloManufacturadoDetalle[]>([]);
+    const [imagenesArticulo, setImagenesArticulo] = useState<ImagenArticulo[]>([]);
+    const [categorias, setCategorias] = useState<Categoria[]>([]);
+    const [selectedImagen, setSelectedImagen] = useState<ImagenArticulo | null>(null);
     const [showDetalleModal, setShowDetalleModal] = useState<boolean>(false);
+    const [showAgregarImagenModal, setShowAgregarImagenModal] = useState<boolean>(false);
+    const [showAgregarCategoriaModal, setShowAgregarCategoriaModal] = useState<boolean>(false);
+
+    useEffect(() => {
+        async function cargarDatosIniciales() {
+            const imagenes = await getImagenesArticulo();
+            setImagenesArticulo(imagenes);
+
+            const categorias = await getCategorias();
+            setCategorias(categorias);
+        }
+
+        cargarDatosIniciales();
+    }, [show]);
 
     const handleGuardar = () => {
+        const imagenSeleccionada = imagenesArticulo.find(i => i.id === imagenId);
         const unidadMedidaSeleccionada = unidadesMedida.find((um) => um.id === unidadMedidaId);
-    
-        if (!unidadMedidaSeleccionada) {
-            // Manejar el caso donde no se encuentra la unidad de medida
-            console.error('No se encontró la unidad de medida');
+        const categoriaSeleccionada = categorias.find((cat) => cat.id === categoriaId);
+
+        if (!unidadMedidaSeleccionada || !categoriaSeleccionada || !imagenSeleccionada) {
+            console.error('No se encontró la unidad de medida, la categoría o la imagen seleccionada');
             return;
         }
-    
+
         const nuevoArticuloManufacturado: ArticuloManufacturado = {
             id: 0,
             denominacion,
             eliminado: false,
             precioVenta,
             unidadMedida: unidadMedidaSeleccionada,
+            categoria: categoriaSeleccionada,
             descripcion,
             tiempoEstimadoMinutos: tiempoEstimado,
             preparacion,
-            imagenesArticulo: new Set(),  // Corregido a `new Set()`
+            imagenesArticulo: new Set([imagenSeleccionada]),
             articuloManufacturadoDetalles: new Set(articuloManufacturadoDetalles.map((detalle) => ({
                 ...detalle,
                 articuloInsumo: detalle.articuloInsumo,
                 eliminado: false,
             }))),
         };
-    
-        // Lógica para agregar el artículo manufacturado
+
         agregarArticuloManufacturado(nuevoArticuloManufacturado);
-    
-        // Limpiar los campos y cerrar el modal
+
         setDenominacion('');
         setPrecioVenta(0);
         setUnidadMedidaId(0);
         setDescripcion('');
         setTiempoEstimado(0);
         setPreparacion('');
+        setCategoriaId(0);
+        setImagenId(0);
         setArticuloManufacturadoDetalles([]);
-    
+        setSelectedImagen(null);
+
         onHide();
+    };
+
+    const handleActualizarCategoria = async (id: number, datosActualizados: any) => {
+        try {
+            await actualizarCategoria(id, datosActualizados);
+            const nuevasCategorias = await getCategorias();
+            setCategorias(nuevasCategorias);  // Actualiza las categorías directamente
+        } catch (error) {
+            console.error(`Error al actualizar la categoría con ID ${id}:`, error);
+            // Aquí puedes manejar el error según tus necesidades
+        }
     };
 
     const agregarDetalle = (detalle: ArticuloManufacturadoDetalle) => {
         setArticuloManufacturadoDetalles([...articuloManufacturadoDetalles, detalle]);
+    };
+
+    const handleImagenSeleccionada = (imagen: ImagenArticulo) => {
+        setSelectedImagen(imagen);
+    };
+
+    const toggleAgregarImagenModal = () => {
+        setShowAgregarImagenModal(!showAgregarImagenModal);
+    };
+
+    const toggleAgregarCategoriaModal = () => {
+        setShowAgregarCategoriaModal(!showAgregarCategoriaModal);
     };
 
     return (
@@ -156,6 +206,39 @@ const AgregarArticuloManufacturadoModal: React.FC<AgregarArticuloManufacturadoMo
                             />
                         </Form.Group>
 
+                        <Form.Group controlId="formCategoria">
+                            <Form.Label>Categoría</Form.Label>
+                            <Form.Control
+                                as="select"
+                                value={categoriaId}
+                                onChange={(e) => setCategoriaId(Number(e.target.value))}
+                            >
+                                <option value={0}>Seleccionar categoría...</option>
+                                {categorias.map((cat) => (
+                                    <option key={cat.id} value={cat.id}>
+                                        {cat.denominacion}
+                                    </option>
+                                ))}
+                            </Form.Control>
+                            <Button className='btn-Guardar' variant="outline-primary" size="sm" onClick={toggleAgregarCategoriaModal}>
+                                Nueva Categoría
+                            </Button>
+                        </Form.Group>
+
+                        <Form.Group controlId="formImagen">
+                            <Form.Label>Imagen</Form.Label>
+                            {selectedImagen ? (
+                                <div className="selected-image">
+                                    <img src={selectedImagen.url} alt="Imagen seleccionada" />
+                                </div>
+                            ) : (
+                                <div>No hay imagen seleccionada</div>
+                            )}
+                            <Button className='btn-Guardar' variant="outline-primary" size="sm" onClick={toggleAgregarImagenModal}>
+                                Nueva Imagen
+                            </Button>
+                        </Form.Group>
+
                         <Form.Group controlId="formArticuloManufacturadoDetalles">
                             <Form.Label>Detalles del Artículo Manufacturado</Form.Label>
                             {articuloManufacturadoDetalles.map((detalle, index) => (
@@ -184,7 +267,12 @@ const AgregarArticuloManufacturadoModal: React.FC<AgregarArticuloManufacturadoMo
                                                 setArticuloManufacturadoDetalles((prevState) =>
                                                     prevState.map((prevDetalle, idx) =>
                                                         idx === index
-                                                            ? { ...prevDetalle, articuloInsumoId: Number(e.target.value) }
+                                                            ? {
+                                                                  ...prevDetalle,
+                                                                  articuloInsumo: articulosInsumo.find(
+                                                                      (ai) => ai.id === Number(e.target.value)
+                                                                  ) || prevDetalle.articuloInsumo,
+                                                              }
                                                             : prevDetalle
                                                     )
                                                 )
@@ -200,21 +288,17 @@ const AgregarArticuloManufacturadoModal: React.FC<AgregarArticuloManufacturadoMo
                                     </Col>
                                 </Row>
                             ))}
-                            <Button
-                                variant="outline-primary"
-                                size="sm"
-                                onClick={() => setShowDetalleModal(true)}
-                            >
+                            <Button className='btn-Guardar' variant="outline-primary" size="sm" onClick={() => setShowDetalleModal(true)}>
                                 Agregar Detalle
                             </Button>
                         </Form.Group>
                     </Form>
                 </Modal.Body>
                 <Modal.Footer>
-                    <Button variant="secondary" onClick={onHide}>
+                    <Button className='btn-Cancelar' variant="secondary" onClick={onHide}>
                         Cancelar
                     </Button>
-                    <Button variant="primary" onClick={handleGuardar}>
+                    <Button className='btn-Guardar' variant="primary" onClick={handleGuardar}>
                         Guardar
                     </Button>
                 </Modal.Footer>
@@ -225,6 +309,25 @@ const AgregarArticuloManufacturadoModal: React.FC<AgregarArticuloManufacturadoMo
                 onHide={() => setShowDetalleModal(false)}
                 agregarArticuloDetalle={agregarDetalle}
                 articulosInsumo={articulosInsumo}
+            />
+
+            <div>
+                {/* Modal para agregar imagen */}
+                {showAgregarImagenModal && (
+                    <AgregarImagenModal
+                        show={showAgregarImagenModal}
+                        onSave={handleImagenSeleccionada}
+                        toggleModal={toggleAgregarImagenModal}
+                        imagenes={imagenesArticulo}
+                        setImagenes={setImagenesArticulo}
+                    />
+                        )}
+            </div>
+
+            <AgregarCategoriaModal
+                show={showAgregarCategoriaModal}
+                onHide={toggleAgregarCategoriaModal}                
+                actualizarCategorias = {handleActualizarCategoria}
             />
         </>
     );

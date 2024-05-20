@@ -57,7 +57,7 @@ const ArticuloList: React.FC = () => {
   return (
     <div>
       <SearchBar onSearch={setQuery} />
-      <Button variant="primary" onClick={() => setShowModal(true)}>
+      <Button className='btn-Guardar' variant="primary" onClick={() => setShowModal(true)}>
         Agregar Artículo
       </Button>
       <li className="row">

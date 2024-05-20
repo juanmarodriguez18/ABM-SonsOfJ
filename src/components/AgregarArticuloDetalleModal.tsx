@@ -80,10 +80,10 @@ const AgregarArticuloDetalleModal: React.FC<AgregarArticuloDetalleModalProps> = 
                 </Form>
             </Modal.Body>
             <Modal.Footer>
-                <Button variant="secondary" onClick={handleClose}>
+                <Button className='btn-Cancelar' variant="secondary" onClick={handleClose}>
                     Cancelar
                 </Button>
-                <Button variant="primary" onClick={handleGuardar}>
+                <Button className='btn-Guardar' variant="primary" onClick={handleGuardar}>
                     Guardar
                 </Button>
             </Modal.Footer>
