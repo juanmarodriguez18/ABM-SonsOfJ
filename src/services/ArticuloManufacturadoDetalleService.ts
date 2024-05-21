@@ -3,6 +3,16 @@ import axios from 'axios';
 
 const API_URL = 'http://localhost:8080/articulos-detalle';
 
+export const crearArticuloManufacturadoDetalle = async (nuevoDetalle: any) => {
+  try {
+    const response = await axios.post(API_URL, nuevoDetalle);
+    return response.data;
+  } catch (error) {
+    console.error("Error al crear un Detalle:", error);
+    throw error;
+  }
+};
+
 export const getArticulosManufacturadosDetalle = async () => {
   try {
     const response = await axios.get(API_URL);
@@ -23,15 +33,7 @@ export const getArticuloManufacturadoDetalleById = async (id: number) => {
   }
 };
 
-export const crearArticuloManufacturadoDetalle = async (nuevoDetalle: any) => {
-  try {
-    const response = await axios.post(API_URL, nuevoDetalle);
-    return response.data;
-  } catch (error) {
-    console.error("Error al crear un Detalle:", error);
-    throw error;
-  }
-};
+
 
 export const eliminarArticuloManufacturadoDetalle = async (id: number) => {
   try {
@@ -62,3 +64,4 @@ export async function obtenerUltimoId(): Promise<number> {
       throw error;
   }
 }
+

@@ -4,6 +4,16 @@ import { ImagenArticulo } from '../types/ImagenArticulo';
 
 const API_URL = 'http://localhost:8080/imagen-articulo';
 
+export const crearImagenArticulo = async (nuevaImagen: any): Promise<ImagenArticulo> => {
+  try {
+      const response = await axios.post<ImagenArticulo>(API_URL, nuevaImagen);
+      return response.data;
+  } catch (error) {
+      console.error("Error al crear una imagen:", error);
+      throw error;
+  }
+};
+
 export const getImagenesArticulo = async () => {
   try {
     const response = await axios.get(API_URL);
@@ -24,15 +34,7 @@ export const getImagenArticuloById = async (id: number) => {
     }
   };
   
-  export const crearImagenArticulo = async (nuevaImagen: any): Promise<ImagenArticulo> => {
-    try {
-        const response = await axios.post<ImagenArticulo>(API_URL, nuevaImagen);
-        return response.data;
-    } catch (error) {
-        console.error("Error al crear una imagen:", error);
-        throw error;
-    }
-};
+  
   
   export const eliminarImagenArticulo = async (id: number) => {
     try {

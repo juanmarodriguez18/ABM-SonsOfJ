@@ -48,7 +48,7 @@ export const getInsumoById = async (id: number) => {
         const response = await axios.patch(`${API_URL}/${id}/recuperar`, { eliminado: false });
         return response.data;
     } catch (error) {
-        console.error("Error al recuperar un artículo manufacturado:", error);
+        console.error("Error al recuperar un insumo:", error);
         throw error;
     }
 };
@@ -58,7 +58,7 @@ export const getInsumoById = async (id: number) => {
       const response = await axios.put(`${API_URL}/${id}`, datosActualizados);
       return response.data;
     } catch (error) {
-      console.error("Error al actualizar un artículo manufacturado:", error);
+      console.error("Error al actualizar un insumo:", error);
       throw error;
     }
   };
