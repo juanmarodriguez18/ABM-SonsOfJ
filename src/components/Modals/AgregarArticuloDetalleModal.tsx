@@ -1,15 +1,15 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Modal, Button, Form, Col, Image } from 'react-bootstrap';
+import Autosuggest from 'react-autosuggest';
 import { ArticuloManufacturadoDetalle } from '../../types/ArticuloManufacturadoDetalle';
 import { ArticuloInsumo } from '../../types/ArticuloInsumo';
 import { crearArticuloManufacturadoDetalle, obtenerUltimoId } from '../../services/ArticuloManufacturadoDetalleService';
-
 
 interface AgregarArticuloDetalleModalProps {
     show: boolean;
     onHide: () => void;
     agregarArticuloDetalle: (detalle: ArticuloManufacturadoDetalle) => void;
-    articulosInsumo: ArticuloInsumo[]; // Lista de artículos insumo para seleccionar
+    articulosInsumo: ArticuloInsumo[];
 }
 
 const AgregarArticuloDetalleModal: React.FC<AgregarArticuloDetalleModalProps> = ({
@@ -17,10 +17,11 @@ const AgregarArticuloDetalleModal: React.FC<AgregarArticuloDetalleModalProps> = 
     onHide,
     agregarArticuloDetalle,
     articulosInsumo,
-  
 }) => {
     const [cantidadInput, setCantidadInput] = useState<number>(0);
     const [articuloInsumoSeleccionado, setArticuloInsumoSeleccionado] = useState<ArticuloInsumo | null>(null);
+    const [sugerencias, setSugerencias] = useState<ArticuloInsumo[]>([]);
+    const [valorInput, setValorInput] = useState<string>('');
 
     const handleClose = () => {
         onHide();
@@ -29,31 +30,65 @@ const AgregarArticuloDetalleModal: React.FC<AgregarArticuloDetalleModalProps> = 
     const handleGuardar = async () => {
         if (articuloInsumoSeleccionado && cantidadInput > 0) {
             try {
-                // Obtener el último id
                 const ultimoId = await obtenerUltimoId();
-    
-                // Calcular el nuevo id
                 const nuevoId = ultimoId + 1;
-    
-                // Crear el nuevo detalle con el nuevo id
+
                 const nuevoDetalle: ArticuloManufacturadoDetalle = {
                     id: nuevoId,
                     eliminado: false,
                     cantidad: cantidadInput,
                     articuloInsumo: articuloInsumoSeleccionado,
                 };
-    
-                // Agregar el detalle al estado local y al backend
+
                 agregarArticuloDetalle(nuevoDetalle);
                 await crearArticuloManufacturadoDetalle(nuevoDetalle);
-    
-                // Limpiar los inputs y cerrar el modal
+
                 setCantidadInput(0);
                 setArticuloInsumoSeleccionado(null);
+                setValorInput('');
                 onHide();
             } catch (error) {
                 console.error('Error al guardar el detalle:', error);
-                // Manejar el error aquí
+            }
+        }
+    };
+
+    const onSuggestionsFetchRequested = ({ value }: { value: string }) => {
+        const inputValue = value.trim().toLowerCase();
+        const inputLength = inputValue.length;
+
+        const filteredSuggestions = inputLength === 0 ? [] : articulosInsumo.filter(articulo =>
+            articulo.denominacion.toLowerCase().includes(inputValue)
+        );
+
+        setSugerencias(filteredSuggestions);
+    };
+
+    const onSuggestionsClearRequested = () => {
+        setSugerencias([]);
+    };
+
+    const getSuggestionValue = (suggestion: ArticuloInsumo) => suggestion.denominacion;
+
+    const renderSuggestion = (suggestion: ArticuloInsumo) => (
+        <div>
+            {suggestion.denominacion}
+        </div>
+    );
+
+    const onSuggestionSelected = (event: React.FormEvent<any>, { suggestion }: { suggestion: ArticuloInsumo }) => {
+        setArticuloInsumoSeleccionado(suggestion);
+    };
+
+    const inputProps = {
+        placeholder: "Buscar artículo insumo",
+        value: valorInput,
+        onChange: (e: React.ChangeEvent<any>, { newValue }: { newValue: string }) => {
+            setValorInput(newValue);
+        },
+        onKeyPress: (e: React.KeyboardEvent<any>) => {
+            if (e.key === 'Enter' && sugerencias.length > 0) {
+                setArticuloInsumoSeleccionado(sugerencias[0]);
             }
         }
     };
@@ -76,23 +111,18 @@ const AgregarArticuloDetalleModal: React.FC<AgregarArticuloDetalleModalProps> = 
                     </Form.Group>
                     <Form.Group className="mb-3" controlId="formArticuloInsumo">
                         <Form.Label>Artículo Insumo</Form.Label>
-                        <Form.Control
-                            as="select"
-                            value={articuloInsumoSeleccionado?.id || ''}
-                            onChange={(e) => {
-                                const selectedId = parseInt(e.target.value);
-                                const selectedArticulo = articulosInsumo.find(art => art.id === selectedId) || null;
-                                setArticuloInsumoSeleccionado(selectedArticulo);
-                            }}
-                        >
-                            <option value="">Seleccione un artículo</option>
-                            {articulosInsumo.map(articulo => (
-                                <option key={articulo.id} value={articulo.id}>{articulo.denominacion}</option>
-                            ))}
-                        </Form.Control>
+                        <Autosuggest
+                            suggestions={sugerencias}
+                            onSuggestionsFetchRequested={onSuggestionsFetchRequested}
+                            onSuggestionsClearRequested={onSuggestionsClearRequested}
+                            getSuggestionValue={getSuggestionValue}
+                            renderSuggestion={renderSuggestion}
+                            onSuggestionSelected={onSuggestionSelected}
+                            inputProps={inputProps}
+                        />
                         {articuloInsumoSeleccionado && (
-                            <Col xs={6} md={4}>
-                                <Image src={Array.from(articuloInsumoSeleccionado.imagenesArticulo)[0].url} thumbnail />
+                            <Col className='col' xs={6} md={4}>
+                                <Image className='img' src={Array.from(articuloInsumoSeleccionado.imagenesArticulo)[0].url} thumbnail />
                             </Col>
                         )}
                     </Form.Group>
@@ -111,3 +141,4 @@ const AgregarArticuloDetalleModal: React.FC<AgregarArticuloDetalleModalProps> = 
 };
 
 export default AgregarArticuloDetalleModal;
+

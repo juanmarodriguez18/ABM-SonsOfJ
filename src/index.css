@@ -216,3 +216,17 @@ input[type="text"].form-control {
   border-color: #c93232;
 
 }
+
+.col {
+  background-color: #f8f2ab;
+  border-radius: 8px;
+  border-color: #c93232;
+}
+
+.mb-3 {
+  /* Estilos para el Form.Group */
+  margin-bottom: 20px;
+  padding: 10px;
+  border-color: #e35115;
+  border-radius: 8px;
+}
