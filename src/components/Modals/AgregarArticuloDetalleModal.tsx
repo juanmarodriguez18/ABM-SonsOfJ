@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { Modal, Button, Form, Col, Image } from 'react-bootstrap';
-import { ArticuloManufacturadoDetalle } from '../types/ArticuloManufacturadoDetalle';
-import { ArticuloInsumo } from '../types/ArticuloInsumo';
+import { ArticuloManufacturadoDetalle } from '../../types/ArticuloManufacturadoDetalle';
+import { ArticuloInsumo } from '../../types/ArticuloInsumo';
+import { crearArticuloManufacturadoDetalle, obtenerUltimoId } from '../../services/ArticuloManufacturadoDetalleService';
 
 
 interface AgregarArticuloDetalleModalProps {
@@ -16,6 +17,7 @@ const AgregarArticuloDetalleModal: React.FC<AgregarArticuloDetalleModalProps> = 
     onHide,
     agregarArticuloDetalle,
     articulosInsumo,
+  
 }) => {
     const [cantidadInput, setCantidadInput] = useState<number>(0);
     const [articuloInsumoSeleccionado, setArticuloInsumoSeleccionado] = useState<ArticuloInsumo | null>(null);
@@ -24,18 +26,35 @@ const AgregarArticuloDetalleModal: React.FC<AgregarArticuloDetalleModalProps> = 
         onHide();
     };
 
-    const handleGuardar = () => {
+    const handleGuardar = async () => {
         if (articuloInsumoSeleccionado && cantidadInput > 0) {
-            const nuevoDetalle: ArticuloManufacturadoDetalle = {
-                id: 0, // Asigna el ID adecuado, dependiendo de cómo manejes las nuevas entradas
-                eliminado: false,
-                cantidad: cantidadInput,
-                articuloInsumo: articuloInsumoSeleccionado,
-            };
-            agregarArticuloDetalle(nuevoDetalle);
-            setCantidadInput(0);
-            setArticuloInsumoSeleccionado(null);
-            onHide();
+            try {
+                // Obtener el último id
+                const ultimoId = await obtenerUltimoId();
+    
+                // Calcular el nuevo id
+                const nuevoId = ultimoId + 1;
+    
+                // Crear el nuevo detalle con el nuevo id
+                const nuevoDetalle: ArticuloManufacturadoDetalle = {
+                    id: nuevoId,
+                    eliminado: false,
+                    cantidad: cantidadInput,
+                    articuloInsumo: articuloInsumoSeleccionado,
+                };
+    
+                // Agregar el detalle al estado local y al backend
+                agregarArticuloDetalle(nuevoDetalle);
+                await crearArticuloManufacturadoDetalle(nuevoDetalle);
+    
+                // Limpiar los inputs y cerrar el modal
+                setCantidadInput(0);
+                setArticuloInsumoSeleccionado(null);
+                onHide();
+            } catch (error) {
+                console.error('Error al guardar el detalle:', error);
+                // Manejar el error aquí
+            }
         }
     };
 
@@ -80,10 +99,10 @@ const AgregarArticuloDetalleModal: React.FC<AgregarArticuloDetalleModalProps> = 
                 </Form>
             </Modal.Body>
             <Modal.Footer>
-                <Button variant="secondary" onClick={handleClose}>
+                <Button className='btn-Cancelar' variant="secondary" onClick={handleClose}>
                     Cancelar
                 </Button>
-                <Button variant="primary" onClick={handleGuardar}>
+                <Button className='btn-Guardar' variant="primary" onClick={handleGuardar}>
                     Guardar
                 </Button>
             </Modal.Footer>

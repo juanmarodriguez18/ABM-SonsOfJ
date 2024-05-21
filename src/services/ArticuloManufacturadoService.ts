@@ -53,6 +53,24 @@ export const actualizarArticuloManufacturado = async (id: number, datosActualiza
   }
 };
 
+export const recuperarManufacturado = async (id: number) => {
+  try {
+      const response = await axios.patch(`${API_URL}/${id}/recuperar`, { eliminado: false });
+      return response.data;
+  } catch (error) {
+      console.error("Error al recuperar un artículo manufacturado:", error);
+      throw error;
+  }
+};
 
+export const actualizarManufacturado = async (id: number, datosActualizados: any) => {
+  try {
+    const response = await axios.put(`${API_URL}/${id}`, datosActualizados);
+    return response.data;
+  } catch (error) {
+    console.error("Error al actualizar un artículo manufacturado:", error);
+    throw error;
+  }
+};
 
 

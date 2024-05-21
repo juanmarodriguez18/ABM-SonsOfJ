@@ -9,7 +9,7 @@ export class ArticuloManufacturadoDetalle extends Base {
         id: number = 0,
         eliminado: boolean = false,
         cantidad: number = 0,
-        articuloInsumo: ArticuloInsumo = new ArticuloInsumo()
+        articuloInsumo: ArticuloInsumo
     ) {
         super(id, eliminado);
         this.cantidad = cantidad;
