@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Modal, Button, Form } from 'react-bootstrap';
-import { crearCategoria } from '../services/CategoriaService';
-import '../styles/InsumoFormulario.css';
+import { crearCategoria } from '../../services/CategoriaService';
+import '../../styles/InsumoFormulario.css';
 
 interface ModalFormularioCategoriaProps {
     show: boolean;

@@ -11,7 +11,7 @@ import { Spinner } from "react-bootstrap";
 import { useEffect, useState } from "react";
 import { persona } from "../../types/persona";
 import { deleteData, getData } from "../../services/GenericFetch";
-import { ModalFormulario } from "../ModalFormulario/ModalFormulario";
+import { ModalFormulario } from "../ModalFormularioPruebas/ModalFormulario";
 import swal from 'sweetalert2'
 
 // Definición de las propiedades que recibe el componente

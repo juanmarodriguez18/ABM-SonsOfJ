@@ -35,7 +35,7 @@
 
 .eliminado {
     background-color: #f8d7da; /* Color de fondo rojo */
-    opacity: 0.6; /* Opcional: Añade opacidad para indicar estado eliminado */
+    opacity: 0.3; /* Opcional: Añade opacidad para indicar estado eliminado */
 }
 
 /* Estilos para el botón eliminar */

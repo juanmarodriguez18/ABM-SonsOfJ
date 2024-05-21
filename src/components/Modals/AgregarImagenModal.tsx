@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { crearImagenArticulo } from '../services/ImagenArticuloService';
-import { ImagenArticulo } from '../types/ImagenArticulo';
-import '../styles/AgregarImagenModal.css';
+import { crearImagenArticulo } from '../../services/ImagenArticuloService';
+import { ImagenArticulo } from '../../types/ImagenArticulo';
+import '../../styles/AgregarImagenModal.css';
 
 interface AgregarImagenModalProps {
     imagenes: ImagenArticulo[];
@@ -54,7 +54,7 @@ const AgregarImagenModal: React.FC<AgregarImagenModalProps> = ({ imagenes, setIm
     };
 
     return (
-        <div className="modal">
+        <div className="modal" style={{zIndex: 1060}}>
             <div className="modal-content">
                 <span className="close" onClick={toggleModal}>&times;</span>
                 <div className="mb-3">

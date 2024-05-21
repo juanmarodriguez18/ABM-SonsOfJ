@@ -52,3 +52,13 @@ export const actualizarArticuloManufacturadoDetalle = async (id: number, datosAc
     throw error;
   }
 };
+
+export async function obtenerUltimoId(): Promise<number> {
+  try {
+      const response = await axios.get<number>(`${API_URL}/ultimoId`);
+      return response.data;
+  } catch (error) {
+      console.error('Error al obtener el último id:', error);
+      throw error;
+  }
+}

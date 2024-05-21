@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { getArticulosManufacturados } from '../services/ArticuloManufacturadoService';
 import Articulo from './Articulo';
 import SearchBar from './SearchBar';
-import AgregarArticuloManufacturadoModal from './AgregarArticuloManufacturadoModal';
+import AgregarArticuloManufacturadoModal from './Modals/AgregarArticuloManufacturadoModal';
 import { ArticuloManufacturado } from '../types/ArticuloManufacturado';
 import { ArticuloInsumo } from '../types/ArticuloInsumo';
 import { UnidadMedida } from '../types/UnidadMedida';

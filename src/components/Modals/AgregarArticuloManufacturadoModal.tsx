@@ -3,15 +3,16 @@ import { Modal, Button, Form, Col, Row } from 'react-bootstrap';
 import AgregarArticuloDetalleModal from './AgregarArticuloDetalleModal';
 import AgregarImagenModal from './AgregarImagenModal';
 import AgregarCategoriaModal from './AgregarCategoriaModal';
-import { ArticuloManufacturado } from '../types/ArticuloManufacturado';
-import { ImagenArticulo } from '../types/ImagenArticulo';
-import { ArticuloInsumo } from '../types/ArticuloInsumo';
-import { UnidadMedida } from '../types/UnidadMedida';
-import { ArticuloManufacturadoDetalle } from '../types/ArticuloManufacturadoDetalle';
-import { Categoria } from '../types/Categoria';
-import { getImagenesArticulo } from '../services/ImagenArticuloService';
-import { actualizarCategoria, getCategorias } from '../services/CategoriaService';
-import '../styles/InsumoFormulario.css';
+import { ArticuloManufacturado } from '../../types/ArticuloManufacturado';
+import { ImagenArticulo } from '../../types/ImagenArticulo';
+import { ArticuloInsumo } from '../../types/ArticuloInsumo';
+import { UnidadMedida } from '../../types/UnidadMedida';
+import { ArticuloManufacturadoDetalle } from '../../types/ArticuloManufacturadoDetalle';
+import { Categoria } from '../../types/Categoria';
+import { getImagenesArticulo } from '../../services/ImagenArticuloService';
+import { actualizarCategoria, getCategorias } from '../../services/CategoriaService';
+import '../../styles/InsumoFormulario.css';
+import { crearArticuloManufacturado } from '../../services/ArticuloManufacturadoService';
 
 interface AgregarArticuloManufacturadoModalProps {
     show: boolean;
@@ -20,6 +21,7 @@ interface AgregarArticuloManufacturadoModalProps {
     articulosInsumo: ArticuloInsumo[];
     unidadesMedida: UnidadMedida[];
     imagenesArticulo: ImagenArticulo[];
+
 }
 
 const AgregarArticuloManufacturadoModal: React.FC<AgregarArticuloManufacturadoModalProps> = ({
@@ -36,7 +38,6 @@ const AgregarArticuloManufacturadoModal: React.FC<AgregarArticuloManufacturadoMo
     const [tiempoEstimado, setTiempoEstimado] = useState<number>(0);
     const [preparacion, setPreparacion] = useState<string>('');
     const [categoriaId, setCategoriaId] = useState<number>(0);
-    const [imagenId, setImagenId] = useState<number>(0);
     const [articuloManufacturadoDetalles, setArticuloManufacturadoDetalles] = useState<ArticuloManufacturadoDetalle[]>([]);
     const [imagenesArticulo, setImagenesArticulo] = useState<ImagenArticulo[]>([]);
     const [categorias, setCategorias] = useState<Categoria[]>([]);
@@ -57,16 +58,20 @@ const AgregarArticuloManufacturadoModal: React.FC<AgregarArticuloManufacturadoMo
         cargarDatosIniciales();
     }, [show]);
 
-    const handleGuardar = () => {
-        const imagenSeleccionada = imagenesArticulo.find(i => i.id === imagenId);
-        const unidadMedidaSeleccionada = unidadesMedida.find((um) => um.id === unidadMedidaId);
-        const categoriaSeleccionada = categorias.find((cat) => cat.id === categoriaId);
-
-        if (!unidadMedidaSeleccionada || !categoriaSeleccionada || !imagenSeleccionada) {
-            console.error('No se encontró la unidad de medida, la categoría o la imagen seleccionada');
+    const handleGuardar = async () => {
+        if (!selectedImagen) {
+            console.error('No se ha seleccionado ninguna imagen');
             return;
         }
-
+    
+        const unidadMedidaSeleccionada = unidadesMedida.find((um) => um.id === unidadMedidaId);
+        const categoriaSeleccionada = categorias.find((cat) => cat.id === categoriaId);
+    
+        if (!unidadMedidaSeleccionada || !categoriaSeleccionada) {
+            console.error('No se encontró la unidad de medida o la categoría seleccionada');
+            return;
+        }
+    
         const nuevoArticuloManufacturado: ArticuloManufacturado = {
             id: 0,
             denominacion,
@@ -77,28 +82,43 @@ const AgregarArticuloManufacturadoModal: React.FC<AgregarArticuloManufacturadoMo
             descripcion,
             tiempoEstimadoMinutos: tiempoEstimado,
             preparacion,
-            imagenesArticulo: new Set([imagenSeleccionada]),
+            imagenesArticulo: new Set([selectedImagen]),
             articuloManufacturadoDetalles: new Set(articuloManufacturadoDetalles.map((detalle) => ({
                 ...detalle,
+                id: detalle.id,
                 articuloInsumo: detalle.articuloInsumo,
                 eliminado: false,
             }))),
         };
+    
+        try {
+            const imagenesArticuloArray = Array.from(nuevoArticuloManufacturado.imagenesArticulo);
+            const detallesArticuloArray = Array.from(nuevoArticuloManufacturado.articuloManufacturadoDetalles);
+            const articuloParaGuardar = {
+                ...nuevoArticuloManufacturado,
+                imagenesArticulo: imagenesArticuloArray,
+                articuloManufacturadoDetalles: detallesArticuloArray
+            };
 
-        agregarArticuloManufacturado(nuevoArticuloManufacturado);
-
-        setDenominacion('');
-        setPrecioVenta(0);
-        setUnidadMedidaId(0);
-        setDescripcion('');
-        setTiempoEstimado(0);
-        setPreparacion('');
-        setCategoriaId(0);
-        setImagenId(0);
-        setArticuloManufacturadoDetalles([]);
-        setSelectedImagen(null);
-
-        onHide();
+            console.log('JSON enviado al servidor:', JSON.stringify(articuloParaGuardar, null, 2));
+            const articuloCreado = await crearArticuloManufacturado(articuloParaGuardar);
+            alert('El ArticuloManufacturado se guardó correctamente');
+            agregarArticuloManufacturado(articuloCreado);
+    
+            setDenominacion('');
+            setPrecioVenta(0);
+            setUnidadMedidaId(0);
+            setDescripcion('');
+            setTiempoEstimado(0);
+            setPreparacion('');
+            setCategoriaId(0);
+            setArticuloManufacturadoDetalles([]);
+            setSelectedImagen(null);
+    
+            onHide();
+        } catch (error) {
+            console.error('Error al crear el artículo manufacturado:', error);
+        }
     };
 
     const handleActualizarCategoria = async (id: number, datosActualizados: any) => {
@@ -130,7 +150,7 @@ const AgregarArticuloManufacturadoModal: React.FC<AgregarArticuloManufacturadoMo
 
     return (
         <>
-            <Modal show={show} onHide={onHide} size="lg">
+            <Modal show={show} onHide={onHide} size="lg" style={{zIndex: 1050}} >
                 <Modal.Header closeButton>
                     <Modal.Title>Agregar Artículo Manufacturado</Modal.Title>
                 </Modal.Header>

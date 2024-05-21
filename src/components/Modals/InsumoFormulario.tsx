@@ -1,17 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { Modal, Button } from 'react-bootstrap';
-import { ArticuloInsumo } from '../types/ArticuloInsumo';
-import { ImagenArticulo } from '../types/ImagenArticulo';
-import { UnidadMedida } from '../types/UnidadMedida';
-import { getImagenesArticulo } from '../services/ImagenArticuloService';
-import { crearUnidadMedida, getUnidadesMedida } from '../services/UnidadMedidaService';
-import { actualizarInsumo, crearInsumo} from '../services/ArticuloInsumoService';
+import { ArticuloInsumo } from '../../types/ArticuloInsumo';
+import { ImagenArticulo } from '../../types/ImagenArticulo';
+import { UnidadMedida } from '../../types/UnidadMedida';
+import { getImagenesArticulo } from '../../services/ImagenArticuloService';
+import { crearUnidadMedida, getUnidadesMedida } from '../../services/UnidadMedidaService';
+import { actualizarInsumo, crearInsumo} from '../../services/ArticuloInsumoService';
 import AgregarImagenModal from './AgregarImagenModal';
 import AgregarUnidadMedidaModal from './AgregarUnidadMedidaModal';
-import '../styles/InsumoFormulario.css';
-import { Categoria } from '../types/Categoria';
+import '../../styles/InsumoFormulario.css'
+import { Categoria } from '../../types/Categoria';
 import AgregarCategoriaModal from './AgregarCategoriaModal';
-import { actualizarCategoria, getCategorias } from '../services/CategoriaService';
+import { actualizarCategoria, getCategorias } from '../../services/CategoriaService';
 
 interface InsumoFormularioProps {
     show: boolean;

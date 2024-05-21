@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { ArticuloInsumo } from '../types/ArticuloInsumo';
 import '../styles/Articulo.css';
 import { eliminarInsumo, recuperarInsumo } from '../services/ArticuloInsumoService'; // Asumiendo que tienes una función para recuperar el insumo
-import InsumoFormulario from './InsumoFormulario';
+import InsumoFormulario from './Modals/InsumoFormulario';
 
 const Insumo: React.FC<{ articulo: ArticuloInsumo }> = ({ articulo }) => {
     const [insumo, setInsumo] = useState<ArticuloInsumo>(articulo);
