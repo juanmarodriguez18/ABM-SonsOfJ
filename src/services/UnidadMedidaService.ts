@@ -1,4 +1,4 @@
-// src/services/api.ts
+// src/services/UnidadMedidaService.ts
 import axios from 'axios';
 
 const API_URL = 'http://localhost:8080/unidad-medida';

@@ -35,7 +35,7 @@ export const crearArticuloManufacturado = async (nuevoArticulo: any) => {
 
 export const eliminarArticuloManufacturado = async (id: number) => {
   try {
-    const response = await axios.patch(`${API_URL}/${id}`, { eliminado: true });
+    const response = await axios.patch(`${API_URL}/${id}/eliminar`, { eliminado: true });
     return response.data;
   } catch (error) {
     console.error("Error al eliminar lógicamente un artículo manufacturado:", error);

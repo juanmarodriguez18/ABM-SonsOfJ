@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Modal, Button, Form, Col, Row } from 'react-bootstrap';
-import AgregarArticuloDetalleModal from './AgregarArticuloDetalleModal';
-import AgregarImagenModal from './AgregarImagenModal';
-import AgregarCategoriaModal from './AgregarCategoriaModal';
+import AgregarArticuloDetalleModal from '../ArticuloManufacturadoDetalles/AgregarArticuloDetalleModal';
+import AgregarImagenModal from '../ImagenesArticulo/AgregarImagenModal';
+import AgregarCategoriaModal from '../Categorias/AgregarCategoriaModal';
 import { ArticuloManufacturado } from '../../types/ArticuloManufacturado';
 import { ImagenArticulo } from '../../types/ImagenArticulo';
 import { ArticuloInsumo } from '../../types/ArticuloInsumo';

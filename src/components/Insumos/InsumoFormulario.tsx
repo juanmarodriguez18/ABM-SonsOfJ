@@ -6,11 +6,11 @@ import { UnidadMedida } from '../../types/UnidadMedida';
 import { getImagenesArticulo } from '../../services/ImagenArticuloService';
 import { crearUnidadMedida, getUnidadesMedida } from '../../services/UnidadMedidaService';
 import { actualizarInsumo, crearInsumo} from '../../services/ArticuloInsumoService';
-import AgregarImagenModal from './AgregarImagenModal';
-import AgregarUnidadMedidaModal from './AgregarUnidadMedidaModal';
+import AgregarImagenModal from '../ImagenesArticulo/AgregarImagenModal';
+import AgregarUnidadMedidaModal from '../UnidadesMedida/AgregarUnidadMedidaModal';
 import '../../styles/InsumoFormulario.css'
 import { Categoria } from '../../types/Categoria';
-import AgregarCategoriaModal from './AgregarCategoriaModal';
+import AgregarCategoriaModal from '../Categorias/AgregarCategoriaModal';
 import { actualizarCategoria, getCategorias } from '../../services/CategoriaService';
 
 interface InsumoFormularioProps {

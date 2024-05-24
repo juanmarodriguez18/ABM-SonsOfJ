@@ -1,10 +1,10 @@
 // src/pages/ArticuloDetalle.tsx
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { getArticulosManufacturados } from '../services/ArticuloManufacturadoService';
-import { ArticuloManufacturado } from '../types/ArticuloManufacturado';
-import { ArticuloManufacturadoDetalle } from '../types/ArticuloManufacturadoDetalle';
-import '../styles/ArticuloDetalle.css';
+import { getArticulosManufacturados } from '../../services/ArticuloManufacturadoService';
+import { ArticuloManufacturado } from '../../types/ArticuloManufacturado';
+import { ArticuloManufacturadoDetalle } from '../../types/ArticuloManufacturadoDetalle';
+import '../../styles/ArticuloDetalle.css';
 
 const ArticuloDetalle: React.FC = () => {
   const { id } = useParams<{ id: string }>();

@@ -1,3 +1,5 @@
+//src/services/GenericFetch.ts
+
 // Función generica para obtener datos mediante una solicitud GET
 export async function getData<T>(path: string): Promise<T> {
   try {

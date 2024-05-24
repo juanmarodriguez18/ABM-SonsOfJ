@@ -13,6 +13,7 @@ export const NavBar: React.FC = () => {
           <Nav.Link as={Link} to="/contacto">Contacto</Nav.Link>
           <Nav.Link as={Link} to="/articulos">Artículos</Nav.Link> {/* Nueva ruta */}
           <Nav.Link as={Link} to="/insumos">Insumos</Nav.Link> {/* Nueva ruta */}
+          <Nav.Link as={Link} to="/unidades-medida">Unidades Medida</Nav.Link> {/* Nueva ruta */}
         </Nav>
       </Navbar.Collapse>
     </Navbar>

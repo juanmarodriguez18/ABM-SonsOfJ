@@ -1,17 +1,17 @@
 import React, { useEffect, useState } from 'react';
-import { getArticulosManufacturados } from '../services/ArticuloManufacturadoService';
+import { getArticulosManufacturados } from '../../services/ArticuloManufacturadoService';
 import Articulo from './Articulo';
-import SearchBar from './SearchBar';
-import AgregarArticuloManufacturadoModal from './Modals/AgregarArticuloManufacturadoModal';
-import { ArticuloManufacturado } from '../types/ArticuloManufacturado';
-import { ArticuloInsumo } from '../types/ArticuloInsumo';
-import { UnidadMedida } from '../types/UnidadMedida';
-import '../styles/Articulo.css';
+import SearchBar from '../SearchBar/SearchBar';
+import AgregarArticuloManufacturadoModal from './AgregarArticuloManufacturadoModal';
+import { ArticuloManufacturado } from '../../types/ArticuloManufacturado';
+import { ArticuloInsumo } from '../../types/ArticuloInsumo';
+import { UnidadMedida } from '../../types/UnidadMedida';
+import '../../styles/Articulo.css';
 import { Button } from 'react-bootstrap';
-import { getInsumos } from '../services/ArticuloInsumoService';
-import { getUnidadesMedida } from '../services/UnidadMedidaService';
-import { getCategorias } from '../services/CategoriaService';
-import { Categoria } from '../types/Categoria';
+import { getInsumos } from '../../services/ArticuloInsumoService';
+import { getUnidadesMedida } from '../../services/UnidadMedidaService';
+import { getCategorias } from '../../services/CategoriaService';
+import { Categoria } from '../../types/Categoria';
 
 const ArticuloList: React.FC = () => {
   const [articulos, setArticulos] = useState<ArticuloManufacturado[]>([]);

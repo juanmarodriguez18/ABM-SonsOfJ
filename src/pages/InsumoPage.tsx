@@ -1,5 +1,5 @@
 import React from 'react';
-import InsumoList from '../components/InsumoList';
+import InsumoList from '../components/Insumos/InsumoList';
 
 const InsumoPage: React.FC = () => {
   return (

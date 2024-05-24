@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import SearchBar from './SearchBar';
-import { ArticuloInsumo } from '../types/ArticuloInsumo';
+import SearchBar from '../SearchBar/SearchBar';
+import { ArticuloInsumo } from '../../types/ArticuloInsumo';
 import Insumo from './ArticuloInsumo';
-import { getInsumos } from '../services/ArticuloInsumoService';
-import InsumoFormulario from './Modals/InsumoFormulario';
-import { getCategorias } from '../services/CategoriaService';
-import '../styles/AgregarImagenModal.css';
-import { Categoria } from '../types/Categoria';
+import { getInsumos } from '../../services/ArticuloInsumoService';
+import InsumoFormulario from './InsumoFormulario';
+import { getCategorias } from '../../services/CategoriaService';
+import '../../styles/AgregarImagenModal.css';
+import { Categoria } from '../../types/Categoria';
 
 const InsumoList: React.FC = () => {
   const [insumos, setInsumos] = useState<ArticuloInsumo[]>([]);

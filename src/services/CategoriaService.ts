@@ -2,7 +2,7 @@
 import axios from 'axios';
 import { Categoria } from '../types/Categoria';
 
-const API_URL = 'http://localhost:8080/categoria';
+const API_URL = 'http://localhost:8080/categorias';
 
 // Función para obtener todas las categorías
 export const getCategorias = async (): Promise<Categoria[]> => {

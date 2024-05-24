@@ -1,5 +1,5 @@
 import React from 'react';
-import ArticuloList from '../components/ArticuloList';
+import ArticuloList from '../components/ArticulosManufacturados/ArticuloList';
 
 const ArticulosPage: React.FC = () => {
   return (

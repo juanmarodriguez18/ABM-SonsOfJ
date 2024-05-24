@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
-import { ArticuloManufacturado } from '../types/ArticuloManufacturado';
+import { ArticuloManufacturado } from '../../types/ArticuloManufacturado';
 import { Link } from 'react-router-dom';
-import '../styles/Articulo.css';
-import { recuperarManufacturado } from '../services/ArticuloManufacturadoService';
-import { eliminarArticuloManufacturado } from '../services/ArticuloManufacturadoService';
-import AgregarArticuloManufacturadoModal from './Modals/AgregarArticuloManufacturadoModal';
+import '../../styles/Articulo.css';
+import { recuperarManufacturado } from '../../services/ArticuloManufacturadoService';
+import { eliminarArticuloManufacturado } from '../../services/ArticuloManufacturadoService';
+import AgregarArticuloManufacturadoModal from './AgregarArticuloManufacturadoModal';
 
 
 const Articulo: React.FC<{ articulo: ArticuloManufacturado }> = ({ articulo }) => {
