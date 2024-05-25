@@ -1,64 +1,76 @@
-// /components/UnidadesMedida/UnidadMedidaForm.tsx
-
-import React, { useState } from 'react';
-import { Button, Form } from 'react-bootstrap';
+import React, { useState, useEffect } from 'react';
+import { Modal, Button, Form } from 'react-bootstrap';
 import { UnidadMedida } from '../../types/UnidadMedida';
-import { postData, putData } from '../../services/GenericFetch';
 
-interface Props {
-  unidadMedida?: UnidadMedida;
-  onSaveSuccess: () => void;
-  onCancel: () => void;
+interface UnidadMedidaFormProps {
+  show: boolean;
+  onHide: () => void;
+  onSave: (unidadMedida: UnidadMedida) => void;
+  initialData?: UnidadMedida;
 }
 
-const UnidadMedidaForm: React.FC<Props> = ({ unidadMedida, onSaveSuccess, onCancel }) => {
-  const [denominacion, setDenominacion] = useState(unidadMedida?.denominacion || '');
+const UnidadMedidaForm: React.FC<UnidadMedidaFormProps> = ({ show, onHide, onSave, initialData }) => {
+  const [denominacion, setDenominacion] = useState<string>('');
+  const [error, setError] = useState<string>('');
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-
-    const data: UnidadMedida = {
-      id: unidadMedida?.id || 0,
-      eliminado: unidadMedida?.eliminado || false,
-      denominacion,
-    };
-
-    try {
-      if (unidadMedida) {
-        await putData(`/api/unidadesmedida/${unidadMedida.id}`, data); // Ajusta la ruta según tu API
-      } else {
-        await postData('/api/unidadesmedida', data); // Ajusta la ruta según tu API
-      }
-      onSaveSuccess();
-    } catch (error) {
-      console.error('Error saving unidad de medida:', error);
+  useEffect(() => {
+    if (initialData) {
+      setDenominacion(initialData.denominacion);
+    } else {
+      setDenominacion('');
     }
+  }, [initialData]);
+
+  const handleSubmit = () => {
+    if (!denominacion.trim()) {
+      setError('La denominación no puede estar vacía');
+      return;
+    }
+
+    const unidadMedida: UnidadMedida = {
+      ...initialData,
+      denominacion,
+    } as UnidadMedida;
+    onSave(unidadMedida);
+  };
+
+ const handleClose = () => {
+    setDenominacion('');
+    setError('');
+    onHide();
   };
 
   return (
-    <div>
-      <h2>{unidadMedida ? 'Modificar Unidad de Medida' : 'Agregar Unidad de Medida'}</h2>
-      <Form onSubmit={handleSubmit}>
-        <Form.Group controlId="formDenominacion">
-          <Form.Label>Denominación</Form.Label>
-          <Form.Control
-            type="text"
-            placeholder="Ingrese la denominación"
-            value={denominacion}
-            onChange={(e) => setDenominacion(e.target.value)}
-          />
-        </Form.Group>
-
-        <div className="d-grid gap-2">
-          <Button variant="primary" type="submit">
-            Guardar
-          </Button>
-          <Button variant="secondary" onClick={onCancel}>
-            Cancelar
-          </Button>
-        </div>
-      </Form>
-    </div>
+    <Modal show={show} onHide={handleClose}>
+      <Modal.Header closeButton>
+        <Modal.Title>{initialData ? 'Editar Unidad de Medida' : 'Agregar Unidad de Medida'}</Modal.Title>
+      </Modal.Header>
+      <Modal.Body>
+        <Form>
+          <Form.Group>
+            <Form.Label>Denominacion</Form.Label>
+            <Form.Control
+              type="text"
+              value={denominacion}
+              onChange={(e) => {
+                setDenominacion(e.target.value);
+                setError('');
+              }}
+              isInvalid={!!error}
+            />
+            <Form.Control.Feedback type="invalid">{error}</Form.Control.Feedback>
+          </Form.Group>
+        </Form>
+      </Modal.Body>
+      <Modal.Footer>
+        <Button className="btn-Cancelar" variant="secondary" onClick={handleClose}>
+          Cancelar
+        </Button>
+        <Button className="btn-Guardar" variant="primary" onClick={handleSubmit}>
+          Guardar
+        </Button>
+      </Modal.Footer>
+    </Modal>
   );
 };
 

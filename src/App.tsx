@@ -6,7 +6,7 @@ import { NavBar } from "./components/NavBar/NavBar";
 import ArticulosPage from "./pages/ArticulosPage";
 import ArticuloDetalle from "./components/ArticulosManufacturados/ArticuloDetalle";
 import InsumoPage from "./pages/InsumoPage";
-import UnidadesMedida from "./components/UnidadesMedida/UnidadMedida";
+import UnidadesMedidaPage from "./pages/UnidadMedidaPage";
 
 
 
@@ -20,7 +20,7 @@ function App() {
         <Route path="/articulos" Component={ArticulosPage} />
         <Route path="/articulos/:id" element={<ArticuloDetalle />} />
         <Route path="/insumos" Component={InsumoPage} />
-        <Route path="/unidades-medida" element={<UnidadesMedida/>} />
+        <Route path="/unidades-medida" Component={UnidadesMedidaPage} />
       </Routes>
     </BrowserRouter>
   )
