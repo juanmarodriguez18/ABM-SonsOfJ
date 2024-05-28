@@ -1,25 +1,42 @@
-import React, { useEffect, useState } from 'react';
-import { getArticulosManufacturados } from '../../services/ArticuloManufacturadoService';
-import Articulo from './Articulo';
-import SearchBar from '../SearchBar/SearchBar';
-import AgregarArticuloManufacturadoModal from './AgregarArticuloManufacturadoModal';
-import { ArticuloManufacturado } from '../../types/ArticuloManufacturado';
-import { ArticuloInsumo } from '../../types/ArticuloInsumo';
-import { UnidadMedida } from '../../types/UnidadMedida';
-import '../../styles/Articulo.css';
-import { Button } from 'react-bootstrap';
-import { getInsumos } from '../../services/ArticuloInsumoService';
-import { getUnidadesMedida } from '../../services/UnidadMedidaService';
-import { getCategorias } from '../../services/CategoriaService';
-import { Categoria } from '../../types/Categoria';
+import React, { useEffect, useState } from "react";
+import { getArticulosManufacturados } from "../../services/ArticuloManufacturadoService";
+import Articulo from "./Articulo";
+import SearchBar from "../SearchBar/SearchBar";
+import AgregarArticuloManufacturadoModal from "./AgregarArticuloManufacturadoModal";
+import { ArticuloManufacturado } from "../../types/ArticuloManufacturado";
+import { ArticuloInsumo } from "../../types/ArticuloInsumo";
+import { UnidadMedida } from "../../types/UnidadMedida";
+import {
+  Button,
+  FormControl,
+  MenuItem,
+  TableContainer,
+  Typography,
+  Box,
+  Select,
+  Paper,
+  Table,
+  TableHead,
+  TableRow,
+  TableCell,
+  TableBody,
+} from "@mui/material";
+import { getInsumos } from "../../services/ArticuloInsumoService";
+import { getUnidadesMedida } from "../../services/UnidadMedidaService";
+import { getCategorias } from "../../services/CategoriaService";
+import { Categoria } from "../../types/Categoria";
+import AddIcon from "@mui/icons-material/Add";
 
 const ArticuloList: React.FC = () => {
   const [articulos, setArticulos] = useState<ArticuloManufacturado[]>([]);
-  const [filteredArticulos, setFilteredArticulos] = useState<ArticuloManufacturado[]>([]);
-  const [query, setQuery] = useState<string>('');
+  const [filteredArticulos, setFilteredArticulos] = useState<
+    ArticuloManufacturado[]
+  >([]);
+  const [query, setQuery] = useState<string>("");
   const [showModal, setShowModal] = useState<boolean>(false);
   const [categorias, setCategorias] = useState<Categoria[]>([]); // Array de objetos Categoria
-  const [categoriaSeleccionada, setCategoriaSeleccionada] = useState<string>('');
+  const [categoriaSeleccionada, setCategoriaSeleccionada] =
+    useState<string>("");
   const [articulosInsumo, setArticulosInsumo] = useState<ArticuloInsumo[]>([]);
   const [unidadesMedida, setUnidadesMedida] = useState<UnidadMedida[]>([]);
 
@@ -39,7 +56,7 @@ const ArticuloList: React.FC = () => {
         const categoriasData = await getCategorias();
         setCategorias(categoriasData);
       } catch (error) {
-        console.error('Error fetching categorias:', error);
+        console.error("Error fetching categorias:", error);
       }
     };
 
@@ -53,7 +70,9 @@ const ArticuloList: React.FC = () => {
 
     if (categoriaSeleccionada) {
       filtered = filtered.filter((articulo) =>
-        articulo.categoria.denominacion.toLowerCase().includes(categoriaSeleccionada.toLowerCase())
+        articulo.categoria.denominacion
+          .toLowerCase()
+          .includes(categoriaSeleccionada.toLowerCase())
       );
     }
 
@@ -67,68 +86,122 @@ const ArticuloList: React.FC = () => {
       setArticulosInsumo(insumosData);
       setUnidadesMedida(unidadesData);
     };
-  
+
     fetchInsumosYUnidades();
   }, []);
 
-  const agregarArticuloManufacturado = (nuevoArticulo: ArticuloManufacturado) => {
+  const agregarArticuloManufacturado = (
+    nuevoArticulo: ArticuloManufacturado
+  ) => {
     setArticulos([...articulos, nuevoArticulo]);
     setFilteredArticulos([...articulos, nuevoArticulo]);
   };
 
   return (
-    <div>
-      <SearchBar onSearch={setQuery} />
-      <Button className='btn-Guardar' variant="primary" onClick={() => setShowModal(true)}>
-        Agregar Artículo
-      </Button>
-      <div>
-        <label htmlFor="categorias">Filtrar por categoría:</label>
-        <select
-          id="categorias"
-          className='form-select'
-          onChange={(e) => {
-            const categoria = e.target.value;
-            setCategoriaSeleccionada(categoria);
+    <Box sx={{ display: "flex", flexDirection: "column", pl: 2 }}>
+      <Box>
+        <SearchBar onSearch={setQuery} />
+        <Button
+          className="btn-Guardar"
+          onClick={() => setShowModal(true)}
+          sx={{
+            bgcolor: "#43a047",
+            color: "#fff",
+            borderRadius: 8,
+            textTransform: "none",
+            ml: 2,
+            "&:hover": {
+              bgcolor: "#1b5e20",
+            },
           }}
-          value={categoriaSeleccionada}
         >
-          <option value="">Seleccionar categoría...</option>
-          {categorias.map((categoria, index) => (
-            <option className="form-select-option" key={index} value={categoria.denominacion}>
-              {categoria.denominacion}
-            </option>
-          ))}
-        </select>
-      </div>
-      <li className="row">
-        <div className="col">
-          <b>Denominacion:</b>
-        </div>
-        <div className="col">
-          <b>Imagen:</b>
-        </div>
-        <div className="col">
-          <b>Descripción:</b>
-        </div>
-        <div className="col">
-          <b>Precio:</b>
-        </div>
-        <div className="col">
-          <b>Tiempo estimado:</b>
-        </div>
-        <div className="col">
-          <b>Mas:</b>
-        </div>
-        <div className="col">
-          <b>Eliminar/Modificar:</b>
-        </div>
-      </li>
-      <ul>
-        {filteredArticulos.map(articulo => (
-          <Articulo key={articulo.id} articulo={articulo} />
-        ))}
-      </ul>
+          <AddIcon></AddIcon>
+          Agregar Artículo
+        </Button>
+      </Box>
+      <Box sx={{ display: "flex" }}>
+        <Typography variant="subtitle2">Filtrar por categoría:</Typography>
+        <FormControl
+          variant="outlined"
+          sx={{
+            "& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline":
+              {
+                borderColor: "#3f51b5",
+              },
+          }}
+        >
+          <Select
+            size="small"
+            id="categorias"
+            className="form-select"
+            onChange={(e) => {
+              const categoria = e.target.value;
+              setCategoriaSeleccionada(categoria);
+            }}
+            value={categoriaSeleccionada}
+            sx={{
+              width: 200,
+              height: 25,
+              ml: 1,
+              bgcolor: "#ccc",
+            }}
+          >
+            {categorias.map((categoria, index) => (
+              <MenuItem
+                className="form-select-option"
+                key={index}
+                value={categoria.denominacion}
+              >
+                <Typography variant="subtitle2">
+                  {categoria.denominacion}
+                </Typography>
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+      </Box>
+      <TableContainer
+        component={Paper}
+        sx={{
+          borderRadius: 8,
+          width: "99%",
+          marginTop: 2,
+          bgcolor: "#eee",
+          boxShadow: 2,
+        }}
+      >
+        <Table sx={{ minWidth: 700 }}>
+          <TableHead sx={{ bgcolor: "#aaa" }}>
+            <TableRow sx={{ display: "flex", flexDirection: "row" }}>
+              <TableCell align="center" className="col">
+                Denominacion
+              </TableCell>
+              <TableCell align="center" className="col">
+                Imagen
+              </TableCell>
+              <TableCell align="center" className="col">
+                Descripción
+              </TableCell>
+              <TableCell align="center" className="col">
+                Precio
+              </TableCell>
+              <TableCell align="center" className="col">
+                Tiempo estimado
+              </TableCell>
+              <TableCell align="center" className="col">
+                Operaciones
+              </TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {filteredArticulos.map((articulo) => (
+              <TableRow>
+                <Articulo key={articulo.id} articulo={articulo} />
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
 
       <AgregarArticuloManufacturadoModal
         show={showModal}
@@ -138,7 +211,7 @@ const ArticuloList: React.FC = () => {
         unidadesMedida={unidadesMedida}
         imagenesArticulo={[]} // Pasa las imágenes del artículo si es necesario
       />
-    </div>
+    </Box>
   );
 };
 

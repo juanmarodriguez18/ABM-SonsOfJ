@@ -1,10 +1,9 @@
 // src/pages/ArticuloDetalle.tsx
-import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
-import { getArticulosManufacturados } from '../../services/ArticuloManufacturadoService';
-import { ArticuloManufacturado } from '../../types/ArticuloManufacturado';
-import { ArticuloManufacturadoDetalle } from '../../types/ArticuloManufacturadoDetalle';
-import '../../styles/ArticuloDetalle.css';
+import React, { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
+import { getArticulosManufacturados } from "../../services/ArticuloManufacturadoService";
+import { ArticuloManufacturado } from "../../types/ArticuloManufacturado";
+import { ArticuloManufacturadoDetalle } from "../../types/ArticuloManufacturadoDetalle";
 
 const ArticuloDetalle: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -13,8 +12,11 @@ const ArticuloDetalle: React.FC = () => {
   useEffect(() => {
     const fetchArticulo = async () => {
       if (id) {
-        const data: ArticuloManufacturado[] = await getArticulosManufacturados();
-        const foundArticulo = data.find((art: ArticuloManufacturado) => art.id === parseInt(id, 10));
+        const data: ArticuloManufacturado[] =
+          await getArticulosManufacturados();
+        const foundArticulo = data.find(
+          (art: ArticuloManufacturado) => art.id === parseInt(id, 10)
+        );
         setArticulo(foundArticulo || null);
       }
     };
@@ -31,7 +33,9 @@ const ArticuloDetalle: React.FC = () => {
   }
 
   const imagenesArticuloArray = Array.from(articulo.imagenesArticulo);
-  const detallesArray: ArticuloManufacturadoDetalle[] = Array.from(articulo.articuloManufacturadoDetalles);
+  const detallesArray: ArticuloManufacturadoDetalle[] = Array.from(
+    articulo.articuloManufacturadoDetalles
+  );
 
   return (
     <div>
@@ -41,8 +45,12 @@ const ArticuloDetalle: React.FC = () => {
         </div>
         <div className="col">
           {imagenesArticuloArray.length > 0 && (
-        	<img className="img" src={imagenesArticuloArray[0].url} alt={articulo.denominacion} />
-      	)}
+            <img
+              className="img"
+              src={imagenesArticuloArray[0].url}
+              alt={articulo.denominacion}
+            />
+          )}
         </div>
         <div className="col">
           <p>Descripción: {articulo.descripcion}</p>
@@ -59,21 +67,28 @@ const ArticuloDetalle: React.FC = () => {
       </li>
       <h3>Insumos</h3>
       <ul>
-        {detallesArray.map(detalle => (
-          <li className="row"key={detalle.id}>
+        {detallesArray.map((detalle) => (
+          <li className="row" key={detalle.id}>
             <div className="col">
               <p>{detalle.articuloInsumo.denominacion}</p>
             </div>
             <div className="col">
-            {Array.from(detalle.articuloInsumo.imagenesArticulo).length > 0 && (
-              <img className='img'
-                src={Array.from(detalle.articuloInsumo.imagenesArticulo)[0].url}
-                alt={detalle.articuloInsumo.denominacion}
-              />
+              {Array.from(detalle.articuloInsumo.imagenesArticulo).length >
+                0 && (
+                <img
+                  className="img"
+                  src={
+                    Array.from(detalle.articuloInsumo.imagenesArticulo)[0].url
+                  }
+                  alt={detalle.articuloInsumo.denominacion}
+                />
               )}
             </div>
             <div className="col">
-              <p>Cantidad: {detalle.cantidad} {detalle.articuloInsumo.unidadMedida.denominacion}</p>
+              <p>
+                Cantidad: {detalle.cantidad}{" "}
+                {detalle.articuloInsumo.unidadMedida.denominacion}
+              </p>
             </div>
           </li>
         ))}
@@ -83,5 +98,3 @@ const ArticuloDetalle: React.FC = () => {
 };
 
 export default ArticuloDetalle;
-
-
