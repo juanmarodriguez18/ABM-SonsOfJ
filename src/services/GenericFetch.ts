@@ -1,5 +1,7 @@
 //src/services/GenericFetch.ts
 
+import axios from "axios";
+
 // Función generica para obtener datos mediante una solicitud GET
 export async function getData<T>(path: string): Promise<T> {
   try {
@@ -58,7 +60,7 @@ export async function putData<T>(path: string, data: T): Promise<T> {
 export async function deleteData(path: string) {
   try {
     const response = await fetch(`${path}`, {
-      method: "DELETE",
+      method: "PATCH",
       headers: {
         "Content-Type": "application/json",
       },
@@ -70,3 +72,23 @@ export async function deleteData(path: string) {
     console.error(error); // Imprime el error en la consola
   }
 }
+
+export const eliminarEntidad = async (id: number, path: string) => {
+  try {
+      const response = await axios.patch(`${path}/${id}`, { eliminado: true });
+      return response.data;
+  } catch (error) {
+      console.error(`Error al eliminar lógicamente la entidad en ${path}:`, error);
+      throw error;
+  }
+};
+
+export const recuperarEntidad = async (id: number, path: string) => {
+  try {
+      const response = await axios.patch(`${path}/${id}`, { eliminado: false });
+      return response.data;
+  } catch (error) {
+      console.error(`Error al recuperar la entidad en ${path}:`, error);
+      throw error;
+  }
+};
