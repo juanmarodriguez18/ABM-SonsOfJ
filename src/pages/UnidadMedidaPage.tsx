@@ -55,6 +55,7 @@ const UnidadMedidaPage: React.FC = () => {
   // Función para eliminar o recuperar una unidad de medida
   const handleEliminarRecuperarUnidadMedida = async (unidadMedida: UnidadMedida) => {
     await handleEliminarRecuperar<UnidadMedida>(unidadMedida, setUnidadesMedida, endpoint);
+    window.location.reload();
   };
 
   // Función para manejar la búsqueda en la barra de búsqueda
