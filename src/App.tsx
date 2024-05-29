@@ -6,15 +6,14 @@ import UnidadesMedidaPage from "./pages/UnidadMedidaPage";
 import Home from "./pages/Home";
 
 function App() {
-  //Rutas de nuestra aplicación
   return (
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<Home />} />
-        <Route path="/articulos" Component={ArticulosPage} />
+        <Route path="/articulos" element={<ArticulosPage />} />
         <Route path="/articulos/:id" element={<ArticuloDetalle />} />
-        <Route path="/insumos" Component={InsumoPage} />
-        <Route path="/unidades-medida" Component={UnidadesMedidaPage} />
+        <Route path="/insumos" element={<InsumoPage />} />
+        <Route path="/unidades-medida" element={<UnidadesMedidaPage />} />
       </Routes>
     </BrowserRouter>
   );
