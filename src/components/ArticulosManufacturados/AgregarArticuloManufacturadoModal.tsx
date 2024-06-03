@@ -13,7 +13,8 @@ import { getImagenesArticulo } from '../../services/ImagenArticuloService';
 import { actualizarCategoria, getCategorias } from '../../services/CategoriaService';
 import '../../styles/InsumoFormulario.css';
 import { actualizarArticuloManufacturado, crearArticuloManufacturado } from '../../services/ArticuloManufacturadoService';
-import { crearArticuloManufacturadoDetalle } from '../../services/ArticuloManufacturadoDetalleService';
+import { crearArticuloManufacturadoDetalle, getArticulosManufacturadosDetalle } from '../../services/ArticuloManufacturadoDetalleService';
+import { getUnidadesMedida } from '../../services/UnidadMedidaService';
 
 interface AgregarArticuloManufacturadoModalProps {
     show: boolean;
@@ -24,6 +25,7 @@ interface AgregarArticuloManufacturadoModalProps {
     articulosInsumo: ArticuloInsumo[];
     unidadesMedida: UnidadMedida[];
     imagenesArticulo: ImagenArticulo[];
+    detalles: ArticuloManufacturadoDetalle[];
 }
 
 const AgregarArticuloManufacturadoModal: React.FC<AgregarArticuloManufacturadoModalProps> = ({
@@ -33,7 +35,6 @@ const AgregarArticuloManufacturadoModal: React.FC<AgregarArticuloManufacturadoMo
     isEdit = false,
     articuloManufacturadoInicial,
     articulosInsumo,
-    unidadesMedida,
     imagenesArticulo,
 }) => {
     const [denominacion, setDenominacion] = useState<string>('');
@@ -50,6 +51,7 @@ const AgregarArticuloManufacturadoModal: React.FC<AgregarArticuloManufacturadoMo
     const [showAgregarImagenModal, setShowAgregarImagenModal] = useState<boolean>(false);
     const [showAgregarCategoriaModal, setShowAgregarCategoriaModal] = useState<boolean>(false);
     const [, setImagenesArticulos] = useState<ImagenArticulo[]>([]);
+    const [unidadesMedida, setUnidadesMedida] = useState<UnidadMedida[]>([]);
 
 
     useEffect(() => {
@@ -59,6 +61,12 @@ const AgregarArticuloManufacturadoModal: React.FC<AgregarArticuloManufacturadoMo
 
             const categorias = await getCategorias();
             setCategorias(categorias);
+
+            const unidadesMedida = await getUnidadesMedida();
+            setUnidadesMedida(unidadesMedida);
+
+            const detalles = await getArticulosManufacturadosDetalle();
+            setArticuloManufacturadoDetalles(detalles);
 
             if (isEdit && articuloManufacturadoInicial) {
                 setDenominacion(articuloManufacturadoInicial.denominacion);

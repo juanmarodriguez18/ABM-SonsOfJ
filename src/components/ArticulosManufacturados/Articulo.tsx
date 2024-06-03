@@ -138,13 +138,12 @@ const Articulo: React.FC<{ articulo: ArticuloManufacturado }> = ({
           console.log("Artículo manufacturado guardado:", manufacturado);
           setShowForm(false);
           setManufacturado(manufacturado);
-        }}
+        } }
         isEdit={true}
         articuloManufacturadoInicial={manufacturado}
         articulosInsumo={[]}
         unidadesMedida={[]}
-        imagenesArticulo={[]}
-      />
+        imagenesArticulo={[]} detalles={[]}      />
     </li>
   );
 };

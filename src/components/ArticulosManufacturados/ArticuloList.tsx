@@ -26,6 +26,7 @@ import { getUnidadesMedida } from "../../services/UnidadMedidaService";
 import { getCategorias } from "../../services/CategoriaService";
 import { Categoria } from "../../types/Categoria";
 import AddIcon from "@mui/icons-material/Add";
+import { ArticuloManufacturadoDetalle } from "../../types/ArticuloManufacturadoDetalle";
 
 const ArticuloList: React.FC = () => {
   const [articulos, setArticulos] = useState<ArticuloManufacturado[]>([]);
@@ -39,6 +40,7 @@ const ArticuloList: React.FC = () => {
     useState<string>("");
   const [articulosInsumo, setArticulosInsumo] = useState<ArticuloInsumo[]>([]);
   const [unidadesMedida, setUnidadesMedida] = useState<UnidadMedida[]>([]);
+  const [detalles, setDetalles] = useState<ArticuloManufacturadoDetalle[]>([]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -210,7 +212,7 @@ const ArticuloList: React.FC = () => {
         articulosInsumo={articulosInsumo}
         unidadesMedida={unidadesMedida}
         imagenesArticulo={[]} // Pasa las imágenes del artículo si es necesario
-      />
+        detalles={[]}      />
     </Box>
   );
 };

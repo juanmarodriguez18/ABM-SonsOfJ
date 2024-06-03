@@ -14,7 +14,7 @@ interface UnidadesMedidaTableProps {
 const UnidadesMedidaTable: React.FC<UnidadesMedidaTableProps> = ({ data, onEdit, onDelete }) => {
   const columns = [
     { label: 'Denominación', dataKey: 'denominacion', width: 200 },
-    { label: 'Acciones', dataKey: 'actions', width: 120 },
+    { label: 'Operaciones', dataKey: 'actions', width: 120 },
   ];
 
   const fixedHeaderContent = () => (
