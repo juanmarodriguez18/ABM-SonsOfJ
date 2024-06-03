@@ -2,11 +2,12 @@ import React, { useEffect, useState } from 'react';
 import SearchBar from '../SearchBar/SearchBar';
 import { ArticuloInsumo } from '../../types/ArticuloInsumo';
 import Insumo from './ArticuloInsumo';
-import { getInsumos } from '../../services/ArticuloInsumoService';
 import InsumoFormulario from './InsumoFormulario';
+import { getInsumos } from '../../services/ArticuloInsumoService';
 import { getCategorias } from '../../services/CategoriaService';
-import '../../styles/AgregarImagenModal.css';
 import { Categoria } from '../../types/Categoria';
+import { Button, FormControl, MenuItem, Select, Typography, Box, Paper, Table, TableHead, TableRow, TableCell, TableBody, TableContainer } from '@mui/material';
+import AddIcon from '@mui/icons-material/Add';
 
 const InsumoList: React.FC = () => {
   const [insumos, setInsumos] = useState<ArticuloInsumo[]>([]);
@@ -18,9 +19,13 @@ const InsumoList: React.FC = () => {
 
   useEffect(() => {
     const fetchData = async () => {
-      const data: ArticuloInsumo[] = await getInsumos();
-      setInsumos(data);
-      setFilteredInsumos(data);
+      try {
+        const data: ArticuloInsumo[] = await getInsumos();
+        setInsumos(data);
+        setFilteredInsumos(data);
+      } catch (error) {
+        console.error('Error fetching insumos:', error);
+      }
     };
 
     fetchData();
@@ -64,65 +69,122 @@ const InsumoList: React.FC = () => {
   };
 
   return (
-    <div>
-      <SearchBar onSearch={setQuery} />
-      <button className="btn-Guardar" onClick={() => setShowForm(true)}>
-        Agregar Insumo
-      </button>
-      {showForm && (
-        <InsumoFormulario show={showForm} handleClose={handleCancel} onSave={handleSaveInsumo} />
-      )}
-      {/* Formulario para filtrar por categoría */}
-      <div>
-        <label htmlFor="categorias">Filtrar por categoría:</label>
-        <select
-          id="categorias"
-          className='form-select'
-          onChange={(e) => {
-            const categoria = e.target.value;
-            setCategoriaSeleccionada(categoria);
+    <Box sx={{ display: 'flex', flexDirection: 'column', pl: 2 }}>
+      <Box sx={{ display: 'flex' }}>
+        <SearchBar onSearch={setQuery} />
+        <Button
+          className="btn-Guardar"
+          onClick={() => setShowForm(true)}
+          sx={{
+            bgcolor: '#43a047',
+            color: '#fff',
+            borderRadius: 8,
+            textTransform: 'none',
+            ml: 2,
+            '&:hover': {
+              bgcolor: '#1b5e20',
+            },
           }}
-          value={categoriaSeleccionada}
         >
-          <option value="">Seleccionar categoría...</option>
-          {categorias.map((categoria, index) => (
-            <option className="form-select-option" key={index} value={categoria.denominacion}>
-              {categoria.denominacion}
-            </option>
-          ))}
-        </select>
-      </div>
-        <li key="lista1" className="row">
-          <div className="col">
-            <b>Denominacion:</b>
-          </div>
-          <div className="col">
-            <b>Imagen:</b>
-          </div>
-          <div className="col">
-            <b>Precio Compra:</b>
-          </div>
-          <div className="col">
-            <b>Stock Actual:</b>
-          </div>
-          <div className="col">
-            <b>Stock Maximo:</b>
-          </div>
-          <div className="col">
-            <b>Es para elaborar:</b>
-          </div>
-          <div className="col">
-            <b>Eliminar/Modificar:</b>
-          </div>
-        </li>
-      <ul>
-        {filteredInsumos.map((insumo) => (
-          <Insumo key={insumo.id} articulo={insumo} />
-        ))}
-      </ul>
-    </div>
+          <AddIcon />
+          Agregar Insumo
+        </Button>
+      </Box>
+      <Box sx={{ display: 'flex' }}>
+        <Typography variant="subtitle2">Filtrar por categoría:</Typography>
+        <FormControl
+          variant="outlined"
+          sx={{
+            '& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline': {
+              borderColor: '#3f51b5',
+            },
+          }}
+        >
+          <Select
+            size="small"
+            id="categorias"
+            className="form-select"
+            onChange={(e) => {
+              const categoria = e.target.value;
+              setCategoriaSeleccionada(categoria);
+            }}
+            value={categoriaSeleccionada}
+            sx={{
+              width: 200,
+              height: 25,
+              ml: 1,
+              bgcolor: '#ccc',
+            }}
+          >
+            <MenuItem value="">Seleccionar categoría...</MenuItem>
+            {categorias.map((categoria, index) => (
+              <MenuItem
+                key={index}
+                value={categoria.denominacion}
+              >
+                <Typography variant="subtitle2">
+                  {categoria.denominacion}
+                </Typography>
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+      </Box>
+      <TableContainer
+        component={Paper}
+        sx={{
+          borderRadius: 8,
+          width: '99%',
+          marginTop: 2,
+          bgcolor: '#eee',
+          boxShadow: 2,
+        }}
+      >
+        <Table sx={{ minWidth: 700 }}>
+          <TableHead sx={{ bgcolor: '#aaa' }}>
+            <TableRow sx={{ display: 'flex', flexDirection: 'row' }}>
+              <TableCell align="center" className="col">
+                Denominación
+              </TableCell>
+              <TableCell align="center" className="col">
+                Imagen
+              </TableCell>
+              <TableCell align="center" className="col">
+                Precio Compra
+              </TableCell>
+              <TableCell align="center" className="col">
+                Stock Actual
+              </TableCell>
+              <TableCell align="center" className="col">
+                Stock Máximo
+              </TableCell>
+              <TableCell align="center" className="col">
+                Es para elaborar
+              </TableCell>
+              <TableCell align="center" className="col">
+                Operaciones
+              </TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {filteredInsumos.map((insumo) => (
+              <TableRow key={insumo.id}>
+                <Insumo articulo={insumo} />
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
+
+      {showForm && (
+        <InsumoFormulario
+          show={showForm}
+          handleClose={handleCancel}
+          onSave={handleSaveInsumo}
+        />
+      )}
+    </Box>
   );
 };
 
 export default InsumoList;
-

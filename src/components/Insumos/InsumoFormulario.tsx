@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { Modal, Button } from 'react-bootstrap';
 import { ArticuloInsumo } from '../../types/ArticuloInsumo';
 import { ImagenArticulo } from '../../types/ImagenArticulo';
 import { UnidadMedida } from '../../types/UnidadMedida';
@@ -12,6 +11,7 @@ import '../../styles/InsumoFormulario.css'
 import { Categoria } from '../../types/Categoria';
 import AgregarCategoriaModal from '../Categorias/AgregarCategoriaModal';
 import { actualizarCategoria, getCategorias } from '../../services/CategoriaService';
+import { Button, Checkbox, Dialog, DialogActions, DialogContent, DialogTitle, FormControl, FormControlLabel, Grid, InputLabel, MenuItem, Select, TextField } from '@mui/material';
 
 interface InsumoFormularioProps {
     show: boolean;
@@ -169,132 +169,169 @@ const InsumoFormulario: React.FC<InsumoFormularioProps> = ({ show, handleClose, 
     };
 
     return (
-        <Modal show={show} onHide={handleClose} size="lg">
-            <Modal.Header closeButton>
-                <Modal.Title>{isEdit ? "Editar Insumo" : "Agregar Insumo"}</Modal.Title>
-            </Modal.Header>
-            <Modal.Body>
-                <div className="mb-3">
-                    <label htmlFor="txtDenominacion" className="form-label">Denominación</label>
-                    <input type="text" id="txtDenominacion" className="form-control" placeholder="Ingrese la denominación" value={insumo.denominacion || ''} onChange={e => setInsumo({ ...insumo, denominacion: e.target.value })} />
-                </div>
-                <div className="mb-3">
-                    <label htmlFor="txtPrecioVenta" className="form-label">Precio de Venta</label>
-                    <input type="number" id="txtPrecioVenta" className="form-control" placeholder="Ingrese el precio de venta" value={insumo.precioVenta || ''} onChange={e => setInsumo({ ...insumo, precioVenta: parseFloat(e.target.value) })} />
-                </div>
-                <div className="mb-3">
-                    <label htmlFor="cmbImagenes" className="form-label">Imagen</label>
-                    {insumo.imagenesArticulo.size > 0 ? (
-                        <div className="selected-image">
-                            <img className = "img" src={Array.from(insumo.imagenesArticulo)[0].url} alt="Imagen seleccionada" />
-                        </div>
-                    ) : (
-                        <div>No hay imagen seleccionada</div>
-                    )}
-                    <button className="btn-Guardar" onClick={toggleAgregarImagenModal}>Nueva Imagen</button>
-                </div>
-                <div className="mb-3">
-                    <label htmlFor="cmbUnidadMedida" className="form-label">Unidad de Medida</label>
-                    <select
-                        id="cmbUnidadMedida"
-                        className="form-select"
-                        value={insumo.unidadMedida.id || ''}
-                        onChange={e => setInsumo({ ...insumo, unidadMedida: { id: parseInt(e.target.value), denominacion: "", eliminado: false } })}
-                    >
-                        <option className="form-select-option" value="">Seleccione una unidad de medida</option>
-                        {unidadesMedida.map(unidad => (
-                            <option className="form-select-option" key={unidad.id} value={unidad.id}>{unidad.denominacion}</option>
-                        ))}
-                    </select>
-                </div>
-                <div>
-                    <button className="btn-Guardar" onClick={toggleNuevaUnidadModal}>Nueva Unidad Medida</button>
-                </div>
-                <div className="mb-3">
-                    <label htmlFor="txtPrecioCompra" className="form-label">Precio de Compra</label>
-                    <input type="number" id="txtPrecioCompra" className="form-control" placeholder="Ingrese el precio de compra" value={insumo.precioCompra || ''} onChange={e => setInsumo({ ...insumo, precioCompra: parseFloat(e.target.value) })} />
-                </div>
-                <div className="mb-3">
-                    <label htmlFor="txtStockActual" className="form-label">Stock Actual</label>
-                    <input type="number" id="txtStockActual" className="form-control" placeholder="Ingrese el stock actual" value={insumo.stockActual || ''} onChange={e => setInsumo({ ...insumo, stockActual: parseFloat(e.target.value) })} />
-                </div>
-                <div className="mb-3">
-                    <label htmlFor="txtStockMaximo" className="form-label">Stock Máximo</label>
-                    <input type="number" id="txtStockMaximo" className="form-control" placeholder="Ingrese el stock máximo" value={insumo.stockMaximo || ''} onChange={e => setInsumo({ ...insumo, stockMaximo: parseFloat(e.target.value) })} />
-                </div>
-                <div className="mb-3">
-                    <label htmlFor="cmbCategoria" className="form-label">Categoría</label>
-                    <select
-                        id="cmbCategoria"
-                        className="form-select"
-                        value={insumo.categoria?.id || ''}
-                        onChange={e => setInsumo({ 
-                            ...insumo, 
-                            categoria: { 
-                                id: parseInt(e.target.value), 
-                                denominacion: categorias.find(c => c.id === parseInt(e.target.value))?.denominacion || '', 
-                                eliminado: false 
-                        } 
-                        })}
-                    >
-                        <option className="form-select-option" value="">Seleccione una categoría</option>
-                        {Array.isArray(categorias) && categorias.length > 0 ? (
-                            categorias.map(categoria => (
-                                <option className="form-select-option" key={categoria.id} value={categoria.id}>{categoria.denominacion}</option>
-                            ))
+        <Dialog open={show} onClose={handleClose} fullWidth maxWidth="md">
+            <DialogTitle>{isEdit ? "Editar Insumo" : "Agregar Insumo"}</DialogTitle>
+            <DialogContent dividers>
+                <Grid container spacing={3}>
+                    <Grid item xs={6}>
+                        <TextField
+                            autoFocus
+                            margin="dense"
+                            id="txtDenominacion"
+                            label="Denominación"
+                            type="text"
+                            fullWidth
+                            value={insumo.denominacion || ''}
+                            onChange={e => setInsumo({ ...insumo, denominacion: e.target.value })}
+                        />
+                    </Grid>
+                    <Grid item xs={6}>
+                        <TextField
+                            margin="dense"
+                            id="txtPrecioVenta"
+                            label="Precio de Venta"
+                            type="number"
+                            fullWidth
+                            value={insumo.precioVenta || ''}
+                            onChange={e => setInsumo({ ...insumo, precioVenta: parseFloat(e.target.value) })}
+                        />
+                    </Grid>
+                    <Grid item xs={6}>
+                        {insumo.imagenesArticulo.size > 0 ? (
+                            <div className="selected-image">
+                                <img className="img" src={Array.from(insumo.imagenesArticulo)[0].url} alt="Imagen seleccionada" />
+                            </div>
                         ) : (
-                            <option className="form-select-option" value="">Cargando categorías...</option>
+                            <div>No hay imagen seleccionada</div>
                         )}
-                    </select>
-                </div>
-                <div>
-                    <button className="btn-Guardar" onClick={toggleAgregarCategoria}>Nueva Categoria</button>
-                </div>
-                <div className="mb-3 form-check">
-                    <input type="checkbox" id="chkEsParaElaborar" className="form-check-input" checked={insumo.esParaElaborar || false} onChange={e => setInsumo({ ...insumo, esParaElaborar: e.target.checked })} />
-                    <label htmlFor="chkEsParaElaborar" className="form-check-label">¿Es para elaborar?</label>
-                </div>
-                <div>
-                    <p style={{ color: 'red', lineHeight: 5, padding: 5 }}>{txtValidacion}</p>
-                </div>
-            </Modal.Body>
-            <Modal.Footer>
-                <Button className="btn-Cancelar" variant="secondary" onClick={handleClose}>
+                        <Button className="btn-Guardar" onClick={toggleAgregarImagenModal}>Nueva Imagen</Button>
+                    </Grid>
+                    <Grid item xs={6}>
+                        <FormControl fullWidth>
+                            <InputLabel id="cmbUnidadMedida-label">Unidad de Medida</InputLabel>
+                            <Select
+                                labelId="cmbUnidadMedida-label"
+                                id="cmbUnidadMedida"
+                                value={insumo.unidadMedida.id || ''}
+                                onChange={e => setInsumo({ ...insumo, unidadMedida: { id: parseInt(e.target.value as string), denominacion: "", eliminado: false } })}
+                            >
+                                <MenuItem value="">Seleccione una unidad de medida</MenuItem>
+                                {unidadesMedida.map(unidad => (
+                                    <MenuItem key={unidad.id} value={unidad.id}>{unidad.denominacion}</MenuItem>
+                                ))}
+                            </Select>
+                        </FormControl>
+                        <Button className="btn-Guardar" onClick={toggleNuevaUnidadModal}>Nueva Unidad Medida</Button>
+                    </Grid>
+                    <Grid item xs={6}>
+                        <TextField
+                            margin="dense"
+                            id="txtPrecioCompra"
+                            label="Precio de Compra"
+                            type="number"
+                            fullWidth
+                            value={insumo.precioCompra || ''}
+                            onChange={e => setInsumo({ ...insumo, precioCompra: parseFloat(e.target.value) })}
+                        />
+                    </Grid>
+                    <Grid item xs={6}>
+                        <TextField
+                            margin="dense"
+                            id="txtStockActual"
+                            label="Stock Actual"
+                            type="number"
+                            fullWidth
+                            value={insumo.stockActual || ''}
+                            onChange={e => setInsumo({ ...insumo, stockActual: parseFloat(e.target.value) })}
+                        />
+                    </Grid>
+                    <Grid item xs={6}>
+                        <TextField
+                            margin="dense"
+                            id="txtStockMaximo"
+                            label="Stock Máximo"
+                            type="number"
+                            fullWidth
+                            value={insumo.stockMaximo || ''}
+                            onChange={e => setInsumo({ ...insumo, stockMaximo: parseFloat(e.target.value) })}
+                        />
+                    </Grid>
+                    <Grid item xs={6}>
+                        <FormControl fullWidth>
+                            <InputLabel id="cmbCategoria-label">Categoría</InputLabel>
+                            <Select
+                                labelId="cmbCategoria-label"
+                                id="cmbCategoria"
+                                value={insumo.categoria?.id || ''}
+                                onChange={e => setInsumo({
+                                    ...insumo,
+                                    categoria: {
+                                        id: parseInt(e.target.value as string),
+                                        denominacion: categorias.find(c => c.id === parseInt(e.target.value as string))?.denominacion || '',
+                                        eliminado: false
+                                    }
+                                })}
+                            >
+                                <MenuItem value="">Seleccione una categoría</MenuItem>
+                                {Array.isArray(categorias) && categorias.length > 0 ? (
+                                    categorias.map(categoria => (
+                                        <MenuItem key={categoria.id} value={categoria.id}>{categoria.denominacion}</MenuItem>
+                                    ))
+                                ) : (
+                                    <MenuItem disabled>Cargando categorías...</MenuItem>
+                                )}
+                            </Select>
+                        </FormControl>
+                        <Button className="btn-Guardar" onClick={toggleAgregarCategoria}>Nueva Categoria</Button>
+                    </Grid>
+                    <Grid item xs={12}>
+                        <FormControlLabel
+                            control={<Checkbox
+                                id="chkEsParaElaborar"
+                                checked={insumo.esParaElaborar || false}
+                                onChange={e => setInsumo({ ...insumo, esParaElaborar: e.target.checked })}
+                            />}
+                            label="¿Es para elaborar?"
+                        />
+                    </Grid>
+                    <Grid item xs={12}>
+                        <p style={{ color: 'red', lineHeight: 5, padding: 5 }}>{txtValidacion}</p>
+                    </Grid>
+                </Grid>
+            </DialogContent>
+            <DialogActions>
+                <Button className="btn-Cancelar" onClick={handleClose} color="secondary">
                     Cancelar
                 </Button>
-                <Button className ="btn-Guardar" variant="primary" onClick={guardarInsumo}>
+                <Button className="btn-Guardar" onClick={guardarInsumo} color="primary">
                     Guardar
                 </Button>
-            </Modal.Footer>
-            <div>
-                {/* Modal para agregar imagen */}
-                {showAgregarImagenModal && (
-                    <AgregarImagenModal
-                        show={showAgregarImagenModal}
-                        onSave={handleImagenSeleccionada}
-                        toggleModal={toggleAgregarImagenModal}
-                        imagenes={imagenes}
-                        setImagenes={setImagenes}
-                    />
-                )}
-            </div>
-            <div>
-                {/* Modal para agregar unidad de medida */}
-                <AgregarUnidadMedidaModal
-                    show={showNuevaUnidadModal}
-                    onHide={() => setShowNuevaUnidadModal(false)}
-                    agregarUnidadMedida={handleNuevaUnidadMedida}
+            </DialogActions>
+            {/* Modal para agregar imagen */}
+            {showAgregarImagenModal && (
+                <AgregarImagenModal
+                    show={showAgregarImagenModal}
+                    onSave={handleImagenSeleccionada}
+                    toggleModal={toggleAgregarImagenModal}
+                    imagenes={imagenes}
+                    setImagenes={setImagenes}
                 />
-            </div>
-            <div>
+            )}
+            {/* Modal para agregar unidad de medida */}
+            <AgregarUnidadMedidaModal
+                show={showNuevaUnidadModal}
+                onHide={() => setShowNuevaUnidadModal(false)}
+                agregarUnidadMedida={handleNuevaUnidadMedida}
+            />
             <AgregarCategoriaModal
                 show={showAgregarCategoriaModal}
                 onHide={() => setAgregarCategoriaModal(false)}
                 actualizarCategorias={handleActualizarCategoria}
             />
-            </div>
-        </Modal>
+        </Dialog>
     );
+    
+    
 }
 
 export default InsumoFormulario;
