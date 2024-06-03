@@ -150,13 +150,8 @@ input[type="text"].form-control {
     margin-top: 15;
 }
 
-::-webkit-scrollbar {
-    width: 9px; /* Ancho de la barra de desplazamiento */
-    background-color: #f8f2ab; /* Color de fondo */
-}
-
-/* Barra de desplazamiento thumb */
-::-webkit-scrollbar-thumb {
-    background-color: #740e0e; /* Color de la barra de desplazamiento */
-    border-radius: 8px; /* Borde redondeado */
+.selected-image img {
+    max-width: 100px;
+    max-height: 100px;
+    object-fit: cover;
 }
