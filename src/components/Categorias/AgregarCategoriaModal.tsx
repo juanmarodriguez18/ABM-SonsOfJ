@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
-import { Modal, Button, Form } from 'react-bootstrap';
+import {
+    Dialog, DialogActions, DialogContent, DialogTitle, Button, TextField
+} from '@mui/material';
 import { crearCategoria } from '../../services/CategoriaService';
 import '../../styles/InsumoFormulario.css';
 
@@ -25,29 +27,31 @@ const ModalFormularioCategoria: React.FC<ModalFormularioCategoriaProps> = ({ sho
     };
 
     return (
-        <Modal show={show} onHide={onHide}>
-            <Modal.Header closeButton>
-                <Modal.Title>Agregar Nueva Categoría</Modal.Title>
-            </Modal.Header>
-            <Modal.Body>
-                <Form onSubmit={handleSubmit}>
-                    <Form.Group controlId="formDenominacion">
-                        <Form.Label>Denominación</Form.Label>
-                        <Form.Control
-                            type="text"
-                            placeholder="Ingrese la denominación de la categoría"
-                            value={denominacion}
-                            onChange={(e) => setDenominacion(e.target.value)}
-                            required
-                        />
-                    </Form.Group>
-
-                    <Button className="btn-Guardar" variant="primary" type="submit">
-                        Guardar
-                    </Button>
-                </Form>
-            </Modal.Body>
-        </Modal>
+        <Dialog open={show} onClose={onHide} maxWidth="sm" fullWidth>
+            <DialogTitle>Agregar Nueva Categoría</DialogTitle>
+            <DialogContent>
+                <form onSubmit={handleSubmit}>
+                    <TextField
+                        fullWidth
+                        margin="dense"
+                        label="Denominación"
+                        type="text"
+                        placeholder="Ingrese la denominación de la categoría"
+                        value={denominacion}
+                        onChange={(e) => setDenominacion(e.target.value)}
+                        required
+                    />
+                    <DialogActions>
+                        <Button variant="outlined" color="secondary" onClick={onHide}>
+                            Cancelar
+                        </Button>
+                        <Button className="btn-Guardar" variant="contained" color="primary" type="submit">
+                            Guardar
+                        </Button>
+                    </DialogActions>
+                </form>
+            </DialogContent>
+        </Dialog>
     );
 };
 

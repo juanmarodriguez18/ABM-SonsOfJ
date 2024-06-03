@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Modal, Button, Form, Col, Row } from 'react-bootstrap';
+import { Button, TextField, Grid,  MenuItem, DialogTitle, DialogContent, FormControl, InputLabel, Select, DialogActions, Dialog, FormLabel } from '@mui/material';
 import AgregarArticuloDetalleModal from '../ArticuloManufacturadoDetalles/AgregarArticuloDetalleModal';
 import AgregarImagenModal from '../ImagenesArticulo/AgregarImagenModal';
 import AgregarCategoriaModal from '../Categorias/AgregarCategoriaModal';
@@ -191,139 +191,142 @@ const AgregarArticuloManufacturadoModal: React.FC<AgregarArticuloManufacturadoMo
 
     return (
         <>
-            <Modal show={show} onHide={handleClose} size="lg" style={{zIndex: 1050}} >
-                <Modal.Header closeButton>
-                    <Modal.Title>{isEdit ? 'Modificar Artículo Manufacturado' : 'Agregar Artículo Manufacturado'}</Modal.Title>
-                </Modal.Header>
-                <Modal.Body>
-                    <Form>
-                        <Form.Group controlId="formDenominacion">
-                            <Form.Label>Denominación</Form.Label>
-                            <Form.Control
-                                type="text"
-                                placeholder="Ingrese la denominación"
-                                value={denominacion}
-                                onChange={(e) => setDenominacion(e.target.value)}
+            <Dialog open={show} onClose={handleClose} aria-labelledby="form-dialog-title" maxWidth="md" style={{zIndex: 1050}}>
+                <DialogTitle id="form-dialog-title">{isEdit ? 'Modificar Artículo Manufacturado' : 'Agregar Artículo Manufacturado'}</DialogTitle>
+                <DialogContent>
+                    <TextField
+                        margin="dense"
+                        id="denominacion"
+                        label="Denominación"
+                        type="text"
+                        fullWidth
+                        value={denominacion}
+                        onChange={(e) => setDenominacion(e.target.value)}
+                    />
+                    <Grid container spacing={2}>
+                        <Grid item xs={6}>
+                            <TextField
+                                margin="dense"
+                                id="precioVenta"
+                                label="Precio de Venta"
+                                type="number"
+                                fullWidth
+                                value={precioVenta}
+                                onChange={(e) => setPrecioVenta(Number(e.target.value))}
                             />
-                        </Form.Group>
-
-                        <Row>
-                            <Form.Group as={Col} controlId="formPrecioVenta">
-                                <Form.Label>Precio de Venta</Form.Label>
-                                <Form.Control
-                                    type="number"
-                                    placeholder="Ingrese el precio de venta"
-                                    value={precioVenta}
-                                    onChange={(e) => setPrecioVenta(Number(e.target.value))}
-                                />
-                            </Form.Group>
-
-                            <Form.Group as={Col} controlId="formUnidadMedida">
-                                <Form.Label>Unidad de Medida</Form.Label>
-                                <Form.Control
-                                    as="select"
+                        </Grid>
+                        <Grid item xs={6}>
+                            <FormControl fullWidth margin="dense">
+                                <InputLabel id="unidad-medida-label">Unidad de Medida</InputLabel>
+                                <Select
+                                    labelId="unidad-medida-label"
+                                    id="unidadMedida"
                                     value={unidadMedidaId}
                                     onChange={(e) => setUnidadMedidaId(Number(e.target.value))}
+                                    label="Unidad de Medida"
                                 >
-                                    <option value={0}>Seleccionar unidad de medida...</option>
+                                    <MenuItem value={0}>Seleccionar unidad de medida...</MenuItem>
                                     {unidadesMedida.map((um) => (
-                                        <option key={um.id} value={um.id}>
+                                        <MenuItem key={um.id} value={um.id}>
                                             {um.denominacion}
-                                        </option>
+                                        </MenuItem>
                                     ))}
-                                </Form.Control>
-                            </Form.Group>
-                        </Row>
-
-                        <Form.Group controlId="formDescripcion">
-                            <Form.Label>Descripción</Form.Label>
-                            <Form.Control
-                                as="textarea"
-                                rows={3}
-                                placeholder="Ingrese la descripción"
-                                value={descripcion}
-                                onChange={(e) => setDescripcion(e.target.value)}
-                            />
-                        </Form.Group>
-
-                        <Form.Group controlId="formTiempoEstimado">
-                            <Form.Label>Tiempo Estimado (minutos)</Form.Label>
-                            <Form.Control
-                                type="number"
-                                placeholder="Ingrese el tiempo estimado en minutos"
-                                value={tiempoEstimado}
-                                onChange={(e) => setTiempoEstimado(Number(e.target.value))}
-                            />
-                        </Form.Group>
-
-                        <Form.Group controlId="formPreparacion">
-                            <Form.Label>Preparación</Form.Label>
-                            <Form.Control
-                                as="textarea"
-                                rows={5}
-                                placeholder="Ingrese los pasos de preparación"
-                                value={preparacion}
-                                onChange={(e) => setPreparacion(e.target.value)}
-                            />
-                        </Form.Group>
-
-                        <Form.Group controlId="formCategoria">
-                            <Form.Label>Categoría</Form.Label>
-                            <Form.Control
-                                as="select"
-                                value={categoriaId}
-                                onChange={(e) => setCategoriaId(Number(e.target.value))}
-                            >
-                                <option value={0}>Seleccionar categoría...</option>
-                                {categorias.map((cat) => (
-                                    <option key={cat.id} value={cat.id}>
-                                        {cat.denominacion}
-                                    </option>
-                                ))}
-                            </Form.Control>
-                            <Button className='btn-Guardar' variant="outline-primary" size="sm" onClick={toggleAgregarCategoriaModal}>
-                                Nueva Categoría
-                            </Button>
-                        </Form.Group>
-
-                        <Form.Group controlId="formImagen">
-                            <Form.Label>Imagen</Form.Label>
-                            {selectedImagen ? (
-                                <div className="selected-image">
-                                    <img src={selectedImagen.url} alt="Imagen seleccionada" />
-                                </div>
-                            ) : (
-                                <div>No hay imagen seleccionada</div>
-                            )}
-                            <Button className='btn-Guardar' variant="outline-primary" size="sm" onClick={toggleAgregarImagenModal}>
-                                Nueva Imagen
-                            </Button>
-                        </Form.Group>
-
-                        <Form.Group controlId="formArticuloManufacturadoDetalles">
-                            <Form.Label>Detalles del Artículo Manufacturado</Form.Label>
-                            {articuloManufacturadoDetalles.map((detalle, index) => (
-                                <Row key={index}>
-                                    <Col>
-                                        <Form.Control
-                                            type="number"
-                                            placeholder="Cantidad"
-                                            value={detalle.cantidad}
-                                            onChange={(e) =>
-                                                setArticuloManufacturadoDetalles((prevState) =>
-                                                    prevState.map((prevDetalle, idx) =>
-                                                        idx === index
-                                                            ? { ...prevDetalle, cantidad: Number(e.target.value) }
-                                                            : prevDetalle
-                                                    )
+                                </Select>
+                            </FormControl>
+                        </Grid>
+                    </Grid>
+                    <TextField
+                        margin="dense"
+                        id="descripcion"
+                        label="Descripción"
+                        multiline
+                        rows={3}
+                        fullWidth
+                        value={descripcion}
+                        onChange={(e) => setDescripcion(e.target.value)}
+                    />
+                    <TextField
+                        margin="dense"
+                        id="tiempoEstimado"
+                        label="Tiempo Estimado (minutos)"
+                        type="number"
+                        fullWidth
+                        value={tiempoEstimado}
+                        onChange={(e) => setTiempoEstimado(Number(e.target.value))}
+                    />
+                    <TextField
+                        margin="dense"
+                        id="preparacion"
+                        label="Preparación"
+                        multiline
+                        rows={5}
+                        fullWidth
+                        value={preparacion}
+                        onChange={(e) => setPreparacion(e.target.value)}
+                    />
+                    <FormControl fullWidth margin="dense">
+                        <InputLabel id="categoria-label">Categoría</InputLabel>
+                        <Select
+                            labelId="categoria-label"
+                            id="categoria"
+                            value={categoriaId}
+                            onChange={(e) => setCategoriaId(Number(e.target.value))}
+                            label="Categoría"
+                        >
+                            <MenuItem value={0}>Seleccionar categoría...</MenuItem>
+                            {categorias.map((cat) => (
+                                <MenuItem key={cat.id} value={cat.id}>
+                                    {cat.denominacion}
+                                </MenuItem>
+                            ))}
+                        </Select>
+                        <Button variant="outlined" color="primary" size="small" onClick={toggleAgregarCategoriaModal}>
+                            Nueva Categoría
+                        </Button>
+                    </FormControl>
+                    <FormControl fullWidth margin="dense">
+                        <FormLabel id="imagen-label">Imagen</FormLabel>
+                        <Button variant="outlined" color="primary" size="small" onClick={toggleAgregarImagenModal}>
+                            Nueva Imagen
+                        </Button>
+                        {selectedImagen ? (
+                            <div className="selected-image">
+                                <img src={selectedImagen.url} alt="Imagen seleccionada" />
+                            </div>
+                        ) : (
+                            <div>No hay imagen seleccionada</div>
+                        )}
+                    </FormControl>
+                    <FormControl fullWidth margin="dense">
+                        <FormLabel id="detalles-label">Detalles del Artículo Manufacturado</FormLabel>
+                        {articuloManufacturadoDetalles.map((detalle, index) => (
+                            <Grid container spacing={2} key={index}>
+                                <Grid item xs={6}>
+                                    <TextField
+                                        margin="dense"
+                                        id={`detalle-cantidad-${index}`}
+                                        label="Cantidad"
+                                        type="number"
+                                        fullWidth
+                                        value={detalle.cantidad}
+                                        onChange={(e) =>
+                                            setArticuloManufacturadoDetalles((prevState) =>
+                                                prevState.map((prevDetalle, idx) =>
+                                                    idx === index
+                                                        ? { ...prevDetalle, cantidad: Number(e.target.value) }
+                                                        : prevDetalle
                                                 )
-                                            }
-                                        />
-                                    </Col>
-                                    <Col>
-                                        <Form.Control
-                                            as="select"
-                                            value={detalle.articuloInsumo?.id}
+                                            )
+                                        }
+                                    />
+                                </Grid>
+                                <Grid item xs={6}>
+                                    <FormControl fullWidth margin="dense">
+                                        <InputLabel id={`detalle-insumo-label-${index}`}>Insumo</InputLabel>
+                                        <Select
+                                            labelId={`detalle-insumo-label-${index}`}
+                                            id={`detalle-insumo-${index}`}
+                                            value={detalle.articuloInsumo?.id || ''}
                                             onChange={(e) =>
                                                 setArticuloManufacturadoDetalles((prevState) =>
                                                     prevState.map((prevDetalle, idx) =>
@@ -338,43 +341,42 @@ const AgregarArticuloManufacturadoModal: React.FC<AgregarArticuloManufacturadoMo
                                                     )
                                                 )
                                             }
+                                            label="Insumo"
                                         >
-                                            <option value={0}>Seleccionar insumo...</option>
+                                            <MenuItem value={0}>Seleccionar insumo...</MenuItem>
                                             {articulosInsumo.map((ai) => (
-                                                <option key={ai.id} value={ai.id}>
+                                                <MenuItem key={ai.id} value={ai.id}>
                                                     {ai.denominacion}
-                                                </option>
+                                                </MenuItem>
                                             ))}
-                                        </Form.Control>
-                                    </Col>
-                                </Row>
-                            ))}
-                            <Button className='btn-Guardar' variant="outline-primary" size="sm" onClick={() => setShowDetalleModal(true)}>
-                                Agregar Detalle
-                            </Button>
-                        </Form.Group>
-
-                    </Form>
-                </Modal.Body>
-                <Modal.Footer>
-                    <Button className='btn-Cancelar' variant="secondary" onClick={handleClose}>
+                                        </Select>
+                                    </FormControl>
+                                </Grid>
+                            </Grid>
+                        ))}
+                        <Button variant="outlined" color="primary" size="small" onClick={() => setShowDetalleModal(true)}>
+                            Agregar Detalle
+                        </Button>
+                    </FormControl>
+                </DialogContent>
+                <DialogActions>
+                    <Button variant="outlined" color="secondary" onClick={handleClose}>
                         Cancelar
                     </Button>
-                    <Button className='btn-Guardar' variant="primary" onClick={handleGuardar}>
+                    <Button variant="contained" color="primary" onClick={handleGuardar}>
                         Guardar
                     </Button>
-                </Modal.Footer>
-            </Modal>
-
+                </DialogActions>
+            </Dialog>
+    
             <AgregarArticuloDetalleModal
                 show={showDetalleModal}
                 onHide={() => setShowDetalleModal(false)}
                 agregarArticuloDetalle={agregarDetalle}
                 articulosInsumo={articulosInsumo}
             />
-
+    
             <div>
-                {/* Modal para agregar imagen */}
                 {showAgregarImagenModal && (
                     <AgregarImagenModal
                         show={showAgregarImagenModal}
@@ -383,16 +385,19 @@ const AgregarArticuloManufacturadoModal: React.FC<AgregarArticuloManufacturadoMo
                         imagenes={imagenesArticulo}
                         setImagenes={handleSetImagenes}
                     />
-                        )}
+                )}
             </div>
-
+    
             <AgregarCategoriaModal
                 show={showAgregarCategoriaModal}
-                onHide={toggleAgregarCategoriaModal}                
-                actualizarCategorias = {handleActualizarCategoria}
+                onHide={toggleAgregarCategoriaModal}
+                actualizarCategorias={handleActualizarCategoria}
             />
         </>
     );
+    
+    
+    
 };
 
 export default AgregarArticuloManufacturadoModal;

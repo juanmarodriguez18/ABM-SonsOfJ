@@ -4,20 +4,22 @@ import ArticuloDetalle from "./components/ArticulosManufacturados/ArticuloDetall
 import InsumoPage from "./pages/InsumoPage";
 import UnidadesMedidaPage from "./pages/UnidadMedidaPage";
 import Home from "./pages/Home";
+import Layout from "./components/Layout/Layout";
 
 function App() {
   return (
     <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/articulos" element={<ArticulosPage />} />
-        <Route path="/articulos/:id" element={<ArticuloDetalle />} />
-        <Route path="/insumos" element={<InsumoPage />} />
-        <Route path="/unidades-medida" element={<UnidadesMedidaPage />} />
-      </Routes>
+      <Layout>
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/articulos" element={<ArticulosPage />} />
+          <Route path="/articulos/:id" element={<ArticuloDetalle />} />
+          <Route path="/insumos" element={<InsumoPage />} />
+          <Route path="/unidades-medida" element={<UnidadesMedidaPage />} />
+        </Routes>
+      </Layout>
     </BrowserRouter>
   );
 }
 
 export default App;
-

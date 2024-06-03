@@ -8,8 +8,11 @@ import {
   Dashboard as DashboardIcon,
 } from "@mui/icons-material";
 import SidebarItem from "./SidebarItem";
+import { useNavigate } from "react-router-dom";
 
 const Sidebar: React.FC = () => {
+  const navigate = useNavigate();
+
   return (
     <Box
       sx={{
@@ -43,6 +46,7 @@ const Sidebar: React.FC = () => {
                   color: "#3f51b5",
                 },
               }}
+              onClick={() => navigate("/articulos")}
             >
               Manufacturados
             </Button>
@@ -63,6 +67,7 @@ const Sidebar: React.FC = () => {
                   color: "#3f51b5",
                 },
               }}
+              onClick={() => navigate("/insumos")}
             >
               Insumos
             </Button>
@@ -83,8 +88,9 @@ const Sidebar: React.FC = () => {
                   color: "#3f51b5",
                 },
               }}
+              onClick={() => navigate("/unidades-medida")}
             >
-              Categorías
+              Unidades de Medida
             </Button>
           </ListItem>
         </SidebarItem>

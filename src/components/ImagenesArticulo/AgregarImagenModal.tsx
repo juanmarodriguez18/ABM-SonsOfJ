@@ -1,6 +1,10 @@
 import React, { useState } from 'react';
 import { crearImagenArticulo } from '../../services/ImagenArticuloService';
 import { ImagenArticulo } from '../../types/ImagenArticulo';
+import {
+    Dialog, DialogActions, DialogContent, DialogTitle, Button, IconButton, Avatar, Typography, Fab
+} from '@mui/material';
+import { Close as CloseIcon, PhotoCamera as PhotoCameraIcon } from '@mui/icons-material';
 import '../../styles/AgregarImagenModal.css';
 
 interface AgregarImagenModalProps {
@@ -11,18 +15,25 @@ interface AgregarImagenModalProps {
     onSave: (imagen: ImagenArticulo) => void; // Agregamos onSave como prop
 }
 
-const AgregarImagenModal: React.FC<AgregarImagenModalProps> = ({ imagenes, setImagenes, toggleModal, onSave }) => {
+const AgregarImagenModal: React.FC<AgregarImagenModalProps> = ({ imagenes, setImagenes, toggleModal, show, onSave }) => {
     const [nuevaImagen, setNuevaImagen] = useState<any>({
         url: '',
         eliminado: false
     });
     const [archivo, setArchivo] = useState<File | null>(null);
+    const [vistaPrevia, setVistaPrevia] = useState<string | null>(null);
     const [txtValidacion, setTxtValidacion] = useState<string>('');
 
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files && e.target.files[0]) {
             setArchivo(e.target.files[0]);
-            setNuevaImagen({ ...nuevaImagen, eliminado: false }); // Reiniciar el estado de nuevaImagen
+            setNuevaImagen({ ...nuevaImagen, eliminado: false });
+
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setVistaPrevia(reader.result as string);
+            };
+            reader.readAsDataURL(e.target.files[0]);
         }
     };
 
@@ -54,19 +65,56 @@ const AgregarImagenModal: React.FC<AgregarImagenModalProps> = ({ imagenes, setIm
     };
 
     return (
-        <div className="modal" style={{zIndex: 1060}}>
-            <div className="modal-content">
-                <span className="close" onClick={toggleModal}>&times;</span>
-                <div className="mb-3">
-                    <label htmlFor="fileInput" className="form-label">Seleccionar imagen</label>
-                    <input type="file" id="fileInput" className="form-control" onChange={handleFileChange} />
-                </div>
-                <div>
-                    <p style={{ color: 'red', lineHeight: 5, padding: 5 }}>{txtValidacion}</p>
-                </div>
-                <button className="btn-Guardar" onClick={guardarImagen}>Guardar Imagen</button>
-            </div>
-        </div>
+        <Dialog open={show} onClose={toggleModal} maxWidth="sm" fullWidth>
+            <DialogTitle>
+                Agregar Nueva Imagen
+                <IconButton
+                    aria-label="close"
+                    onClick={toggleModal}
+                    sx={{
+                        position: 'absolute',
+                        right: 8,
+                        top: 8,
+                        color: (theme) => theme.palette.grey[500],
+                    }}
+                >
+                    <CloseIcon />
+                </IconButton>
+            </DialogTitle>
+            <DialogContent>
+                <input
+                    accept="image/*"
+                    id="fileInput"
+                    type="file"
+                    style={{ display: 'none' }}
+                    onChange={handleFileChange}
+                />
+                <label htmlFor="fileInput" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', flexDirection: 'column' }}>
+                    <Fab color="primary" aria-label="add" component="span">
+                        <PhotoCameraIcon />
+                    </Fab>
+                    <Typography variant="caption" display="block" gutterBottom>
+                        Seleccionar Imagen
+                    </Typography>
+                </label>
+                {vistaPrevia && (
+                    <Avatar
+                        src={vistaPrevia}
+                        alt="Vista previa"
+                        sx={{ width: 100, height: 100, margin: '10px auto' }}
+                    />
+                )}
+                <Typography style={{ color: 'red', marginTop: 10 }}>{txtValidacion}</Typography>
+            </DialogContent>
+            <DialogActions>
+                <Button variant="outlined" color="secondary" onClick={toggleModal}>
+                    Cancelar
+                </Button>
+                <Button className="btn-Guardar" variant="contained" color="primary" onClick={guardarImagen}>
+                    Guardar Imagen
+                </Button>
+            </DialogActions>
+        </Dialog>
     );
 };
 

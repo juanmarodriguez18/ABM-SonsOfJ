@@ -1,5 +1,7 @@
-import React, { useState, useEffect } from 'react';
-import { Modal, Button, Form, Col, Image } from 'react-bootstrap';
+import React, { useState } from 'react';
+import {
+    Dialog, DialogActions, DialogContent, DialogTitle, Button, TextField, Grid, Typography, Box, ListItem, ListItemAvatar, ListItemText, Avatar
+} from '@mui/material';
 import Autosuggest from 'react-autosuggest';
 import { ArticuloManufacturadoDetalle } from '../../types/ArticuloManufacturadoDetalle';
 import { ArticuloInsumo } from '../../types/ArticuloInsumo';
@@ -71,19 +73,22 @@ const AgregarArticuloDetalleModal: React.FC<AgregarArticuloDetalleModalProps> = 
     const getSuggestionValue = (suggestion: ArticuloInsumo) => suggestion.denominacion;
 
     const renderSuggestion = (suggestion: ArticuloInsumo) => (
-        <div>
-            {suggestion.denominacion}
-        </div>
+        <ListItem button onClick={() => setArticuloInsumoSeleccionado(suggestion)}>
+            <ListItemAvatar>
+                <Avatar src={Array.from(suggestion.imagenesArticulo)[0].url} />
+            </ListItemAvatar>
+            <ListItemText primary={suggestion.denominacion} />
+        </ListItem>
     );
 
-    const onSuggestionSelected = (event: React.FormEvent<any>, { suggestion }: { suggestion: ArticuloInsumo }) => {
+    const onSuggestionSelected = (_event: React.FormEvent<any>, { suggestion }: { suggestion: ArticuloInsumo }) => {
         setArticuloInsumoSeleccionado(suggestion);
     };
 
     const inputProps = {
         placeholder: "Buscar artículo insumo",
         value: valorInput,
-        onChange: (e: React.ChangeEvent<any>, { newValue }: { newValue: string }) => {
+        onChange: (_e: React.ChangeEvent<any>, { newValue }: { newValue: string }) => {
             setValorInput(newValue);
         },
         onKeyPress: (e: React.KeyboardEvent<any>) => {
@@ -94,23 +99,22 @@ const AgregarArticuloDetalleModal: React.FC<AgregarArticuloDetalleModalProps> = 
     };
 
     return (
-        <Modal show={show} onHide={handleClose} size="lg">
-            <Modal.Header closeButton>
-                <Modal.Title>Agregar Detalle de Artículo Manufacturado</Modal.Title>
-            </Modal.Header>
-            <Modal.Body>
-                <Form>
-                    <Form.Group className="mb-3" controlId="formCantidad">
-                        <Form.Label>Cantidad</Form.Label>
-                        <Form.Control
+        <Dialog open={show} onClose={handleClose} maxWidth="md" fullWidth>
+            <DialogTitle>Agregar Detalle de Artículo Manufacturado</DialogTitle>
+            <DialogContent>
+                <Grid container spacing={2}>
+                    <Grid item xs={12}>
+                        <TextField
+                            fullWidth
+                            margin="dense"
+                            label="Cantidad"
                             type="number"
-                            placeholder="Ingrese la cantidad"
                             value={cantidadInput}
                             onChange={(e) => setCantidadInput(parseInt(e.target.value))}
                         />
-                    </Form.Group>
-                    <Form.Group className="mb-3" controlId="formArticuloInsumo">
-                        <Form.Label>Artículo Insumo</Form.Label>
+                    </Grid>
+                    <Grid item xs={12}>
+                        <Typography>Artículo Insumo</Typography>
                         <Autosuggest
                             suggestions={sugerencias}
                             onSuggestionsFetchRequested={onSuggestionsFetchRequested}
@@ -121,24 +125,27 @@ const AgregarArticuloDetalleModal: React.FC<AgregarArticuloDetalleModalProps> = 
                             inputProps={inputProps}
                         />
                         {articuloInsumoSeleccionado && (
-                            <Col xs={6} md={4}>
-                                <Image src={Array.from(articuloInsumoSeleccionado.imagenesArticulo)[0].url} thumbnail />
-                            </Col>
+                            <Box mt={2}>
+                                <img
+                                    src={Array.from(articuloInsumoSeleccionado.imagenesArticulo)[0].url}
+                                    alt="Imagen seleccionada"
+                                    style={{ maxWidth: '100px', maxHeight: '100px', objectFit: 'cover' }}
+                                />
+                            </Box>
                         )}
-                    </Form.Group>
-                </Form>
-            </Modal.Body>
-            <Modal.Footer>
-                <Button className='btn-Cancelar' variant="secondary" onClick={handleClose}>
+                    </Grid>
+                </Grid>
+            </DialogContent>
+            <DialogActions>
+                <Button variant="outlined" color="secondary" onClick={handleClose}>
                     Cancelar
                 </Button>
-                <Button className='btn-Guardar' variant="primary" onClick={handleGuardar}>
+                <Button variant="contained" color="primary" onClick={handleGuardar}>
                     Guardar
                 </Button>
-            </Modal.Footer>
-        </Modal>
+            </DialogActions>
+        </Dialog>
     );
 };
 
 export default AgregarArticuloDetalleModal;
-
