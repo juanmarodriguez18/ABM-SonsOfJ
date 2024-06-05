@@ -1,5 +1,6 @@
 import { Base } from './Base';
-import { FormaPago } from './FormaPago';
+import { FormaPago } from './enums/FormaPago';
+
 
 export class Factura extends Base {
     fechaFacturacion: string;  // Puedes usar Date si prefieres manejar fechas como objetos Date
@@ -18,7 +19,7 @@ export class Factura extends Base {
         mpMerchantOrderId: number = 0,
         mpPreferenceId: string = '',
         mpPaymentType: string = '',
-        formaPago: FormaPago = null,
+        formaPago: FormaPago,
         totalVenta: number = 0.0
     ) {
         super(id, eliminado);

@@ -5,6 +5,7 @@ import InsumoPage from "./pages/InsumoPage";
 import UnidadesMedidaPage from "./pages/UnidadMedidaPage";
 import Home from "./pages/Home";
 import Layout from "./components/Layout/Layout";
+import { Carrito } from "./components/Carrito/Carrito";
 
 function App() {
   return (
@@ -16,6 +17,7 @@ function App() {
           <Route path="/articulos/:id" element={<ArticuloDetalle />} />
           <Route path="/insumos" element={<InsumoPage />} />
           <Route path="/unidades-medida" element={<UnidadesMedidaPage />} />
+          <Route path="/carrito" element={<Carrito />} />
         </Routes>
       </Layout>
     </BrowserRouter>
