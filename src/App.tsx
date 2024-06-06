@@ -5,6 +5,7 @@ import InsumoPage from "./pages/InsumoPage";
 import UnidadesMedidaPage from "./pages/UnidadMedidaPage";
 import Home from "./pages/Home";
 import Layout from "./components/Layout/Layout";
+import { PedidosPage } from "./pages/PedidosPage";
 import { Carrito } from "./components/Carrito/Carrito";
 
 function App() {
@@ -17,6 +18,7 @@ function App() {
           <Route path="/articulos/:id" element={<ArticuloDetalle />} />
           <Route path="/insumos" element={<InsumoPage />} />
           <Route path="/unidades-medida" element={<UnidadesMedidaPage />} />
+          <Route path="/pedidos" element={<PedidosPage />} />
           <Route path="/carrito" element={<Carrito />} />
         </Routes>
       </Layout>
