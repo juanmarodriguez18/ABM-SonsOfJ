@@ -7,8 +7,10 @@ import {
   Group as GroupIcon,
   Dashboard as DashboardIcon,
 } from "@mui/icons-material";
+import AssignmentIcon from '@mui/icons-material/Assignment';
 import SidebarItem from "./SidebarItem";
 import { useNavigate } from "react-router-dom";
+//import { ArticuloInsumo } from "../../types/ArticuloInsumo";
 
 const Sidebar: React.FC = () => {
   const navigate = useNavigate();
@@ -97,6 +99,28 @@ const Sidebar: React.FC = () => {
         <SidebarItem icon={<MonetizationOnIcon />} text="Promociones" />
         <SidebarItem icon={<StoreIcon />} text="Sucursales" />
         <SidebarItem icon={<GroupIcon />} text="Empleados" />
+        <SidebarItem icon={<AssignmentIcon />} text="Pedidos" />
+        <ListItem>
+            <Button
+              disableRipple
+              disableTouchRipple
+              className="btn-list-sidebar"
+              sx={{
+                color: "#555",
+                fontSize: 12,
+                pl: 2,
+                borderRadius: 8,
+                textTransform: "none",
+                "&:hover": {
+                  bgcolor: "#eee",
+                  color: "#3f51b5",
+                },
+              }}
+              onClick={() => navigate("/pedidos")}
+            >
+              Listado pedidos
+            </Button>
+          </ListItem>
       </List>
     </Box>
   );
