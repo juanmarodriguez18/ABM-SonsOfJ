@@ -1,19 +1,23 @@
 import React from "react";
-import { Box, Button, List, ListItem } from "@mui/material";
+import { Box, Button, List, ListItem, Badge } from "@mui/material";
 import {
   Fastfood as FastfoodIcon,
   MonetizationOn as MonetizationOnIcon,
   Store as StoreIcon,
   Group as GroupIcon,
   Dashboard as DashboardIcon,
+  ShoppingCart as ShoppingCartIcon
 } from "@mui/icons-material";
 import AssignmentIcon from '@mui/icons-material/Assignment';
 import SidebarItem from "./SidebarItem";
 import { useNavigate } from "react-router-dom";
-//import { ArticuloInsumo } from "../../types/ArticuloInsumo";
+import { useCarrito } from "../Carrito/useCarrito"; // Asegúrate de ajustar la ruta según tu estructura de carpetas
 
 const Sidebar: React.FC = () => {
   const navigate = useNavigate();
+  const { cart } = useCarrito();
+
+  const cantidadTotal = cart.reduce((total, item) => total + item.cantidad, 0);
 
   return (
     <Box
@@ -99,8 +103,8 @@ const Sidebar: React.FC = () => {
         <SidebarItem icon={<MonetizationOnIcon />} text="Promociones" />
         <SidebarItem icon={<StoreIcon />} text="Sucursales" />
         <SidebarItem icon={<GroupIcon />} text="Empleados" />
-        <SidebarItem icon={<AssignmentIcon />} text="Pedidos" />
-        <ListItem>
+        <SidebarItem icon={<AssignmentIcon />} text="Pedidos">
+          <ListItem>
             <Button
               disableRipple
               disableTouchRipple
@@ -121,6 +125,52 @@ const Sidebar: React.FC = () => {
               Listado pedidos
             </Button>
           </ListItem>
+        </SidebarItem>
+        <ListItem>
+          <Button
+            disableRipple
+            disableTouchRipple
+            className="btn-list-sidebar"
+            sx={{
+              color: "#555",
+              fontSize: 12,
+              pl: 2,
+              borderRadius: 8,
+              textTransform: "none",
+              "&:hover": {
+                bgcolor: "#eee",
+                color: "#3f51b5",
+              },
+            }}
+            onClick={() => navigate("/grilla")}
+          >
+            Grilla
+          </Button>
+        </ListItem>
+        <ListItem>
+          <Button
+            disableRipple
+            disableTouchRipple
+            className="btn-list-sidebar"
+            sx={{
+              color: "#555",
+              fontSize: 12,
+              pl: 2,
+              borderRadius: 8,
+              textTransform: "none",
+              "&:hover": {
+                bgcolor: "#eee",
+                color: "#3f51b5",
+              },
+            }}
+            onClick={() => navigate("/carrito")}
+          >
+            Carrito
+            <Badge badgeContent={cantidadTotal} color="primary">
+              <ShoppingCartIcon sx={{ ml: 1 }} />
+            </Badge>
+          </Button>
+        </ListItem>
       </List>
     </Box>
   );

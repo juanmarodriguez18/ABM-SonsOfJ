@@ -80,13 +80,10 @@ export function Carrito() {
         return new PedidoDetalle(0, false, cantidad, subTotal, articulo);
       });
 
-      // Guardar el pedido
       await guardarPedidoEnBD(pedidoDetalles);
 
-      // Mostrar el mensaje de éxito con el ID del pedido
       alert(`El pedido se guardó correctamente.`);
 
-      // Limpiar el carrito después de confirmar la compra
       limpiarCarrito();
     } catch (error) {
       console.error('Error al confirmar la compra:', error);
