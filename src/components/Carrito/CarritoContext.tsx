@@ -1,24 +1,21 @@
 import { ReactNode, createContext, useEffect, useState } from 'react';
 import { ArticuloManufacturado } from '../../types/ArticuloManufacturado';
 
-
 interface CartItem {
   articulo: ArticuloManufacturado;
   cantidad: number;
 }
 
-// Definimos el tipo de dato que se almacenará en el contexto del carrito
 interface CartContextType {
   cart: CartItem[];
   addCarrito: (product: ArticuloManufacturado) => void;
   removeCarrito: (product: ArticuloManufacturado) => void;
   removeItemCarrito: (product: ArticuloManufacturado) => void;
   limpiarCarrito: () => void;
-  updateCarrito: (instrumento: ArticuloManufacturado, cantidad: number) => void;
+  updateCarrito: (articulo: ArticuloManufacturado, cantidad: number) => void;
   totalPedido?: number;
 }
 
-// Crear contexto
 export const CartContext = createContext<CartContextType>({
   cart: [],
   addCarrito: () => {},
@@ -29,12 +26,10 @@ export const CartContext = createContext<CartContextType>({
   totalPedido: 0
 });
 
-// Crear provider, encargado de proveer acceso al contexto
 export function CarritoContextProvider({ children }: { children: ReactNode }) {
   const [cart, setCart] = useState<CartItem[]>([]);
   const [totalPedido, setTotalPedido] = useState<number>(0);
 
-  // Cargar el carrito desde localStorage una vez cuando el componente se monta
   useEffect(() => {
     const storedCart = localStorage.getItem('cart');
     if (storedCart) {
@@ -42,7 +37,6 @@ export function CarritoContextProvider({ children }: { children: ReactNode }) {
     }
   }, []);
 
-  // Actualizar localStorage y recalcular el total cuando el carrito cambie
   useEffect(() => {
     localStorage.setItem('cart', JSON.stringify(cart));
     calcularTotalCarrito();
