@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Modal, Button, Form } from 'react-bootstrap';
+import { Button, TextField, Dialog, DialogActions, DialogContent, DialogTitle } from '@mui/material';
 import { UnidadMedida } from '../../types/UnidadMedida';
 
 interface UnidadMedidaFormProps {
@@ -34,43 +34,41 @@ const UnidadMedidaForm: React.FC<UnidadMedidaFormProps> = ({ show, onHide, onSav
     onSave(unidadMedida);
   };
 
- const handleClose = () => {
+  const handleClose = () => {
     setDenominacion('');
     setError('');
     onHide();
   };
 
   return (
-    <Modal show={show} onHide={handleClose}>
-      <Modal.Header closeButton>
-        <Modal.Title>{initialData ? 'Editar Unidad de Medida' : 'Agregar Unidad de Medida'}</Modal.Title>
-      </Modal.Header>
-      <Modal.Body>
-        <Form>
-          <Form.Group>
-            <Form.Label>Denominacion</Form.Label>
-            <Form.Control
-              type="text"
-              value={denominacion}
-              onChange={(e) => {
-                setDenominacion(e.target.value);
-                setError('');
-              }}
-              isInvalid={!!error}
-            />
-            <Form.Control.Feedback type="invalid">{error}</Form.Control.Feedback>
-          </Form.Group>
-        </Form>
-      </Modal.Body>
-      <Modal.Footer>
-        <Button className="btn-Cancelar" variant="secondary" onClick={handleClose}>
+    <Dialog open={show} onClose={handleClose} maxWidth="sm" fullWidth>
+      <DialogTitle>{initialData ? 'Editar Unidad de Medida' : 'Agregar Unidad de Medida'}</DialogTitle>
+      <DialogContent>
+        <TextField
+          autoFocus
+          margin="dense"
+          id="denominacion"
+          label="Denominación"
+          type="text"
+          fullWidth
+          value={denominacion}
+          onChange={(e) => {
+            setDenominacion(e.target.value);
+            setError('');
+          }}
+          error={!!error}
+          helperText={error}
+        />
+      </DialogContent>
+      <DialogActions>
+        <Button onClick={handleClose} color="secondary">
           Cancelar
         </Button>
-        <Button className="btn-Guardar" variant="primary" onClick={handleSubmit}>
+        <Button onClick={handleSubmit} variant="contained" color="primary">
           Guardar
         </Button>
-      </Modal.Footer>
-    </Modal>
+      </DialogActions>
+    </Dialog>
   );
 };
 

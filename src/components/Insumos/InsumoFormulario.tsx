@@ -92,7 +92,7 @@ const InsumoFormulario: React.FC<InsumoFormularioProps> = ({ show, handleClose, 
             setTxtValidacion("Ingrese un stock válido");
             return;
         }
-        if (!insumo.stockMaximo || insumo.stockMaximo < 0) {
+        if (!insumo.stockMinimo || insumo.stockMinimo < 0) {
             setTxtValidacion("Ingrese una cantidad vendida válida");
             return;
         }
@@ -248,12 +248,12 @@ const InsumoFormulario: React.FC<InsumoFormularioProps> = ({ show, handleClose, 
                     <Grid item xs={6}>
                         <TextField
                             margin="dense"
-                            id="txtStockMaximo"
-                            label="Stock Máximo"
+                            id="txtStockMinimo"
+                            label="Stock Mínimo"
                             type="number"
                             fullWidth
-                            value={insumo.stockMaximo || ''}
-                            onChange={e => setInsumo({ ...insumo, stockMaximo: parseFloat(e.target.value) })}
+                            value={insumo.stockMinimo || ''}
+                            onChange={e => setInsumo({ ...insumo, stockMinimo: parseFloat(e.target.value) })}
                         />
                     </Grid>
                     <Grid item xs={6}>

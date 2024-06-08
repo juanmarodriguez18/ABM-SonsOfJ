@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
-import { Modal, Button, Form } from 'react-bootstrap';
+import { Dialog, DialogActions, DialogContent, DialogTitle, Button, TextField } from '@mui/material';
 
 interface AgregarUnidadMedidaModalProps {
     show: boolean;
     onHide: () => void;
-    agregarUnidadMedida: (denominacion: string) => void; // Definir correctamente el tipo de la función
+    agregarUnidadMedida: (denominacion: string) => void;
 }
 
 const AgregarUnidadMedidaModal: React.FC<AgregarUnidadMedidaModalProps> = ({ show, onHide, agregarUnidadMedida }) => {
@@ -15,38 +15,35 @@ const AgregarUnidadMedidaModal: React.FC<AgregarUnidadMedidaModalProps> = ({ sho
     };
 
     const handleGuardar = () => {
-        agregarUnidadMedida(denominacionInput); // Llamar a la función agregarUnidadMedida con el valor correcto
+        agregarUnidadMedida(denominacionInput);
         setDenominacionInput('');
         onHide();
     };
 
     return (
-        <Modal show={show} onHide={handleClose} size="lg">
-            <Modal.Header closeButton>
-                <Modal.Title>Agregar Nueva Unidad de Medida</Modal.Title>
-            </Modal.Header>
-            <Modal.Body>
-                <Form>
-                    <Form.Group className="mb-3" controlId="formDenominacion">
-                        <Form.Label>Denominación</Form.Label>
-                        <Form.Control
-                            type="text"
-                            placeholder="Ingrese la denominación"
-                            value={denominacionInput}
-                            onChange={(e) => setDenominacionInput(e.target.value)}
-                        />
-                    </Form.Group>
-                </Form>
-            </Modal.Body>
-            <Modal.Footer>
-                <Button className= "btn-Cancelar" variant="secondary" onClick={handleClose}>
+        <Dialog open={show} onClose={handleClose} maxWidth="sm" fullWidth>
+            <DialogTitle>Agregar Nueva Unidad de Medida</DialogTitle>
+            <DialogContent>
+                <TextField
+                    autoFocus
+                    margin="dense"
+                    id="denominacion"
+                    label="Denominación"
+                    type="text"
+                    fullWidth
+                    value={denominacionInput}
+                    onChange={(e) => setDenominacionInput(e.target.value)}
+                />
+            </DialogContent>
+            <DialogActions>
+                <Button onClick={handleClose} color="secondary">
                     Cancelar
                 </Button>
-                <Button className= "btn-Guardar" variant="primary" onClick={handleGuardar}>
+                <Button onClick={handleGuardar} variant="contained" color="primary">
                     Guardar
                 </Button>
-            </Modal.Footer>
-        </Modal>
+            </DialogActions>
+        </Dialog>
     );
 };
 
