@@ -54,7 +54,7 @@ const Insumo: React.FC<{ articulo: ArticuloInsumo }> = ({ articulo }) => {
                 <p>{insumo.stockActual}</p>
             </TableCell>
             <TableCell className="col" align="center">
-                <p>{insumo.stockMaximo}</p>
+                <p>{insumo.stockMinimo}</p>
             </TableCell>
             <TableCell className="col" align="center">
             <p>{insumo.esParaElaborar ? "Sí" : "No"}</p>

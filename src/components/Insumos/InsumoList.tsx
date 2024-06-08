@@ -156,7 +156,7 @@ const InsumoList: React.FC = () => {
                 Stock Actual
               </TableCell>
               <TableCell align="center" className="col">
-                Stock Máximo
+                Stock Mínimo
               </TableCell>
               <TableCell align="center" className="col">
                 Es para elaborar

@@ -6,7 +6,7 @@ import { Categoria } from './Categoria';
 export class ArticuloInsumo extends Articulo {
     precioCompra: number;
     stockActual: number;
-    stockMaximo: number;
+    stockMinimo: number;
     esParaElaborar: boolean;
 
     constructor(
@@ -19,13 +19,13 @@ export class ArticuloInsumo extends Articulo {
         categoria: Categoria,
         precioCompra: number = 0,
         stockActual: number = 0,
-        stockMaximo: number = 0,
+        stockMinimo: number = 0,
         esParaElaborar: boolean = false
     ) {
         super(id, eliminado, denominacion, precioVenta, imagenesArticulo, unidadMedida, categoria);
         this.precioCompra = precioCompra;
         this.stockActual = stockActual;
-        this.stockMaximo = stockMaximo;
+        this.stockMinimo = stockMinimo;
         this.esParaElaborar = esParaElaborar;
     }
 }
