@@ -3,7 +3,7 @@ import { FormaPago } from './enums/FormaPago';
 
 
 export class Factura extends Base {
-    fechaFacturacion: string;  // Puedes usar Date si prefieres manejar fechas como objetos Date
+    fechaFacturacion: Date;  // Puedes usar Date si prefieres manejar fechas como objetos Date
     mpPaymentId: number;
     mpMerchantOrderId: number;
     mpPreferenceId: string;
@@ -14,7 +14,7 @@ export class Factura extends Base {
     constructor(
         id: number = 0,
         eliminado: boolean = false,
-        fechaFacturacion: string = '',
+        fechaFacturacion: Date = new Date(),
         mpPaymentId: number = 0,
         mpMerchantOrderId: number = 0,
         mpPreferenceId: string = '',

@@ -22,7 +22,7 @@ export class Pedido extends Base {
     empleado: Empleado;
     pedidoDetalles: PedidoDetalle[];
     cliente: Cliente;
-    factura: Factura;
+    factura: Factura | null;
 
     constructor(
         id: number = 0,
@@ -39,7 +39,7 @@ export class Pedido extends Base {
         empleado: Empleado,
         pedidoDetalles: PedidoDetalle[] = [],
         cliente: Cliente,
-        factura: Factura
+        factura: Factura | null = null
     ) {
         super(id, eliminado);
         this.horaEstimadaFinalizacion = horaEstimadaFinalizacion;

@@ -10,9 +10,9 @@ import { useState } from 'react';
 import { Estado } from '../../types/enums/Estado';
 import { TipoEnvio } from '../../types/enums/TipoEnvio';
 import { FormaPago } from '../../types/enums/FormaPago';
-import { Factura } from '../../types/Factura';
 import { ArticuloManufacturado } from '../../types/ArticuloManufacturado';
 import { useDatosSeleccion } from './useDatosSeleccion';
+import { crearFactura } from './Facturacion';
 
 interface CartItemProps {
   detalle: PedidoDetalle;
@@ -92,17 +92,11 @@ export function Carrito() {
         throw new Error('No se ha seleccionado un empleado válido.');
       }
 
-      const factura = new Factura(
-        0,
-        false,
-        new Date().toISOString(),
-        0,
-        0,
-        '',
-        '',
-        formaPago,
-        totalPedido
-      );
+      if (totalPedido === undefined || isNaN(totalPedido)) {
+        throw new Error('El total del pedido no es válido.');
+      }
+
+      const factura = crearFactura(totalPedido, formaPago);
 
       const pedido = new Pedido(
         0,
