@@ -1,19 +1,21 @@
 import { ReactNode, createContext, useEffect, useState } from 'react';
 import { ArticuloManufacturado } from '../../types/ArticuloManufacturado';
-
-interface CartItem {
-  articulo: ArticuloManufacturado;
-  cantidad: number;
-}
+import { Cliente } from '../../types/Cliente';
+import { Empleado } from '../../types/Empleado';
+import { Sucursal } from '../../types/Sucursal';
+import { PedidoDetalle } from '../../types/PedidoDetalle'; // Asegúrate de importar PedidoDetalle
 
 interface CartContextType {
-  cart: CartItem[];
+  cart: PedidoDetalle[]; // Cambiar el tipo a PedidoDetalle
   addCarrito: (product: ArticuloManufacturado) => void;
   removeCarrito: (product: ArticuloManufacturado) => void;
   removeItemCarrito: (product: ArticuloManufacturado) => void;
   limpiarCarrito: () => void;
   updateCarrito: (articulo: ArticuloManufacturado, cantidad: number) => void;
   totalPedido?: number;
+  cliente?: Cliente | null;
+  empleado?: Empleado | null;
+  sucursal?: Sucursal | null;
 }
 
 export const CartContext = createContext<CartContextType>({
@@ -23,12 +25,18 @@ export const CartContext = createContext<CartContextType>({
   removeItemCarrito: () => {},
   limpiarCarrito: () => {},
   updateCarrito: () => {},
-  totalPedido: 0
+  totalPedido: 0,
+  cliente: null,
+  empleado: null,
+  sucursal: null,
 });
 
 export function CarritoContextProvider({ children }: { children: ReactNode }) {
-  const [cart, setCart] = useState<CartItem[]>([]);
+  const [cart, setCart] = useState<PedidoDetalle[]>([]);
   const [totalPedido, setTotalPedido] = useState<number>(0);
+  const [cliente, setCliente] = useState<Cliente | null>(null);
+  const [empleado, setEmpleado] = useState<Empleado | null>(null);
+  const [sucursal, setSucursal] = useState<Sucursal | null>(null);
 
   useEffect(() => {
     const storedCart = localStorage.getItem('cart');
@@ -49,17 +57,17 @@ export function CarritoContextProvider({ children }: { children: ReactNode }) {
       updatedCart[existingItemIndex].cantidad += 1;
       setCart(updatedCart);
     } else {
-      setCart(prevCart => [...prevCart, { articulo: product, cantidad: 1 }]);
+      setCart(prevCart => [...prevCart, new PedidoDetalle(0, false, 1, product.precioVenta, product)]);
     }
   };
 
   const updateCarrito = (articulo: ArticuloManufacturado, cantidad: number) => {
-    setCart((prevCarrito) => {
+    setCart(prevCarrito => {
       if (cantidad <= 0) {
-        return prevCarrito.filter((item) => item.articulo.id !== articulo.id);
+        return prevCarrito.filter(item => item.articulo.id !== articulo.id);
       }
-      return prevCarrito.map((item) =>
-        item.articulo.id === articulo.id ? { ...item, cantidad } : item
+      return prevCarrito.map(item =>
+        item.articulo.id === articulo.id ? new PedidoDetalle(0, false, cantidad, articulo.precioVenta * cantidad, articulo) : item
       );
     });
   };
@@ -74,7 +82,7 @@ export function CarritoContextProvider({ children }: { children: ReactNode }) {
       if (existingItem.cantidad > 1) {
         const updatedCart = cart.map(item => {
           if (item.articulo.id === product.id) {
-            return { ...item, cantidad: item.cantidad - 1 };
+            return new PedidoDetalle(0, false, item.cantidad - 1, item.articulo.precioVenta * (item.cantidad - 1), item.articulo);
           }
           return item;
         });
@@ -98,7 +106,7 @@ export function CarritoContextProvider({ children }: { children: ReactNode }) {
   };
 
   return (
-    <CartContext.Provider value={{ cart, addCarrito, updateCarrito, limpiarCarrito, removeCarrito, removeItemCarrito, totalPedido }}>
+    <CartContext.Provider value={{ cart, addCarrito, updateCarrito, limpiarCarrito, removeCarrito, removeItemCarrito, totalPedido, cliente, empleado, sucursal }}>
       {children}
     </CartContext.Provider>
   );
