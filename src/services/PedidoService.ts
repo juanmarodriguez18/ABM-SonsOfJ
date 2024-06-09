@@ -1,9 +1,9 @@
-import { PedidoDetalle } from "../types/PedidoDetalle";
+import { Pedido } from "../types/Pedido";
 
 const urlPedidos = 'http://localhost:8080/pedidos';
 
 // Función para guardar un pedido en la base de datos
-export async function guardarPedidoEnBD(detallesPedido: PedidoDetalle[]): Promise<void> {
+export async function guardarPedidoEnBD(pedido: Pedido): Promise<void> {
     try {
         const response = await fetch(urlPedidos, {
             method: 'POST',
@@ -11,7 +11,7 @@ export async function guardarPedidoEnBD(detallesPedido: PedidoDetalle[]): Promis
                 'Content-Type': 'application/json',
                 'Access-Control-Allow-Origin': '*'
             },
-            body: JSON.stringify(detallesPedido) // Enviar directamente el array de PedidoDetalle
+            body: JSON.stringify(pedido) // Enviar el objeto Pedido convertido a JSON
         });
         if (!response.ok) {
             throw new Error('Error al guardar el pedido');

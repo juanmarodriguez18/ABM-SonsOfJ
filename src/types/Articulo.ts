@@ -4,7 +4,7 @@ import { ImagenArticulo } from './ImagenArticulo';
 import { UnidadMedida } from './UnidadMedida';
 
 // Definición de la clase Articulo extendiendo de Base
-export abstract class Articulo extends Base {
+export class Articulo extends Base {
     public denominacion: string;
     public precioVenta: number;
     public imagenesArticulo: Set<ImagenArticulo>;
