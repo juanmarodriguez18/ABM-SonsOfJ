@@ -1,12 +1,15 @@
 import React from 'react';
 import InsumoList from '../components/Insumos/InsumoList';
+import { Typography } from '@mui/material';
 
 const InsumoPage: React.FC = () => {
   return (
-    <div className="insumo-page">
-      <h1>Insumos</h1>
+    <>
+      <Typography variant="h4" gutterBottom p={3}>
+        Insumos
+      </Typography>
       <InsumoList />
-    </div>
+    </>
   );
 };
 

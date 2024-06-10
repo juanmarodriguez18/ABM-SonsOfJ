@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { Button } from 'react-bootstrap';
 import { UnidadMedida } from '../types/UnidadMedida';
 import SearchBar from '../components/SearchBar/SearchBar';
 import UnidadesMedidaTable from '../components/UnidadesMedida/UnidadesMedidaTable';
@@ -11,6 +10,8 @@ import {
   recuperarUnidadMedida,
 } from '../services/UnidadMedidaService';
 import axios from 'axios';
+import { Box, Typography } from '@mui/material';
+import CustomButton from '../components/Shared/CustomButton';
 
 const UnidadMedidaPage: React.FC = () => {
   const endpoint = "http://localhost:8080/unidad-medida";
@@ -105,11 +106,12 @@ const UnidadMedidaPage: React.FC = () => {
   };
 
   return (
-    <div>
+    <Box p={3}>
+      <Typography variant="h4" gutterBottom>
+        Unidades de Medida
+      </Typography>
       <SearchBar onSearch={handleSearch} />
-      <Button className='btn-Guardar' variant="primary" onClick={handleNuevaUnidadMedida}>
-        Agregar Unidad Medida
-      </Button>
+      <CustomButton onClick={handleNuevaUnidadMedida} text="Agregar Unidad Medida" />
       <UnidadesMedidaTable
         data={filteredUMedida}
         onEdit={handleEditarUnidadMedida}
@@ -122,7 +124,7 @@ const UnidadMedidaPage: React.FC = () => {
         onSave={handleGuardarUnidadMedida}
         initialData={selectedUnidadMedida}
       />
-    </div>
+    </Box>
   );
 };
 

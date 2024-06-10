@@ -21,3 +21,45 @@ export async function guardarPedidoEnBD(pedido: Pedido): Promise<void> {
         throw new Error('Error al guardar el pedido. Por favor, inténtalo de nuevo más tarde.');
     }
 }
+
+// Función para obtener todos los pedidos desde la base de datos
+export async function getAllPedidos(): Promise<Pedido[]> {
+    try {
+        const response = await fetch(urlPedidos, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'Access-Control-Allow-Origin': '*'
+            }
+        });
+        if (!response.ok) {
+            throw new Error('Error al obtener los pedidos');
+        }
+        const data: Pedido[] = await response.json();
+        return data;
+    } catch (error) {
+        console.error('Error en getAllPedidos:', error);
+        throw new Error('Error al obtener los pedidos. Por favor, inténtalo de nuevo más tarde.');
+    }
+}
+
+// Función para obtener un pedido por su ID
+export async function getPedidoById(id: number): Promise<Pedido | null> {
+    try {
+        const response = await fetch(`${urlPedidos}/${id}`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'Access-Control-Allow-Origin': '*'
+            }
+        });
+        if (!response.ok) {
+            throw new Error('Pedido no encontrado');
+        }
+        const pedido: Pedido = await response.json();
+        return pedido;
+    } catch (error) {
+        console.error(`Error al obtener el pedido con ID ${id}:`, error);
+        return null;
+    }
+}

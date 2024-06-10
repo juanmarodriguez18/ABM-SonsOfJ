@@ -5,8 +5,8 @@ import { Typography } from "@mui/material";
 const ArticulosPage: React.FC = () => {
   return (
     <>
-      <Typography sx={{ p: 2 }} variant="h5">
-        Manufacturados
+      <Typography variant="h4" gutterBottom p={3}>
+        Articulos Manufacturados
       </Typography>
       <ArticuloList />
     </>
