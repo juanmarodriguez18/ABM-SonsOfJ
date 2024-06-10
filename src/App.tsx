@@ -5,9 +5,9 @@ import InsumoPage from "./pages/InsumoPage";
 import UnidadesMedidaPage from "./pages/UnidadMedidaPage";
 import Layout from "./components/Layout/Layout";
 import EmpresaPage from "./pages/EmpresaPage";
-import { PedidosPage } from "./pages/PedidosPage";
 import { Carrito } from "./components/Carrito/Carrito";
 import GrillaManufacturados from "./components/ArticulosManufacturados/GrillaManufacturados";
+import PedidosPage from "./pages/PedidosPage";
 
 function App() {
   return (

@@ -1,4 +1,4 @@
-import { Box, Typography, List, ListItem, ListItemAvatar, ListItemText, Avatar, IconButton, Divider, Button, Select, MenuItem, FormControl, InputLabel } from '@mui/material';
+import { Box, Typography, List, ListItem, ListItemAvatar, ListItemText, Avatar, IconButton, Divider, Button, Select, MenuItem, FormControl, InputLabel, Grid } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import ClearAllIcon from '@mui/icons-material/ClearAll';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
@@ -13,6 +13,8 @@ import { FormaPago } from '../../types/enums/FormaPago';
 import { ArticuloManufacturado } from '../../types/ArticuloManufacturado';
 import { useDatosSeleccion } from './useDatosSeleccion';
 import { crearFactura } from './Facturacion';
+import CheckoutMP from './MercadoPago/CheckoutMP';
+
 
 interface CartItemProps {
   detalle: PedidoDetalle;
@@ -22,7 +24,7 @@ interface CartItemProps {
 function CartItem({ detalle, onRemove }: CartItemProps) {
   const imagenArticulo = Array.from(detalle.articulo.imagenesArticulo.values())[0]?.url || '';
   return (
-    <ListItem key={detalle.articulo.id} alignItems="flex-start">
+    <ListItem key={detalle.articulo.id} alignItems="flex-start" sx={{ borderRadius: 8 }}>
       <ListItemAvatar>
         <Avatar alt={detalle.articulo.denominacion} src={imagenArticulo} />
       </ListItemAvatar>
@@ -57,6 +59,7 @@ export function Carrito() {
   } = useDatosSeleccion();
 
   const [loading, setLoading] = useState(false);
+  const [pedido, setPedido] = useState<Pedido | null>(null); // Estado para almacenar el pedido
 
   const mostrarCarritoJSON = () => {
     console.log(cart);
@@ -98,7 +101,7 @@ export function Carrito() {
 
       const factura = crearFactura(totalPedido, formaPago);
 
-      const pedido = new Pedido(
+      const nuevoPedido = new Pedido(
         0,
         false,
         horaEstimadaFinalizacion,
@@ -116,12 +119,14 @@ export function Carrito() {
         factura
       );
 
-      console.log('Pedido a enviar:', JSON.stringify(pedido)); // Aquí se imprime el JSON completo del pedido
+      setPedido(nuevoPedido); // Almacenamos el pedido en el estado
 
-      await guardarPedidoEnBD(pedido);
+      console.log('Pedido a enviar:', JSON.stringify(nuevoPedido)); // Aquí se imprime el JSON completo del pedido
+
+      await guardarPedidoEnBD(nuevoPedido);
 
       alert(`El pedido se guardó correctamente.`);
-      limpiarCarrito();
+      //limpiarCarrito();
     } catch (error) {
       console.error('Error al confirmar la compra:', error);
       alert('Ocurrió un error al confirmar la compra. Inténtalo de nuevo más tarde.');
@@ -130,12 +135,15 @@ export function Carrito() {
     }
   };
 
+  // Verificamos que totalPedido tenga un valor numérico antes de pasarlo
+  const montoCarrito = typeof totalPedido === 'number' ? totalPedido : 0;
+
   return (
-    <Box sx={{ padding: 2 }}>
-      <Typography variant="h5" gutterBottom>
+    <Box sx={{ padding: 3 }}>
+      <Typography variant="h4" gutterBottom>
         Carrito de Compras
       </Typography>
-      <List>
+      <List sx={{ bgcolor: '#F5F5F5', borderRadius: 2, marginBottom: 4}}>
         {cart.map((detalle) => (
           <CartItem
             key={detalle.articulo.id}
@@ -147,70 +155,87 @@ export function Carrito() {
       <Typography variant="h6" gutterBottom>
         Total Pedido: ${totalPedido}
       </Typography>
-      
-      <FormControl fullWidth margin="normal">
-        <InputLabel id="tipo-envio-label">Tipo de Envío</InputLabel>
-        <Select
-          labelId="tipo-envio-label"
-          value={tipoEnvio}
-          onChange={(e) => setTipoEnvio(e.target.value as TipoEnvio)}
-        >
-          <MenuItem value={TipoEnvio.DELIVERY}>Delivery</MenuItem>
-          <MenuItem value={TipoEnvio.TAKE_AWAY}>Retirar</MenuItem>
-        </Select>
-      </FormControl>
 
-      <FormControl fullWidth margin="normal">
-        <InputLabel id="forma-pago-label">Forma de Pago</InputLabel>
-        <Select
-          labelId="forma-pago-label"
-          value={formaPago}
-          onChange={(e) => setFormaPago(e.target.value as FormaPago)}
-        >
-          <MenuItem value={FormaPago.EFECTIVO}>Efectivo</MenuItem>
-          <MenuItem value={FormaPago.MERCADO_PAGO}>Mercado Pago</MenuItem>
-        </Select>
-      </FormControl>
+        <Grid container spacing={2}>
+          <Grid item xs={3}>
+            <FormControl fullWidth margin="normal">
+              <InputLabel id="tipo-envio-label">Tipo de Envío</InputLabel>
+              <Select
+                labelId="tipo-envio-label"
+                label="Tipo de Envío"
+                value={tipoEnvio}
+                onChange={(e) => setTipoEnvio(e.target.value as TipoEnvio)}
+              >
+                <MenuItem value={TipoEnvio.DELIVERY}>Delivery</MenuItem>
+                <MenuItem value={TipoEnvio.TAKE_AWAY}>Retirar</MenuItem>
+              </Select>
+            </FormControl>
+          </Grid>
 
-      <FormControl fullWidth margin="normal">
-        <InputLabel id="sucursal-label">Sucursal</InputLabel>
-        <Select
-          labelId="sucursal-label"
-          value={sucursalSeleccionada?.id || ''}
-          onChange={(e) => setSucursalSeleccionada(sucursales.find(s => s.id === e.target.value) || null)}
-        >
-          {sucursales.map(sucursal => (
-            <MenuItem key={sucursal.id} value={sucursal.id}>{sucursal.nombre}</MenuItem>
-          ))}
-        </Select>
-      </FormControl>
+          <Grid item xs={3}>
+            <FormControl fullWidth margin="normal">
+              <InputLabel id="forma-pago-label">Forma de Pago</InputLabel>
+              <Select
+                labelId="forma-pago-label"
+                label="Forma de Pago"
+                value={formaPago}
+                onChange={(e) => setFormaPago(e.target.value as FormaPago)}
+              >
+                <MenuItem value={FormaPago.EFECTIVO}>Efectivo</MenuItem>
+                <MenuItem value={FormaPago.MERCADO_PAGO}>Mercado Pago</MenuItem>
+              </Select>
+            </FormControl>
+          </Grid>
 
-      <FormControl fullWidth margin="normal">
-        <InputLabel id="cliente-label">Cliente</InputLabel>
-        <Select
-          labelId="cliente-label"
-          value={clienteSeleccionado?.id || ''}
-          onChange={(e) => setClienteSeleccionado(clientes.find(c => c.id === e.target.value) || null)}
-        >
-          {clientes.map(cliente => (
-            <MenuItem key={cliente.id} value={cliente.id}>{cliente.nombre}</MenuItem>
-          ))}
-        </Select>
-      </FormControl>
+          <Grid item xs={3}>
+            <FormControl fullWidth margin="normal">
+              <InputLabel id="sucursal-label">Sucursal</InputLabel>
+              <Select
+                labelId="sucursal-label"
+                label="Sucursal"
+                value={sucursalSeleccionada?.id || ''}
+                onChange={(e) => setSucursalSeleccionada(sucursales.find(s => s.id === e.target.value) || null)}
+              >
+                {sucursales.map(sucursal => (
+                  <MenuItem key={sucursal.id} value={sucursal.id}>{sucursal.nombre}</MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          </Grid>
 
-      <FormControl fullWidth margin="normal">
-        <InputLabel id="domicilio-label">Domicilio</InputLabel>
-        <Select
-          labelId="domicilio-label"
-          value={domicilioSeleccionado?.id || ''}
-          onChange={(e) => setDomicilioSeleccionado(clienteSeleccionado?.domicilios.find(d => d.id === e.target.value) || null)}
-          disabled={!clienteSeleccionado}
-        >
-          {clienteSeleccionado?.domicilios.map(domicilio => (
-            <MenuItem key={domicilio.id} value={domicilio.id}>{domicilio.calle}</MenuItem>
-          ))}
-        </Select>
-      </FormControl>
+          <Grid item xs={3}>
+            <FormControl fullWidth margin="normal">
+              <InputLabel id="cliente-label">Cliente</InputLabel>
+              <Select
+                labelId="cliente-label"
+                label="Cliente"
+                value={clienteSeleccionado?.id || ''}
+                onChange={(e) => setClienteSeleccionado(clientes.find(c => c.id === e.target.value) || null)}
+              >
+                {clientes.map(cliente => (
+                  <MenuItem key={cliente.id} value={cliente.id}>{cliente.nombre} {cliente.apellido}</MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          </Grid>
+
+          <Grid item xs={6}>
+            <FormControl fullWidth margin="normal">
+              <InputLabel id="domicilio-label">Domicilio</InputLabel>
+              <Select
+                labelId="domicilio-label"
+                label="Domicilio"
+                value={domicilioSeleccionado?.id || ''}
+                onChange={(e) => setDomicilioSeleccionado(clienteSeleccionado?.domicilios.find(d => d.id === e.target.value) || null)}
+                disabled={!clienteSeleccionado}
+              >
+                {clienteSeleccionado?.domicilios.map(domicilio => (
+                  <MenuItem key={domicilio.id} value={domicilio.id}>{domicilio.calle} {domicilio.numero}, {domicilio.localidad.nombre}, {domicilio.localidad.provincia.nombre}</MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          </Grid>
+        </Grid>
 
       <Box sx={{ display: 'flex', justifyContent: 'space-between', marginTop: 2 }}>
         <Button
@@ -224,21 +249,22 @@ export function Carrito() {
         <Button
           variant="contained"
           color="primary"
+          onClick={mostrarCarritoJSON}
+        >
+          Mostrar Cart Json
+        </Button>
+        <Button
+          variant="contained"
+          disabled={loading}
           startIcon={<ShoppingCartIcon />}
           onClick={confirmarCompra}
-          disabled={loading}
         >
           Confirmar Compra
         </Button>
       </Box>
-      <Box sx={{ marginTop: 2 }}>
-        <Button
-          variant="outlined"
-          onClick={mostrarCarritoJSON}
-        >
-          Mostrar Cart JSON
-        </Button>
-      </Box>
+      {formaPago === FormaPago.MERCADO_PAGO && pedido && (
+        <CheckoutMP montoCarrito={montoCarrito} pedido={pedido} />
+      )}
     </Box>
   );
 }

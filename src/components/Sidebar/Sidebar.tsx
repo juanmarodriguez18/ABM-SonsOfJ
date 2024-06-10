@@ -96,7 +96,7 @@ const Sidebar: React.FC = () => {
               }}
               onClick={() => navigate("/unidades-medida")}
             >
-              Unidades de Medida
+              Unidades Medida
             </Button>
           </ListItem>
         </SidebarItem>
@@ -125,7 +125,6 @@ const Sidebar: React.FC = () => {
               Listado pedidos
             </Button>
           </ListItem>
-        </SidebarItem>
         <ListItem>
           <Button
             disableRipple
@@ -171,6 +170,7 @@ const Sidebar: React.FC = () => {
             </Badge>
           </Button>
         </ListItem>
+        </SidebarItem>
       </List>
     </Box>
   );

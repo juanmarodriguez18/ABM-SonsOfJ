@@ -7,7 +7,6 @@ import { ArticuloManufacturado } from "../../types/ArticuloManufacturado";
 import { ArticuloInsumo } from "../../types/ArticuloInsumo";
 import { UnidadMedida } from "../../types/UnidadMedida";
 import {
-  Button,
   FormControl,
   MenuItem,
   TableContainer,
@@ -27,6 +26,7 @@ import { getCategorias } from "../../services/CategoriaService";
 import { Categoria } from "../../types/Categoria";
 import AddIcon from "@mui/icons-material/Add";
 import { ArticuloManufacturadoDetalle } from "../../types/ArticuloManufacturadoDetalle";
+import CustomButton from "../Shared/CustomButton";
 
 const ArticuloList: React.FC = () => {
   const [articulos, setArticulos] = useState<ArticuloManufacturado[]>([]);
@@ -103,23 +103,11 @@ const ArticuloList: React.FC = () => {
     <Box sx={{ display: "flex", flexDirection: "column", pl: 2 }}>
       <Box>
         <SearchBar onSearch={setQuery} />
-        <Button
-          className="btn-Guardar"
+        <CustomButton
           onClick={() => setShowModal(true)}
-          sx={{
-            bgcolor: "#43a047",
-            color: "#fff",
-            borderRadius: 8,
-            textTransform: "none",
-            ml: 2,
-            "&:hover": {
-              bgcolor: "#1b5e20",
-            },
-          }}
-        >
-          <AddIcon></AddIcon>
-          Agregar Artículo
-        </Button>
+          text="Agregar Manufacturado"
+          icon={<AddIcon />}
+        />
       </Box>
       <Box sx={{ display: "flex" }}>
         <Typography variant="subtitle2">Filtrar por categoría:</Typography>
@@ -148,6 +136,7 @@ const ArticuloList: React.FC = () => {
               bgcolor: "#ccc",
             }}
           >
+            <MenuItem value="">Seleccionar categoría...</MenuItem>
             {categorias.map((categoria, index) => (
               <MenuItem
                 className="form-select-option"

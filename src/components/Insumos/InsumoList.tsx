@@ -6,8 +6,9 @@ import InsumoFormulario from './InsumoFormulario';
 import { getInsumos } from '../../services/ArticuloInsumoService';
 import { getCategorias } from '../../services/CategoriaService';
 import { Categoria } from '../../types/Categoria';
-import { Button, FormControl, MenuItem, Select, Typography, Box, Paper, Table, TableHead, TableRow, TableCell, TableBody, TableContainer } from '@mui/material';
+import { FormControl, MenuItem, Select, Typography, Box, Paper, Table, TableHead, TableRow, TableCell, TableBody, TableContainer } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
+import CustomButton from '../Shared/CustomButton';
 
 const InsumoList: React.FC = () => {
   const [insumos, setInsumos] = useState<ArticuloInsumo[]>([]);
@@ -70,25 +71,13 @@ const InsumoList: React.FC = () => {
 
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', pl: 2 }}>
-      <Box sx={{ display: 'flex' }}>
+      <Box>
         <SearchBar onSearch={setQuery} />
-        <Button
-          className="btn-Guardar"
+        <CustomButton
           onClick={() => setShowForm(true)}
-          sx={{
-            bgcolor: '#43a047',
-            color: '#fff',
-            borderRadius: 8,
-            textTransform: 'none',
-            ml: 2,
-            '&:hover': {
-              bgcolor: '#1b5e20',
-            },
-          }}
-        >
-          <AddIcon />
-          Agregar Insumo
-        </Button>
+          text="Agregar Insumo"
+          icon={<AddIcon />}
+        />
       </Box>
       <Box sx={{ display: 'flex' }}>
         <Typography variant="subtitle2">Filtrar por categoría:</Typography>
