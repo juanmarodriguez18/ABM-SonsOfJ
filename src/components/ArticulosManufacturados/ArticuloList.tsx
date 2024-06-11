@@ -6,20 +6,7 @@ import AgregarArticuloManufacturadoModal from "./AgregarArticuloManufacturadoMod
 import { ArticuloManufacturado } from "../../types/ArticuloManufacturado";
 import { ArticuloInsumo } from "../../types/ArticuloInsumo";
 import { UnidadMedida } from "../../types/UnidadMedida";
-import {
-  FormControl,
-  MenuItem,
-  TableContainer,
-  Typography,
-  Box,
-  Select,
-  Paper,
-  Table,
-  TableHead,
-  TableRow,
-  TableCell,
-  TableBody,
-} from "@mui/material";
+import { FormControl, MenuItem, TableContainer, Typography, Box, Select, Paper, Table, TableHead, TableRow, TableCell, TableBody } from "@mui/material";
 import { getInsumos } from "../../services/ArticuloInsumoService";
 import { getUnidadesMedida } from "../../services/UnidadMedidaService";
 import { getCategorias } from "../../services/CategoriaService";
@@ -35,12 +22,12 @@ const ArticuloList: React.FC = () => {
   >([]);
   const [query, setQuery] = useState<string>("");
   const [showModal, setShowModal] = useState<boolean>(false);
-  const [categorias, setCategorias] = useState<Categoria[]>([]); // Array de objetos Categoria
+  const [categorias, setCategorias] = useState<Categoria[]>([]);
   const [categoriaSeleccionada, setCategoriaSeleccionada] =
     useState<string>("");
   const [articulosInsumo, setArticulosInsumo] = useState<ArticuloInsumo[]>([]);
   const [unidadesMedida, setUnidadesMedida] = useState<UnidadMedida[]>([]);
-  const [detalles, setDetalles] = useState<ArticuloManufacturadoDetalle[]>([]);
+  const [detalles, setDetalles] = useState<ArticuloManufacturadoDetalle[]>([]); // Estado para los detalles
 
   useEffect(() => {
     const fetchData = async () => {
@@ -186,7 +173,7 @@ const ArticuloList: React.FC = () => {
           </TableHead>
           <TableBody>
             {filteredArticulos.map((articulo) => (
-              <TableRow>
+              <TableRow key={articulo.id}>
                 <Articulo key={articulo.id} articulo={articulo} />
               </TableRow>
             ))}
@@ -201,9 +188,12 @@ const ArticuloList: React.FC = () => {
         articulosInsumo={articulosInsumo}
         unidadesMedida={unidadesMedida}
         imagenesArticulo={[]} // Pasa las imágenes del artículo si es necesario
-        detalles={[]}      />
+        detalles={detalles} // Pasa los detalles al modal
+        setDetalles={setDetalles} // Pasa la función para actualizar los detalles
+      />
     </Box>
   );
 };
 
 export default ArticuloList;
+
