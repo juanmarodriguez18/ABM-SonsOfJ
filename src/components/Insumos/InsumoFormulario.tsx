@@ -11,7 +11,8 @@ import '../../styles/InsumoFormulario.css'
 import { Categoria } from '../../types/Categoria';
 import AgregarCategoriaModal from '../Categorias/AgregarCategoriaModal';
 import { actualizarCategoria, getCategorias } from '../../services/CategoriaService';
-import { Button, Checkbox, Dialog, DialogActions, DialogContent, DialogTitle, FormControl, FormControlLabel, Grid, InputLabel, MenuItem, Select, TextField } from '@mui/material';
+import { Button, Checkbox, Dialog, DialogActions, DialogContent, DialogTitle, FormControl, FormControlLabel, FormLabel, Grid, InputLabel, MenuItem, Select, TextField,} from '@mui/material';
+import { CameraAlt } from '@mui/icons-material';
 
 interface InsumoFormularioProps {
     show: boolean;
@@ -173,7 +174,7 @@ const InsumoFormulario: React.FC<InsumoFormularioProps> = ({ show, handleClose, 
             <DialogTitle>{isEdit ? "Editar Insumo" : "Agregar Insumo"}</DialogTitle>
             <DialogContent dividers>
                 <Grid container spacing={3}>
-                    <Grid item xs={6}>
+                    <Grid item xs={4}>
                         <TextField
                             autoFocus
                             margin="dense"
@@ -185,45 +186,8 @@ const InsumoFormulario: React.FC<InsumoFormularioProps> = ({ show, handleClose, 
                             onChange={e => setInsumo({ ...insumo, denominacion: e.target.value })}
                         />
                     </Grid>
-                    <Grid item xs={6}>
-                        <TextField
-                            margin="dense"
-                            id="txtPrecioVenta"
-                            label="Precio de Venta"
-                            type="number"
-                            fullWidth
-                            value={insumo.precioVenta || ''}
-                            onChange={e => setInsumo({ ...insumo, precioVenta: parseFloat(e.target.value) })}
-                        />
-                    </Grid>
-                    <Grid item xs={6}>
-                        {insumo.imagenesArticulo.size > 0 ? (
-                            <div className="selected-image">
-                                <img className="img" src={Array.from(insumo.imagenesArticulo)[0].url} alt="Imagen seleccionada" />
-                            </div>
-                        ) : (
-                            <div>No hay imagen seleccionada</div>
-                        )}
-                        <Button className="btn-Guardar" onClick={toggleAgregarImagenModal}>Nueva Imagen</Button>
-                    </Grid>
-                    <Grid item xs={6}>
-                        <FormControl fullWidth>
-                            <InputLabel id="cmbUnidadMedida-label">Unidad de Medida</InputLabel>
-                            <Select
-                                labelId="cmbUnidadMedida-label"
-                                id="cmbUnidadMedida"
-                                value={insumo.unidadMedida.id || ''}
-                                onChange={e => setInsumo({ ...insumo, unidadMedida: { id: parseInt(e.target.value as string), denominacion: "", eliminado: false } })}
-                            >
-                                <MenuItem value="">Seleccione una unidad de medida</MenuItem>
-                                {unidadesMedida.map(unidad => (
-                                    <MenuItem key={unidad.id} value={unidad.id}>{unidad.denominacion}</MenuItem>
-                                ))}
-                            </Select>
-                        </FormControl>
-                        <Button className="btn-Guardar" onClick={toggleNuevaUnidadModal}>Nueva Unidad Medida</Button>
-                    </Grid>
-                    <Grid item xs={6}>
+                    
+                    <Grid item xs={4}>
                         <TextField
                             margin="dense"
                             id="txtPrecioCompra"
@@ -234,17 +198,19 @@ const InsumoFormulario: React.FC<InsumoFormularioProps> = ({ show, handleClose, 
                             onChange={e => setInsumo({ ...insumo, precioCompra: parseFloat(e.target.value) })}
                         />
                     </Grid>
-                    <Grid item xs={6}>
+
+                    <Grid item xs={4}>
                         <TextField
                             margin="dense"
-                            id="txtStockActual"
-                            label="Stock Actual"
+                            id="txtPrecioVenta"
+                            label="Precio de Venta"
                             type="number"
                             fullWidth
-                            value={insumo.stockActual || ''}
-                            onChange={e => setInsumo({ ...insumo, stockActual: parseFloat(e.target.value) })}
+                            value={insumo.precioVenta || ''}
+                            onChange={e => setInsumo({ ...insumo, precioVenta: parseFloat(e.target.value) })}
                         />
                     </Grid>
+
                     <Grid item xs={6}>
                         <TextField
                             margin="dense"
@@ -256,12 +222,26 @@ const InsumoFormulario: React.FC<InsumoFormularioProps> = ({ show, handleClose, 
                             onChange={e => setInsumo({ ...insumo, stockMinimo: parseFloat(e.target.value) })}
                         />
                     </Grid>
+
+                    <Grid item xs={6}>
+                        <TextField
+                            margin="dense"
+                            id="txtStockActual"
+                            label="Stock Actual"
+                            type="number"
+                            fullWidth
+                            value={insumo.stockActual || ''}
+                            onChange={e => setInsumo({ ...insumo, stockActual: parseFloat(e.target.value) })}
+                        />
+                    </Grid>
+
                     <Grid item xs={6}>
                         <FormControl fullWidth>
                             <InputLabel id="cmbCategoria-label">Categoría</InputLabel>
                             <Select
                                 labelId="cmbCategoria-label"
                                 id="cmbCategoria"
+                                label="Categoría"
                                 value={insumo.categoria?.id || ''}
                                 onChange={e => setInsumo({
                                     ...insumo,
@@ -282,9 +262,45 @@ const InsumoFormulario: React.FC<InsumoFormularioProps> = ({ show, handleClose, 
                                 )}
                             </Select>
                         </FormControl>
-                        <Button className="btn-Guardar" onClick={toggleAgregarCategoria}>Nueva Categoria</Button>
+                        <Button className="btn-Guardar" onClick={toggleAgregarCategoria} sx={{ marginTop: 2, marginBottom: 2 }}>Nueva Categoria</Button>
                     </Grid>
-                    <Grid item xs={12}>
+                    
+                    <Grid item xs={6}>
+                        <FormControl fullWidth>
+                            <InputLabel id="cmbUnidadMedida-label">Unidad de Medida</InputLabel>
+                            <Select
+                                labelId="cmbUnidadMedida-label"
+                                id="cmbUnidadMedida"
+                                label="Unidad de Medida"
+                                value={insumo.unidadMedida.id || ''}
+                                onChange={e => setInsumo({ ...insumo, unidadMedida: { id: parseInt(e.target.value as string), denominacion: "", eliminado: false } })}
+                            >
+                                <MenuItem value="">Seleccione una unidad de medida</MenuItem>
+                                {unidadesMedida.map(unidad => (
+                                    <MenuItem key={unidad.id} value={unidad.id}>{unidad.denominacion}</MenuItem>
+                                ))}
+                            </Select>
+                        </FormControl>
+                        <Button className="btn-Guardar" onClick={toggleNuevaUnidadModal} sx={{ marginTop: 2, marginBottom: 2 }}>Nueva Unidad Medida</Button>
+                    </Grid>
+
+                    <Grid item xs={6}>
+                        {insumo.imagenesArticulo.size > 0 ? (
+                            <div className="selected-image">
+                                <img className="img" src={Array.from(insumo.imagenesArticulo)[0].url} alt="Imagen seleccionada" />
+                            </div>
+                        ) : (
+                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%' }}>
+                                <CameraAlt fontSize="large" color="disabled" />
+                                <FormLabel sx={{ margin: 2}}>No hay imagen seleccionada</FormLabel>
+                            </div>
+                        )}
+                        <Button className="btn-Guardar" onClick={toggleAgregarImagenModal} sx={{ marginTop: 2, marginBottom: 2 }}>
+                            Nueva Imagen
+                        </Button>
+                    </Grid>
+
+                    <Grid item xs={6}>
                         <FormControlLabel
                             control={<Checkbox
                                 id="chkEsParaElaborar"
@@ -297,13 +313,14 @@ const InsumoFormulario: React.FC<InsumoFormularioProps> = ({ show, handleClose, 
                     <Grid item xs={12}>
                         <p style={{ color: 'red', lineHeight: 5, padding: 5 }}>{txtValidacion}</p>
                     </Grid>
+
                 </Grid>
             </DialogContent>
             <DialogActions>
-                <Button className="btn-Cancelar" onClick={handleClose} color="secondary">
+                <Button variant="outlined" onClick={handleClose} color="secondary">
                     Cancelar
                 </Button>
-                <Button className="btn-Guardar" onClick={guardarInsumo} color="primary">
+                <Button variant="contained" onClick={guardarInsumo} color="primary">
                     Guardar
                 </Button>
             </DialogActions>
