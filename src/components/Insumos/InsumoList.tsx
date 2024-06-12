@@ -70,54 +70,52 @@ const InsumoList: React.FC = () => {
   };
 
   return (
-    <Box sx={{ display: 'flex', flexDirection: 'column', pl: 2 }}>
-      <Box>
+    <Box p={3}>
+      <Typography variant="h4" gutterBottom>
+        Insumos
+      </Typography>
+      <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+        <CustomButton onClick={() => setShowForm(true)} text="Agregar Insumo" icon={<AddIcon />} />
         <SearchBar onSearch={setQuery} />
-        <CustomButton
-          onClick={() => setShowForm(true)}
-          text="Agregar Insumo"
-          icon={<AddIcon />}
-        />
-      </Box>
-      <Box sx={{ display: 'flex' }}>
-        <Typography variant="subtitle2">Filtrar por categoría:</Typography>
-        <FormControl
-          variant="outlined"
-          sx={{
-            '& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline': {
-              borderColor: '#3f51b5',
-            },
-          }}
-        >
-          <Select
-            size="small"
-            id="categorias"
-            className="form-select"
-            onChange={(e) => {
-              const categoria = e.target.value;
-              setCategoriaSeleccionada(categoria);
-            }}
-            value={categoriaSeleccionada}
+        <Box sx={{ display: 'flex', alignItems: 'center', ml: 2 }}>
+          <Typography variant="subtitle2" sx={{ mr: 1 }}>Filtrar por categoría:</Typography>
+          <FormControl
+            variant="outlined"
             sx={{
-              width: 200,
-              height: 25,
-              ml: 1,
-              bgcolor: '#ccc',
+              '& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                borderColor: '#3f51b5',
+              },
             }}
           >
-            <MenuItem value="">Seleccionar categoría...</MenuItem>
-            {categorias.map((categoria, index) => (
-              <MenuItem
-                key={index}
-                value={categoria.denominacion}
-              >
-                <Typography variant="subtitle2">
-                  {categoria.denominacion}
-                </Typography>
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
+            <Select
+              size="small"
+              id="categorias"
+              className="form-select"
+              onChange={(e) => {
+                const categoria = e.target.value;
+                setCategoriaSeleccionada(categoria);
+              }}
+              value={categoriaSeleccionada}
+              sx={{
+                width: 200, // Ajusta el ancho aquí
+                ml: 1,
+                bgcolor: '#ccc',
+              }}
+            >
+              <MenuItem value="">Seleccionar categoría...</MenuItem>
+              {categorias.map((categoria, index) => (
+                <MenuItem
+                  key={index}
+                  value={categoria.denominacion}
+                >
+                  <Typography variant="subtitle2">
+                    {categoria.denominacion}
+                  </Typography>
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+        </Box>
       </Box>
       <TableContainer
         component={Paper}

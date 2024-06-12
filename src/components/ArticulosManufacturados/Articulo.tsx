@@ -9,6 +9,7 @@ import ModeEditIcon from "@mui/icons-material/ModeEdit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import UndoIcon from "@mui/icons-material/Undo";
 import InfoIcon from "@mui/icons-material/Info";
+import { ArticuloManufacturadoDetalle } from "../../types/ArticuloManufacturadoDetalle";
 
 const Articulo: React.FC<{ articulo: ArticuloManufacturado }> = ({
   articulo,
@@ -18,6 +19,7 @@ const Articulo: React.FC<{ articulo: ArticuloManufacturado }> = ({
   const imagenesArray = Array.from(articulo.imagenesArticulo);
   const primeraImagen = imagenesArray[0]?.url;
   const [showForm, setShowForm] = useState(false);
+  const [detalles, setDetalles] = useState<ArticuloManufacturadoDetalle[]>([]); // Estado para los detalles
 
   const handleEliminarRecuperar = async () => {
     try {
@@ -143,7 +145,10 @@ const Articulo: React.FC<{ articulo: ArticuloManufacturado }> = ({
         articuloManufacturadoInicial={manufacturado}
         articulosInsumo={[]}
         unidadesMedida={[]}
-        imagenesArticulo={[]} detalles={[]}      />
+        imagenesArticulo={[]} 
+        detalles={detalles} // Pasa los detalles al modal
+        setDetalles={setDetalles} // Pasa la función para actualizar los detalles
+        />
     </li>
   );
 };
