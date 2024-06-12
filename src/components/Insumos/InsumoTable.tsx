@@ -1,24 +1,17 @@
-import React, { useState } from "react";
+import React from "react";
 import { ArticuloInsumo } from "../../types/ArticuloInsumo";
 import { IconButton, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from "@mui/material";
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import RestoreIcon from '@mui/icons-material/Restore';
-import InsumoFormulario from "./InsumoFormulario";
 
 interface InsumoTableProps {
     data: ArticuloInsumo[];
+    onEdit: (articuloInsumo: ArticuloInsumo) => void;
     onDelete: (articuloInsumo: ArticuloInsumo) => void;
 }
 
-const InsumoTable: React.FC<InsumoTableProps> = ({ data, onDelete }) => {
-    const [showForm, setShowForm] = useState(false);
-    const [selectedInsumo, setSelectedInsumo] = useState<ArticuloInsumo | null>(null);
-
-    const handleModificar = (insumo: ArticuloInsumo) => {
-        setSelectedInsumo(insumo);
-        setShowForm(true);
-    };
+const InsumoTable: React.FC<InsumoTableProps> = ({ data, onEdit, onDelete }) => {
 
     const columns = [
         { label: 'Denominación', dataKey: 'denominacion', width: 150 },
@@ -67,7 +60,7 @@ const InsumoTable: React.FC<InsumoTableProps> = ({ data, onDelete }) => {
                         </IconButton>
                     ) : (
                         <>
-                            <IconButton aria-label="edit" onClick={() => handleModificar(articuloInsumo)} title="Editar">
+                            <IconButton aria-label="edit" onClick={() => onEdit(articuloInsumo)} title="Editar">
                                 <EditIcon />
                             </IconButton>
                             <IconButton aria-label="delete" onClick={() => onDelete(articuloInsumo)} title="Eliminar">
@@ -96,24 +89,6 @@ const InsumoTable: React.FC<InsumoTableProps> = ({ data, onDelete }) => {
                     </Table>
                 </TableContainer>
             </Paper>
-
-            {/* Formulario de Modificar */}
-            {selectedInsumo && (
-                <InsumoFormulario
-                    show={showForm}
-                    handleClose={() => {
-                        setShowForm(false);
-                        setSelectedInsumo(null);
-                    }}
-                    onSave={(insumo: ArticuloInsumo) => {
-                        console.log('Insumo guardado:', insumo);
-                        setShowForm(false);
-                        setSelectedInsumo(null);
-                    }}
-                    isEdit={true}
-                    insumo={selectedInsumo}
-                />
-            )}
         </>
     );
 };

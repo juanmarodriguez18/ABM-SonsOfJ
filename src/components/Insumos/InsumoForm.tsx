@@ -1,309 +1,273 @@
 import React, { useState, useEffect } from 'react';
+import {
+    Button,
+    TextField,
+    Dialog,
+    DialogActions,
+    DialogContent,
+    DialogTitle,
+    FormControl,
+    InputLabel,
+    Select,
+    MenuItem,
+    FormHelperText,
+    FormControlLabel,
+    Checkbox,
+} from '@mui/material';
+import { Categoria } from '../../types/Categoria';
+import { UnidadMedida } from '../../types/UnidadMedida';
+import { getCategorias } from '../../services/CategoriaService';
+import { getUnidadesMedida } from '../../services/UnidadMedidaService';
 import { ArticuloInsumo } from '../../types/ArticuloInsumo';
 import { ImagenArticulo } from '../../types/ImagenArticulo';
-import { UnidadMedida } from '../../types/UnidadMedida';
-import { Categoria } from '../../types/Categoria';
-import { getImagenesArticulo } from '../../services/ImagenArticuloService';
-import { getUnidadesMedida } from '../../services/UnidadMedidaService';
-import { getCategorias } from '../../services/CategoriaService';
-import { actualizarInsumo, crearInsumo } from '../../services/ArticuloInsumoService';
-import { Button, Checkbox, Dialog, DialogActions, DialogContent, DialogTitle, FormControl, FormControlLabel, FormLabel, Grid, InputLabel, MenuItem, Select, TextField } from '@mui/material';
-import { CameraAlt } from '@mui/icons-material';
+import { crearInsumo } from '../../services/ArticuloInsumoService';
+import uploadImage from '../../services/CloudinaryService';
 
-interface InsumoFormularioProps {
+interface InsumoFormProps {
     show: boolean;
-    handleClose: () => void;
-    onSave: (insumo: ArticuloInsumo) => void;
-    isEdit?: boolean; // Indicador de edición
-    insumo?: ArticuloInsumo;
+    onHide: () => void;
+    onSave: (articuloInsumo: ArticuloInsumo) => void;
+    initialData?: ArticuloInsumo;
 }
 
-const InsumoFormulario: React.FC<InsumoFormularioProps> = ({ show, handleClose, onSave, isEdit = false, insumo: insumoInicial }) => {
+const InsumoForm: React.FC<InsumoFormProps> = ({
+    show,
+    onHide,
+    onSave,
+    initialData,
+}) => {
     const [categorias, setCategorias] = useState<Categoria[]>([]);
-    const [insumo, setInsumo] = useState<ArticuloInsumo>(new ArticuloInsumo(0, false, '', 0, new Set<ImagenArticulo>(), new UnidadMedida(), categorias[0], 0, 0, 0, false));
-    const [imagenes, setImagenes] = useState<ImagenArticulo[]>([]);
     const [unidadesMedida, setUnidadesMedida] = useState<UnidadMedida[]>([]);
-    const [txtValidacion, setTxtValidacion] = useState<string>("");
-    const [showAgregarImagenModal, setShowAgregarImagenModal] = useState<boolean>(false);
+    const [error, setError] = useState<string>('');
+    const [articuloInsumo, setArticuloInsumo] = useState<ArticuloInsumo>(
+        initialData || new ArticuloInsumo(0, false, '', 0, new Set<ImagenArticulo>(), new UnidadMedida(), {} as Categoria, 0, 0, 0, false));
 
     useEffect(() => {
-        if (isEdit && insumoInicial) {
-            setInsumo(insumoInicial); // Cargar los datos del insumo a editar
+        if (initialData) {
+            setArticuloInsumo(initialData);
         } else {
-            setInsumo(new ArticuloInsumo(0, false, '', 0, new Set<ImagenArticulo>(), new UnidadMedida(), categorias[0], 0, 0, 0, false)); // Limpiar el formulario si no estamos editando
+            // Inicializamos con valores por defecto
+            setArticuloInsumo(new ArticuloInsumo(0, false, '', 0, new Set<ImagenArticulo>(), new UnidadMedida(), {} as Categoria, 0, 0, 0, false));
         }
-    }, [show, isEdit, insumoInicial]);
+    }, [initialData]);
 
     useEffect(() => {
-        async function cargarDatosIniciales() {
-            try {
-                const imagenes = await getImagenesArticulo();
-                setImagenes(imagenes);
-    
-                const unidadesMedida = await getUnidadesMedida();
-                setUnidadesMedida(unidadesMedida);
-
-                const categorias = await getCategorias();
-                setCategorias(categorias);
-    
-                // Si estamos editando y hay un insumo inicial, configurar las imágenes del insumo
-                if (isEdit && insumoInicial) {
-                    // Convertir el Set de imagenesArticulo a un array de ImagenArticulo
-                    const imagenesInsumo = Array.from(insumoInicial.imagenesArticulo).map(imagen => new ImagenArticulo(imagen.id, imagen.eliminado, imagen.url));
-                    setInsumo({ ...insumoInicial, imagenesArticulo: new Set(imagenesInsumo) });
-                }
-            } catch (error) {
-                console.error("Error al cargar datos iniciales:", error);
-                setTxtValidacion("Error al cargar datos iniciales. Por favor, inténtelo de nuevo más tarde.");
+        // Cargamos categorías y unidades de medida
+        getCategorias().then((data) => {
+            setCategorias(data);
+            // Si no hay initialData, inicializamos con la primera categoría
+            if (!initialData && data.length > 0) {
+                setArticuloInsumo((prev) => ({
+                    ...prev,
+                    categoria: data[0],
+                }));
             }
-        }
-        cargarDatosIniciales();
-    }, [show, isEdit, insumoInicial]);
+        });
+        getUnidadesMedida().then((data) => {
+            setUnidadesMedida(data);
+            // Si no hay initialData, inicializamos con la primera unidad de medida
+            if (!initialData && data.length > 0) {
+                setArticuloInsumo((prev) => ({
+                    ...prev,
+                    unidadMedida: data[0],
+                }));
+            }
+        });
+    }, [initialData]);
 
-    const guardarInsumo = async () => {
-        // Validación de campos
-        if (!insumo.denominacion || insumo.denominacion.trim() === "") {
-            setTxtValidacion("Ingrese la denominación del Insumo");
+    const handleSubmit = async () => {
+        if (!articuloInsumo.denominacion.trim()) {
+            setError('La denominación no puede estar vacía');
             return;
         }
-        if (!insumo.precioVenta || insumo.precioVenta <= 0) {
-            setTxtValidacion("Ingrese un precio válido");
-            return;
-        }
-        if (insumo.imagenesArticulo.size === 0) {
-            setTxtValidacion("Ingrese al menos una imagen para el insumo");
-            return;
-        }
-        if (!insumo.unidadMedida || !insumo.unidadMedida.id) {
-            setTxtValidacion("Seleccione una unidad de medida");
-            return;
-        }
-        if (!insumo.precioCompra || insumo.precioCompra <= 0) {
-            setTxtValidacion("Ingrese un precio válido");
-            return;
-        }
-        if (!insumo.stockActual || insumo.stockActual < 0) {
-            setTxtValidacion("Ingrese un stock válido");
-            return;
-        }
-        if (!insumo.stockMinimo || insumo.stockMinimo < 0) {
-            setTxtValidacion("Ingrese una cantidad vendida válida");
-            return;
-        }
-        if (insumo.esParaElaborar === undefined) {
-            setTxtValidacion("Indique si es para elaborar");
-            return;
-        }
-        if (!insumo.categoria || !insumo.categoria.id) {
-            setTxtValidacion("Seleccione una categoría");
-            return;
-        }
-
+    
         try {
-            const imagenesArticuloArray = Array.from(insumo.imagenesArticulo);
+            // Convertimos el Set de imágenes a un array de objetos con propiedad 'url'
+            const imagenesArticuloArray = Array.from(articuloInsumo.imagenesArticulo).map(
+                (imagen: ImagenArticulo) => ({ url: imagen.url })
+            );
+    
             const insumoParaGuardar = {
-                ...insumo,
-                imagenesArticulo: imagenesArticuloArray
+                ...articuloInsumo,
+                imagenesArticulo: imagenesArticuloArray,
             };
     
-            if (isEdit && insumo.id) {
-                await actualizarInsumo(insumo.id, insumoParaGuardar); // Actualizar el insumo existente
-                alert('El insumo se modificó correctamente');
-                window.location.reload();
-                
-            } else {
-                const nuevoInsumo = await crearInsumo(insumoParaGuardar); // Crear un nuevo insumo
-                alert(`El insumo se guardó correctamente.`);
-                onSave(nuevoInsumo);
-            }
-
-            handleClose();
+            console.log('JSON enviado al backend:', JSON.stringify(insumoParaGuardar));
+    
+            const nuevoInsumo = await crearInsumo(insumoParaGuardar); // Crear un nuevo insumo
+            alert('El insumo se guardó correctamente.');
+            onSave(nuevoInsumo);
         } catch (error) {
-            console.error("Error al guardar el insumo:", error);
-            setTxtValidacion("Error al guardar el insumo. Por favor, inténtelo de nuevo más tarde.");
+            console.error('Error al guardar el insumo:', error);
+            alert(
+                'Hubo un error al guardar el insumo. Por favor, inténtalo de nuevo.'
+            );
         }
     };
-
-    const handleImagenSeleccionada = (imagen: ImagenArticulo) => {
-        setInsumo({ ...insumo, imagenesArticulo: new Set([imagen]) });
+    
+    const handleClose = () => {
+        setArticuloInsumo(new ArticuloInsumo(0, false, '', 0, new Set<ImagenArticulo>(), new UnidadMedida(), {} as Categoria, 0, 0, 0, false));
+        setError('');
+        onHide();
     };
 
-    const toggleAgregarImagenModal = () => {
-        setShowAgregarImagenModal(!showAgregarImagenModal);
+    const handleChange = (field: keyof ArticuloInsumo, value: any) => {
+        setArticuloInsumo((prev) => ({ ...prev, [field]: value }));
+    };
+
+    const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (file) {
+            uploadImage(file, setArticuloInsumo); // Llama a la función de utilidad
+        }
     };
 
     return (
-        <Dialog open={show} onClose={handleClose} fullWidth maxWidth="md">
-            <DialogTitle>{isEdit ? "Editar Insumo" : "Agregar Insumo"}</DialogTitle>
-            <DialogContent dividers>
-                <Grid container spacing={3}>
-                    <Grid item xs={4}>
-                        <TextField
-                            autoFocus
-                            margin="dense"
-                            id="txtDenominacion"
-                            label="Denominación"
-                            type="text"
-                            fullWidth
-                            value={insumo.denominacion || ''}
-                            onChange={e => setInsumo({ ...insumo, denominacion: e.target.value })}
+        <Dialog open={show} onClose={handleClose} maxWidth="sm" fullWidth>
+            <DialogTitle>{initialData ? 'Editar Artículo Insumo' : 'Agregar Artículo Insumo'}</DialogTitle>
+            <DialogContent>
+                <TextField
+                    autoFocus
+                    margin="dense"
+                    id="denominacion"
+                    label="Denominación"
+                    type="text"
+                    fullWidth
+                    value={articuloInsumo.denominacion}
+                    onChange={(e) => handleChange('denominacion', e.target.value)}
+                    error={!!error}
+                    helperText={error}
+                />
+                <TextField
+                    margin="dense"
+                    id="precioCompra"
+                    label="Precio de Compra"
+                    type="number"
+                    fullWidth
+                    value={articuloInsumo.precioCompra}
+                    onChange={(e) => handleChange('precioCompra', +e.target.value)}
+                />
+                <TextField
+                    margin="dense"
+                    id="precioVenta"
+                    label="Precio de Venta"
+                    type="number"
+                    fullWidth
+                    value={articuloInsumo.precioVenta}
+                    onChange={(e) => handleChange('precioVenta', +e.target.value)}
+                />
+                <TextField
+                    margin="dense"
+                    id="stockActual"
+                    label="Stock Actual"
+                    type="number"
+                    fullWidth
+                    value={articuloInsumo.stockActual}
+                    onChange={(e) => handleChange('stockActual', +e.target.value)}
+                />
+                <TextField
+                    margin="dense"
+                    id="stockMinimo"
+                    label="Stock Mínimo"
+                    type="number"
+                    fullWidth
+                    value={articuloInsumo.stockMinimo}
+                    onChange={(e) => handleChange('stockMinimo', +e.target.value)}
+                />
+                <FormControl fullWidth margin="dense" error={!!error}>
+                    <InputLabel id="unidadMedida-label">Unidad de Medida</InputLabel>
+                    <Select
+                        labelId="unidadMedida-label"
+                        id="unidadMedida"
+                        value={articuloInsumo.unidadMedida.id || ''}
+                        onChange={(e) =>
+                            handleChange(
+                                'unidadMedida',
+                                unidadesMedida.find((um) => um.id === e.target.value) || new UnidadMedida()
+                            )
+                        }
+                        fullWidth
+                    >
+                        {unidadesMedida.map((unidad) => (
+                            <MenuItem key={unidad.id} value={unidad.id}>
+                                {unidad.denominacion}
+                            </MenuItem>
+                        ))}
+                    </Select>
+                    <FormHelperText>{error}</FormHelperText>
+                </FormControl>
+                <FormControl fullWidth margin="dense" error={!!error}>
+                    <InputLabel id="categoria-label">Categoría</InputLabel>
+                    <Select
+                        labelId="categoria-label"
+                        id="categoria"
+                        value={articuloInsumo.categoria.id || ''}
+                        onChange={(e) =>
+                            handleChange(
+                                'categoria',
+                                categorias.find((cat) => cat.id === e.target.value) || ({} as Categoria)
+                            )
+                        }
+                        fullWidth
+                    >
+                        {categorias.map((categoria) => (
+                            <MenuItem key={categoria.id} value={categoria.id}>
+                                {categoria.denominacion}
+                            </MenuItem>
+                        ))}
+                    </Select>
+                    <FormHelperText>{error}</FormHelperText>
+                </FormControl>
+                <FormControlLabel
+                    control={
+                        <Checkbox
+                            checked={articuloInsumo.esParaElaborar}
+                            onChange={(e) => handleChange('esParaElaborar', e.target.checked)}
+                            color="primary"
                         />
-                    </Grid>
-                    
-                    <Grid item xs={4}>
-                        <TextField
-                            margin="dense"
-                            id="txtPrecioCompra"
-                            label="Precio de Compra"
-                            type="number"
-                            fullWidth
-                            value={insumo.precioCompra || ''}
-                            onChange={e => setInsumo({ ...insumo, precioCompra: parseFloat(e.target.value) })}
-                        />
-                    </Grid>
-
-                    <Grid item xs={4}>
-                        <TextField
-                            margin="dense"
-                            id="txtPrecioVenta"
-                            label="Precio de Venta"
-                            type="number"
-                            fullWidth
-                            value={insumo.precioVenta || ''}
-                            onChange={e => setInsumo({ ...insumo, precioVenta: parseFloat(e.target.value) })}
-                        />
-                    </Grid>
-
-                    <Grid item xs={6}>
-                        <TextField
-                            margin="dense"
-                            id="txtStockMinimo"
-                            label="Stock Mínimo"
-                            type="number"
-                            fullWidth
-                            value={insumo.stockMinimo || ''}
-                            onChange={e => setInsumo({ ...insumo, stockMinimo: parseFloat(e.target.value) })}
-                        />
-                    </Grid>
-
-                    <Grid item xs={6}>
-                        <TextField
-                            margin="dense"
-                            id="txtStockActual"
-                            label="Stock Actual"
-                            type="number"
-                            fullWidth
-                            value={insumo.stockActual || ''}
-                            onChange={e => setInsumo({ ...insumo, stockActual: parseFloat(e.target.value) })}
-                        />
-                    </Grid>
-
-                    <Grid item xs={6}>
-                        <FormControl fullWidth>
-                            <InputLabel id="cmbCategoria-label">Categoría</InputLabel>
-                            <Select
-                                labelId="cmbCategoria-label"
-                                id="cmbCategoria"
-                                label="Categoría"
-                                value={insumo.categoria?.id || ''}
-                                onChange={e => setInsumo({
-                                    ...insumo,
-                                    categoria: {
-                                        id: parseInt(e.target.value as string),
-                                        denominacion: categorias.find(c => c.id === parseInt(e.target.value as string))?.denominacion || '',
-                                        eliminado: false
-                                    }
-                                })}
-                            >
-                                <MenuItem value="">Seleccione una categoría</MenuItem>
-                                {Array.isArray(categorias) && categorias.length > 0 &&
-                                    categorias.map((categoria) => (
-                                        <MenuItem key={categoria.id} value={categoria.id}>{categoria.denominacion}</MenuItem>
-                                    ))}
-                            </Select>
-                        </FormControl>
-                    </Grid>
-
-                    <Grid item xs={6}>
-                        <FormControl fullWidth>
-                            <InputLabel id="cmbUnidadMedida-label">Unidad de Medida</InputLabel>
-                            <Select
-                                labelId="cmbUnidadMedida-label"
-                                id="cmbUnidadMedida"
-                                label="Unidad de Medida"
-                                value={insumo.unidadMedida?.id || ''}
-                                onChange={e => setInsumo({
-                                    ...insumo,
-                                    unidadMedida: {
-                                        id: parseInt(e.target.value as string),
-                                        denominacion: unidadesMedida.find(u => u.id === parseInt(e.target.value as string))?.denominacion || '',
-                                        eliminado: false
-                                    }
-                                })}
-                            >
-                                <MenuItem value="">Seleccione una unidad de medida</MenuItem>
-                                {Array.isArray(unidadesMedida) && unidadesMedida.length > 0 &&
-                                    unidadesMedida.map((unidad) => (
-                                        <MenuItem key={unidad.id} value={unidad.id}>{unidad.denominacion}</MenuItem>
-                                    ))}
-                            </Select>
-                        </FormControl>
-                    </Grid>
-
-                    <Grid item xs={6}>
-                        <FormControlLabel
-                            control={
-                                <Checkbox
-                                    checked={insumo.esParaElaborar || false}
-                                    onChange={e => setInsumo({ ...insumo, esParaElaborar: e.target.checked })}
-                                />
-                            }
-                            label="Es para elaborar"
-                        />
-                    </Grid>
-
-                    <Grid item xs={12}>
-                        <Button variant="outlined" onClick={toggleAgregarImagenModal} startIcon={<CameraAlt />}>
-                            Agregar Imagen
+                    }
+                    label="¿Es para elaborar?"
+                />
+                {/* Lógica para manejar las imágenes */}
+                <input
+                    accept="image/*"
+                    style={{ display: 'none' }}
+                    id="imagen"
+                    type="file"
+                    onChange={handleImageChange}
+                />
+                <label htmlFor="imagen">
+                    <Button variant="contained" color="primary" component="span">
+                        Cargar Imagen
+                    </Button>
+                </label>
+                {Array.from(articuloInsumo.imagenesArticulo).map((imagen, index) => (
+                    <div key={imagen.id}>
+                        <img src={imagen.url} alt={`Imagen ${index + 1}`} width="100" />
+                        <Button
+                            variant="contained"
+                            color="secondary"
+                            onClick={() => {
+                                setArticuloInsumo((prev) => {
+                                    const newImages = new Set(prev.imagenesArticulo);
+                                    newImages.delete(imagen);
+                                    return {
+                                        ...prev,
+                                        imagenesArticulo: newImages,
+                                    };
+                                });
+                            }}
+                        >
+                            Eliminar
                         </Button>
-                        <Grid container spacing={2}>
-                            {Array.isArray(imagenes) && imagenes.length > 0 &&
-                                imagenes.map((imagen) => (
-                                    <Grid item key={imagen.id}>
-                                        <img
-                                            src={imagen.url}
-                                            alt="Imagen de Insumo"
-                                            style={{ width: '100px', height: '100px', objectFit: 'cover', cursor: 'pointer' }}
-                                            onClick={() => handleImagenSeleccionada(imagen)}
-                                        />
-                                    </Grid>
-                                ))}
-                        </Grid>
-                    </Grid>
-
-                    <Grid item xs={6}>
-                        <FormControlLabel
-                            control={<Checkbox
-                                id="chkEsParaElaborar"
-                                checked={insumo.esParaElaborar || false}
-                                onChange={e => setInsumo({ ...insumo, esParaElaborar: e.target.checked })}
-                            />}
-                            label="¿Es para elaborar?"
-                        />
-                    </Grid>
-                    <Grid item xs={12}>
-                        <p style={{ color: 'red', lineHeight: 5, padding: 5 }}>{txtValidacion}</p>
-                    </Grid>
-                </Grid>
-                {txtValidacion && (
-                    <p style={{ color: "red", fontSize: "12px" }}>{txtValidacion}</p>
-                )}
+                    </div>
+                ))}
             </DialogContent>
             <DialogActions>
                 <Button onClick={handleClose} color="primary">
                     Cancelar
                 </Button>
-                <Button onClick={guardarInsumo} color="primary">
+                <Button onClick={handleSubmit} color="primary">
                     Guardar
                 </Button>
             </DialogActions>
@@ -311,4 +275,4 @@ const InsumoFormulario: React.FC<InsumoFormularioProps> = ({ show, handleClose, 
     );
 };
 
-export default InsumoFormulario;
+export default InsumoForm;
