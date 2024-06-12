@@ -142,7 +142,7 @@ const PedidosPage: React.FC = () => {
                             </TableRow>
                             <TableRow>
                               <TableCell>Dirección:</TableCell>
-                              <TableCell>{pedido.domicilio.calle} {pedido.domicilio.numero}</TableCell>
+                              <TableCell>{pedido.domicilio.calle} {pedido.domicilio.numero}, {pedido.domicilio.localidad.nombre}, {pedido.domicilio.localidad.provincia.nombre}</TableCell>
                             </TableRow>
                             <TableRow>
                               <TableCell>Artículos:</TableCell>
