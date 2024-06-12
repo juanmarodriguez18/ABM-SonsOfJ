@@ -7,7 +7,7 @@ import SearchBar from "../components/SearchBar/SearchBar";
 import InsumoTable from "../components/Insumos/InsumoTable";
 import { Categoria } from "../types/Categoria";
 import { getCategorias } from "../services/CategoriaService";
-import InsumoFormulario from "../components/Insumos/InsumoFormulario";
+import InsumoForm from "../components/Insumos/InsumoForm";
 
 const ArticuloInsumoPage: React.FC = () => {
     const [insumos, setInsumos] = useState<ArticuloInsumo[]>([]);
@@ -64,10 +64,6 @@ const ArticuloInsumoPage: React.FC = () => {
             console.error("Error al guardar el insumo:", error);
         }
     };
-
-    const handleCancel = () => {
-        setShowForm(false);
-      };
 
     // Función para manejar la eliminación o recuperación de un insumo
     const handleEliminarRecuperarInsumo = async (articuloInsumo: ArticuloInsumo) => {
@@ -164,19 +160,17 @@ const ArticuloInsumoPage: React.FC = () => {
                     </FormControl>
                 </Box>
             </Box>
-            
-            {/* Formulario de Insumo */}
-            {showForm && (
-                <InsumoFormulario
-                show={showForm}
-                handleClose={handleCancel}
-                onSave={handleGuardarInsumo}
-            />
-            )}
 
+                <InsumoForm
+                show={showForm}
+                onHide={() => setShowForm(false)}
+                onSave={handleGuardarInsumo}
+                initialData={selectedInsumo}
+            />
             {/* Tabla de Insumos */}
             <InsumoTable
                 data={filteredInsumos}
+                onEdit={handleEditarInsumo}
                 onDelete={handleEliminarRecuperarInsumo}
             />
         </Box>

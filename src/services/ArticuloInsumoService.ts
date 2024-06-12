@@ -1,5 +1,6 @@
 // src/services/api.ts
 import axios from 'axios';
+//import { ArticuloInsumo } from '../types/ArticuloInsumo';
 
 const API_URL = 'http://localhost:8080/insumos';
 
@@ -23,7 +24,7 @@ export const getInsumoById = async (id: number) => {
     }
   };
   
-  export const crearInsumo = async (nuevoInsumo: any) => {
+ /* export const crearInsumo = async (nuevoInsumo: any) => {
     try {
       const response = await axios.post(API_URL, nuevoInsumo);
       return response.data;
@@ -31,7 +32,7 @@ export const getInsumoById = async (id: number) => {
       console.error("Error al crear un insumo:", error);
       throw error;
     }
-  };
+  }; */
   
   export const eliminarInsumo = async (id: number) => {
     try {
@@ -62,5 +63,42 @@ export const getInsumoById = async (id: number) => {
       throw error;
     }
   };
+
+  export const crearInsumo = async (nuevoInsumo: any) => {
+    try {
+      console.log('Datos a enviar:', JSON.stringify(nuevoInsumo, null, 2)); // Verificar los datos antes de enviar
+      const response = await axios.post(API_URL, nuevoInsumo, {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+      return response.data;
+    } catch (error) {
+      console.error("Error al crear un insumo:", error);
+      throw error;
+    }
+  };
+
+  /*export async function crearInsumo(nuevoInsumo: ArticuloInsumo): Promise<ArticuloInsumo> {
+    try {
+        const response = await fetch(API_URL, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Access-Control-Allow-Origin': '*'
+            },
+            body: JSON.stringify(nuevoInsumo) // Enviar el objeto nuevoInsumo convertido a JSON
+        });
+        if (!response.ok) {
+            throw new Error('Error al crear el insumo');
+        }
+        const data = await response.json();
+        return data;
+    } catch (error) {
+        console.error('Error en crearInsumo:', error);
+        throw new Error('Error al crear el insumo. Por favor, inténtalo de nuevo más tarde.');
+    }
+}*/
+
 
   
