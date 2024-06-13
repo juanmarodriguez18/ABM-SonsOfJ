@@ -3,7 +3,7 @@ import { ArticuloInsumo } from '../../types/ArticuloInsumo';
 import '../../styles/Articulo.css';
 import { eliminarInsumo, recuperarInsumo } from '../../services/ArticuloInsumoService';
 import InsumoFormulario from './InsumoFormulario';
-import { ListItem, Box, TableCell } from '@mui/material';
+import { Box, TableCell } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import RestoreIcon from '@mui/icons-material/Restore';
 import EditIcon from '@mui/icons-material/Edit';
