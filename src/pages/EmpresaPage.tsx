@@ -1,8 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { Container, Button, Typography, Card, CardContent, CardMedia, CardActions } from '@mui/material';
+import { Container, Button, Typography, Card, CardContent, CardMedia, CardActions, IconButton } from '@mui/material';
+import RestoreIcon from '@mui/icons-material/Restore';
+import EditIcon from '@mui/icons-material/Edit';
+import DeleteIcon from '@mui/icons-material/Delete';
 import { Empresa } from '../types/Empresa';
 import AgregarEmpresaModal from '../components/Empresa/AgregarEmpresa';
-import { getEmpresas } from '../services/EmpresaService';
+import { eliminarEmpresa, getEmpresas, recuperarEmpresa } from '../services/EmpresaService';
 
 const EmpresaPage: React.FC = () => {
     const [showModal, setShowModal] = useState<boolean>(false);
@@ -49,9 +52,28 @@ const EmpresaPage: React.FC = () => {
         setShowModal(true); // Abre el modal con los datos de la empresa seleccionada
     };
 
-    const handleEliminarEmpresa = (id: number) => {
-        setEmpresas(empresas.filter(empresa => empresa.id !== id));
+    const handleEliminarRecuperarEmpresa = async (empresa: Empresa) => {
+        try {
+            if (empresa.eliminado) {
+                await recuperarEmpresa(empresa.id); // Recuperar empresa
+                setEmpresas((prevData) =>
+                    prevData.map((emp) =>
+                        emp.id === empresa.id ? { ...emp, eliminado: false } : emp
+                    )
+                );
+            } else {
+                await eliminarEmpresa(empresa.id); // Eliminar empresa
+                setEmpresas((prevData) =>
+                    prevData.map((emp) =>
+                        emp.id === empresa.id ? { ...emp, eliminado: true } : emp
+                    )
+                );
+            }
+        } catch (error) {
+            console.error("Error al actualizar el estado de la empresa:", error);
+        }
     };
+    
 
     return (
         <Container>
@@ -60,12 +82,13 @@ const EmpresaPage: React.FC = () => {
             </Typography>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: '16px' }}>
                 {empresas.map(empresa => (
-                    <Card key={empresa.id} style={{ maxWidth: '300px' }}>
+                    <Card key={empresa.id} style={{ maxWidth: '300px', backgroundColor: empresa.eliminado ? '#ffebee' : '#181A1B' }}>
                         <CardMedia
                             component="img"
                             height="300"
                             image={empresa.imagenesEmpresa.length > 0 ? empresa.imagenesEmpresa[0].url : 'https://via.placeholder.com/150'}
                             alt={empresa.nombre}
+                            style={{ opacity: empresa.eliminado ? 0.5 : 1 }}
                         />
                         <CardContent>
                             <Typography variant="h6" style={{ fontSize: '16px', lineHeight: '1.2' }}>{empresa.nombre}</Typography>
@@ -73,12 +96,20 @@ const EmpresaPage: React.FC = () => {
                             <Typography variant="subtitle2" style={{ fontSize: '14px' }}>CUIL: {empresa.cuil}</Typography>
                         </CardContent>
                         <CardActions>
-                            <Button size="small" color="primary" onClick={() => handleModificarEmpresa(empresa)}>
-                                Modificar
-                            </Button>
-                            <Button size="small" color="secondary" onClick={() => handleEliminarEmpresa(empresa.id)}>
-                                Eliminar
-                            </Button>
+                            {empresa.eliminado ? (
+                                <IconButton aria-label="restore" onClick={() => handleEliminarRecuperarEmpresa(empresa)} title="Recuperar">
+                                    <RestoreIcon />
+                                </IconButton>
+                            ) : (
+                                <>
+                                <IconButton aria-label="edit" onClick={() => handleModificarEmpresa(empresa)} title="Editar">
+                                    <EditIcon />
+                                </IconButton>
+                                <IconButton aria-label="delete" onClick={() => handleEliminarRecuperarEmpresa(empresa)} title="Eliminar">
+                                    <DeleteIcon />
+                                </IconButton>
+                                </>
+                            )}
                         </CardActions>
                     </Card>
                 ))}
