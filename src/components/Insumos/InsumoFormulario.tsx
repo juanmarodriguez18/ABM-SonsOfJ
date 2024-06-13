@@ -24,7 +24,7 @@ interface InsumoFormularioProps {
 
 const InsumoFormulario: React.FC<InsumoFormularioProps> = ({ show, handleClose, onSave, isEdit = false, insumo: insumoInicial }) => {
     const [categorias, setCategorias] = useState<Categoria[]>([]);
-    const [insumo, setInsumo] = useState<ArticuloInsumo>(new ArticuloInsumo(0, false, '', 0, new Set<ImagenArticulo>(), new UnidadMedida(), categorias[0], 0, 0, 0, false));
+    const [insumo, setInsumo] = useState<ArticuloInsumo>(new ArticuloInsumo( false, '', 0, new Set<ImagenArticulo>(), new UnidadMedida(), categorias[0], 0, 0, 0, false));
     const [imagenes, setImagenes] = useState<ImagenArticulo[]>([]);
     const [unidadesMedida, setUnidadesMedida] = useState<UnidadMedida[]>([]);
     const [txtValidacion, setTxtValidacion] = useState<string>("");
@@ -37,7 +37,7 @@ const InsumoFormulario: React.FC<InsumoFormularioProps> = ({ show, handleClose, 
         if (isEdit && insumoInicial) {
             setInsumo(insumoInicial); // Cargar los datos del insumo a editar
         } else {
-            setInsumo(new ArticuloInsumo(0, false, '', 0, new Set<ImagenArticulo>(), new UnidadMedida(), categorias[0], 0, 0, 0, false)); // Limpiar el formulario si no estamos editando
+            setInsumo(new ArticuloInsumo( false, '', 0, new Set<ImagenArticulo>(), new UnidadMedida(), categorias[0], 0, 0, 0, false)); // Limpiar el formulario si no estamos editando
         }
     }, [show, isEdit, insumoInicial]);
 

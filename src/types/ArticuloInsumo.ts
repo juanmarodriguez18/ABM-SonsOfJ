@@ -10,7 +10,6 @@ export class ArticuloInsumo extends Articulo {
     esParaElaborar: boolean;
 
     constructor(
-        id: number = 0,
         eliminado: boolean = false,
         denominacion: string = '',
         precioVenta: number = 0,
@@ -22,10 +21,11 @@ export class ArticuloInsumo extends Articulo {
         stockMinimo: number = 0,
         esParaElaborar: boolean = false
     ) {
-        super(id, eliminado, denominacion, precioVenta, imagenesArticulo, unidadMedida, categoria);
+        super(0, eliminado, denominacion, precioVenta, imagenesArticulo, unidadMedida, categoria);
         this.precioCompra = precioCompra;
         this.stockActual = stockActual;
         this.stockMinimo = stockMinimo;
         this.esParaElaborar = esParaElaborar;
     }
 }
+

@@ -7,7 +7,7 @@ export class Categoria extends Base {
     subCategorias?: Set<Categoria>;
 
     constructor(
-        denominacion: string,
+        denominacion: string = "",
         articulos: Set<Articulo> = new Set<Articulo>(),
         subCategorias: Set<Categoria> = new Set<Categoria>()
     ) {
