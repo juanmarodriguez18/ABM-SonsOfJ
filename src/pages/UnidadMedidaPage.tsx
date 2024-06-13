@@ -110,8 +110,10 @@ const UnidadMedidaPage: React.FC = () => {
       <Typography variant="h4" gutterBottom>
         Unidades de Medida
       </Typography>
-      <SearchBar onSearch={handleSearch} />
-      <CustomButton onClick={handleNuevaUnidadMedida} text="Agregar Unidad Medida" />
+      <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+        <CustomButton onClick={handleNuevaUnidadMedida} text="Agregar Unidad Medida" />
+        <SearchBar onSearch={handleSearch} />
+      </Box>
       <UnidadesMedidaTable
         data={filteredUMedida}
         onEdit={handleEditarUnidadMedida}

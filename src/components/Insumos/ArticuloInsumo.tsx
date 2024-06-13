@@ -34,7 +34,7 @@ const Insumo: React.FC<{ articulo: ArticuloInsumo }> = ({ articulo }) => {
     };
 
     return (
-        <ListItem className={`row ${insumo.eliminado ? 'eliminado' : ''}`} alignItems="center" divider>
+        <li className={`row ${insumo.eliminado ? 'eliminado' : ''}`}>
             <TableCell className="col" align="center">
                 <p>{insumo.denominacion}</p>
             </TableCell>
@@ -123,7 +123,7 @@ const Insumo: React.FC<{ articulo: ArticuloInsumo }> = ({ articulo }) => {
                 isEdit={true}
                 insumo={articulo}
             />
-        </ListItem>
+        </li>
     );
 };
 

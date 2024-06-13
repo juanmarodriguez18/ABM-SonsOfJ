@@ -20,6 +20,7 @@
     display: flex;
     justify-content: center; /* Alineación horizontal centrada */
     align-items: center; /* Alineación vertical centrada */
+    border-bottom: none !important; /* Eliminacion de borde de abajo de tablas */
 }
 
 .col:first-child {
@@ -29,8 +30,8 @@
 .img {
     max-width: 100px;
     height: auto;
-    margin-right: 10px;
     border-radius: 4px;
+    margin: auto
 }
 
 .eliminado {
