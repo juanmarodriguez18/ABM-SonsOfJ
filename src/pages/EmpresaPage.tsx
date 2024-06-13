@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Container, Button, Typography, Card, CardContent, CardMedia, CardActions, IconButton } from '@mui/material';
+import { Container, Button, Typography, Card, CardContent, CardMedia, CardActions, IconButton, Box } from '@mui/material';
 import RestoreIcon from '@mui/icons-material/Restore';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -80,15 +80,15 @@ const EmpresaPage: React.FC = () => {
             <Typography variant="h4" gutterBottom>
                 Gestión de Empresas
             </Typography>
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '16px' }}>
+            <Box style={{ display: 'flex', flexWrap: 'wrap', gap: '16px' }}>
                 {empresas.map(empresa => (
-                    <Card key={empresa.id} style={{ maxWidth: '300px', backgroundColor: empresa.eliminado ? '#ffebee' : '#181A1B' }}>
+                    <Card key={empresa.id} style={{ maxWidth: '300px', backgroundColor: empresa.eliminado ? '#FFB9B9' : '#E7F4FA' }}>
                         <CardMedia
                             component="img"
                             height="300"
                             image={empresa.imagenesEmpresa.length > 0 ? empresa.imagenesEmpresa[0].url : 'https://via.placeholder.com/150'}
                             alt={empresa.nombre}
-                            style={{ opacity: empresa.eliminado ? 0.5 : 1 }}
+                            style={{ opacity: empresa.eliminado ? 0.2 : 1 }}
                         />
                         <CardContent>
                             <Typography variant="h6" style={{ fontSize: '16px', lineHeight: '1.2' }}>{empresa.nombre}</Typography>
@@ -113,7 +113,7 @@ const EmpresaPage: React.FC = () => {
                         </CardActions>
                     </Card>
                 ))}
-            </div>
+            </Box>
             <Button variant="contained" color="primary" onClick={handleOpenModal} style={{ marginTop: '16px' }}>
                 Agregar Empresa
             </Button>
