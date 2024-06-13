@@ -40,14 +40,14 @@ const InsumoForm: React.FC<InsumoFormProps> = ({
     const [unidadesMedida, setUnidadesMedida] = useState<UnidadMedida[]>([]);
     const [error, setError] = useState<string>('');
     const [articuloInsumo, setArticuloInsumo] = useState<ArticuloInsumo>(
-        initialData || new ArticuloInsumo(0, false, '', 0, new Set<ImagenArticulo>(), new UnidadMedida(), {} as Categoria, 0, 0, 0, false));
+        initialData || new ArticuloInsumo( false, '', 0, new Set<ImagenArticulo>(), new UnidadMedida(), {} as Categoria, 0, 0, 0, false));
 
     useEffect(() => {
         if (initialData) {
             setArticuloInsumo(initialData);
         } else {
             // Inicializamos con valores por defecto
-            setArticuloInsumo(new ArticuloInsumo(0, false, '', 0, new Set<ImagenArticulo>(), new UnidadMedida(), {} as Categoria, 0, 0, 0, false));
+            setArticuloInsumo(new ArticuloInsumo( false, '', 0, new Set<ImagenArticulo>(), new UnidadMedida(), {} as Categoria, 0, 0, 0, false));
         }
     }, [initialData]);
 
@@ -84,11 +84,12 @@ const InsumoForm: React.FC<InsumoFormProps> = ({
         try {
             // Convertimos el Set de imágenes a un array de objetos con propiedad 'url'
             const imagenesArticuloArray = Array.from(articuloInsumo.imagenesArticulo).map(
-                (imagen: ImagenArticulo) => ({ url: imagen.url })
+                (imagen: ImagenArticulo) => ({ id: 0, url: imagen.url, eliminado: false })
             );
     
             const insumoParaGuardar = {
                 ...articuloInsumo,
+                id: articuloInsumo.id || 0, // Asegurar que el id esté presente
                 imagenesArticulo: imagenesArticuloArray,
             };
     
@@ -105,8 +106,9 @@ const InsumoForm: React.FC<InsumoFormProps> = ({
         }
     };
     
+    
     const handleClose = () => {
-        setArticuloInsumo(new ArticuloInsumo(0, false, '', 0, new Set<ImagenArticulo>(), new UnidadMedida(), {} as Categoria, 0, 0, 0, false));
+        setArticuloInsumo(new ArticuloInsumo( false, '', 0, new Set<ImagenArticulo>(), new UnidadMedida(), {} as Categoria, 0, 0, 0, false));
         setError('');
         onHide();
     };

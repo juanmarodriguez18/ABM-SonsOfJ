@@ -18,7 +18,7 @@ export class Articulo extends Base {
         precioVenta: number = 0.0,
         imagenesArticulo: Set<ImagenArticulo> = new Set(),
         unidadMedida: UnidadMedida = new UnidadMedida(),
-        categoria: Categoria
+        categoria: Categoria =  new Categoria(),
     ) {
         super(id, eliminado);
         this.denominacion = denominacion;
