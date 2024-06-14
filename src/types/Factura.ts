@@ -1,4 +1,5 @@
 import { Base } from './Base';
+import { Pedido } from './Pedido';
 import { FormaPago } from './enums/FormaPago';
 
 
@@ -10,6 +11,7 @@ export class Factura extends Base {
     mpPaymentType: string;
     formaPago: FormaPago;
     totalVenta: number;
+    pedido: Pedido | undefined;
 
     constructor(
         id: number = 0,
