@@ -66,10 +66,11 @@ const Insumo: React.FC<{ articulo: ArticuloInsumo }> = ({ articulo }) => {
                             sx={{
                                 bgcolor: "#ef6c00",
                                 color: "#fff",
+                                borderRadius: "50%",
                                 width: 30,
                                 height: 30,
                                 p: 0.5,
-                                borderRadius: "50%",
+                                marginRight:1,
                                 "&:hover": {
                                     bgcolor: "#e65100",
                                     cursor: "pointer",
@@ -81,10 +82,11 @@ const Insumo: React.FC<{ articulo: ArticuloInsumo }> = ({ articulo }) => {
                             sx={{
                                 bgcolor: "#e53935",
                                 color: "#fff",
+                                borderRadius: "50%",
                                 width: 30,
                                 height: 30,
                                 p: 0.5,
-                                borderRadius: "50%",
+                                marginRight:1,
                                 "&:hover": {
                                     bgcolor: "#b71c1c",
                                     cursor: "pointer",
@@ -110,7 +112,6 @@ const Insumo: React.FC<{ articulo: ArticuloInsumo }> = ({ articulo }) => {
                     />
                 </Box>
             </TableCell>
-
             {/* Formulario de Modificar */}
             <InsumoFormulario
                 show={showForm}

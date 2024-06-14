@@ -117,11 +117,12 @@ const InsumoList: React.FC = () => {
           </FormControl>
         </Box>
       </Box>
+
       <TableContainer
         component={Paper}
         sx={{
           borderRadius: 8,
-          width: '99%',
+          width: '100%',
           marginTop: 2,
           bgcolor: '#eee',
           boxShadow: 2,
@@ -153,9 +154,9 @@ const InsumoList: React.FC = () => {
               </TableCell>
             </TableRow>
           </TableHead>
-          <TableBody>
+          <TableBody sx={{ display: 'block', overflowY: 'auto', maxHeight: '74vh' }}>
             {filteredInsumos.map((insumo) => (
-              <TableRow key={insumo.id}>
+              <TableRow key={insumo.id} sx={{ display: 'table', width: '100%' }}>
                 <Insumo articulo={insumo} />
               </TableRow>
             ))}
