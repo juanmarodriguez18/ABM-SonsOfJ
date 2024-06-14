@@ -4,15 +4,15 @@ import { ImagenArticulo } from '../../types/ImagenArticulo';
 import { UnidadMedida } from '../../types/UnidadMedida';
 import { getImagenesArticulo } from '../../services/ImagenArticuloService';
 import { crearUnidadMedida, getUnidadesMedida } from '../../services/UnidadMedidaService';
-import { actualizarInsumo, crearInsumo} from '../../services/ArticuloInsumoService';
-import AgregarImagenModal from '../ImagenesArticulo/AgregarImagenModal';
+import { actualizarInsumo, crearInsumo } from '../../services/ArticuloInsumoService';
 import AgregarUnidadMedidaModal from '../UnidadesMedida/AgregarUnidadMedidaModal';
 import '../../styles/InsumoFormulario.css'
 import { Categoria } from '../../types/Categoria';
 import AgregarCategoriaModal from '../Categorias/AgregarCategoriaModal';
 import { actualizarCategoria, getCategorias } from '../../services/CategoriaService';
-import { Button, Checkbox, Dialog, DialogActions, DialogContent, DialogTitle, FormControl, FormControlLabel, FormLabel, Grid, InputLabel, MenuItem, Select, TextField,} from '@mui/material';
+import { Button, Checkbox, Dialog, DialogActions, DialogContent, DialogTitle, FormControl, FormControlLabel, FormLabel, Grid, InputLabel, MenuItem, Select, TextField, } from '@mui/material';
 import { CameraAlt } from '@mui/icons-material';
+import uploadImage from '../../services/CloudinaryService';
 
 interface InsumoFormularioProps {
     show: boolean;
@@ -24,20 +24,19 @@ interface InsumoFormularioProps {
 
 const InsumoFormulario: React.FC<InsumoFormularioProps> = ({ show, handleClose, onSave, isEdit = false, insumo: insumoInicial }) => {
     const [categorias, setCategorias] = useState<Categoria[]>([]);
-    const [insumo, setInsumo] = useState<ArticuloInsumo>(new ArticuloInsumo( false, '', 0, new Set<ImagenArticulo>(), new UnidadMedida(), categorias[0], 0, 0, 0, false));
-    const [imagenes, setImagenes] = useState<ImagenArticulo[]>([]);
+    const [insumo, setInsumo] = useState<ArticuloInsumo>(new ArticuloInsumo(false, '', 0, new Set<ImagenArticulo>(), new UnidadMedida(), categorias[0], 0, 0, 0, false));
+    const [, setImagenes] = useState<ImagenArticulo[]>([]);
     const [unidadesMedida, setUnidadesMedida] = useState<UnidadMedida[]>([]);
     const [txtValidacion, setTxtValidacion] = useState<string>("");
-    const [showAgregarImagenModal, setShowAgregarImagenModal] = useState<boolean>(false);
     const [showNuevaUnidadModal, setShowNuevaUnidadModal] = useState<boolean>(false);
     const [showAgregarCategoriaModal, setAgregarCategoriaModal] = useState<boolean>(false);
-    
+
 
     useEffect(() => {
         if (isEdit && insumoInicial) {
             setInsumo(insumoInicial); // Cargar los datos del insumo a editar
         } else {
-            setInsumo(new ArticuloInsumo( false, '', 0, new Set<ImagenArticulo>(), new UnidadMedida(), categorias[0], 0, 0, 0, false)); // Limpiar el formulario si no estamos editando
+            setInsumo(new ArticuloInsumo(false, '', 0, new Set<ImagenArticulo>(), new UnidadMedida(), categorias[0], 0, 0, 0, false)); // Limpiar el formulario si no estamos editando
         }
     }, [show, isEdit, insumoInicial]);
 
@@ -46,13 +45,13 @@ const InsumoFormulario: React.FC<InsumoFormularioProps> = ({ show, handleClose, 
             try {
                 const imagenes = await getImagenesArticulo();
                 setImagenes(imagenes);
-    
+
                 const unidadesMedida = await getUnidadesMedida();
                 setUnidadesMedida(unidadesMedida);
 
                 const categorias = await getCategorias();
                 setCategorias(categorias);
-    
+
                 // Si estamos editando y hay un insumo inicial, configurar las imágenes del insumo
                 if (isEdit && insumoInicial) {
                     // Convertir el Set de imagenesArticulo a un array de ImagenArticulo
@@ -112,13 +111,15 @@ const InsumoFormulario: React.FC<InsumoFormularioProps> = ({ show, handleClose, 
                 ...insumo,
                 imagenesArticulo: imagenesArticuloArray
             };
-    
+
             if (isEdit && insumo.id) {
+                console.log('JSON enviado al backend:', JSON.stringify(insumoParaGuardar));
                 await actualizarInsumo(insumo.id, insumoParaGuardar); // Actualizar el insumo existente
                 alert('El insumo se modificó correctamente');
-                window.location.reload();
-                
+                onSave({ ...insumo, imagenesArticulo: insumo.imagenesArticulo }); // Guardar solo la URL de las imágenes
+
             } else {
+                console.log('JSON enviado al backend:', JSON.stringify(insumoParaGuardar));
                 const nuevoInsumo = await crearInsumo(insumoParaGuardar); // Crear un nuevo insumo
                 alert(`El insumo se guardó correctamente.`);
                 onSave(nuevoInsumo);
@@ -129,10 +130,6 @@ const InsumoFormulario: React.FC<InsumoFormularioProps> = ({ show, handleClose, 
             console.error("Error al guardar el insumo:", error);
             setTxtValidacion("Error al guardar el insumo. Por favor, inténtelo de nuevo más tarde.");
         }
-    };
-
-    const handleImagenSeleccionada = (imagen: ImagenArticulo) => {
-        setInsumo({ ...insumo, imagenesArticulo: new Set([imagen]) });
     };
 
     const handleNuevaUnidadMedida = async (denominacion: string) => {
@@ -157,8 +154,15 @@ const InsumoFormulario: React.FC<InsumoFormularioProps> = ({ show, handleClose, 
         }
     };
 
-    const toggleAgregarImagenModal = () => {
-        setShowAgregarImagenModal(!showAgregarImagenModal);
+    const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const file = event.target.files?.[0];
+        if (file) {
+            handleUpload(file);
+        }
+    };
+
+    const handleUpload = async (file: File) => {
+        uploadImage(file, setInsumo);
     };
 
     const toggleNuevaUnidadModal = () => {
@@ -186,7 +190,7 @@ const InsumoFormulario: React.FC<InsumoFormularioProps> = ({ show, handleClose, 
                             onChange={e => setInsumo({ ...insumo, denominacion: e.target.value })}
                         />
                     </Grid>
-                    
+
                     <Grid item xs={4}>
                         <TextField
                             margin="dense"
@@ -264,7 +268,7 @@ const InsumoFormulario: React.FC<InsumoFormularioProps> = ({ show, handleClose, 
                         </FormControl>
                         <Button className="btn-Guardar" onClick={toggleAgregarCategoria} sx={{ marginTop: 2, marginBottom: 2 }}>Nueva Categoria</Button>
                     </Grid>
-                    
+
                     <Grid item xs={6}>
                         <FormControl fullWidth>
                             <InputLabel id="cmbUnidadMedida-label">Unidad de Medida</InputLabel>
@@ -292,12 +296,25 @@ const InsumoFormulario: React.FC<InsumoFormularioProps> = ({ show, handleClose, 
                         ) : (
                             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%' }}>
                                 <CameraAlt fontSize="large" color="disabled" />
-                                <FormLabel sx={{ margin: 2}}>No hay imagen seleccionada</FormLabel>
+                                <FormLabel sx={{ margin: 2 }}>No hay imagen seleccionada</FormLabel>
                             </div>
                         )}
-                        <Button className="btn-Guardar" onClick={toggleAgregarImagenModal} sx={{ marginTop: 2, marginBottom: 2 }}>
-                            Nueva Imagen
-                        </Button>
+                        <input
+                            type="file"
+                            accept="image/*"
+                            onChange={handleFileChange}
+                            style={{ display: 'none' }}
+                            id="upload-image-input"
+                        />
+                        <label htmlFor="upload-image-input">
+                            <Button
+                                className="btn-Guardar"
+                                component="span"
+                                sx={{ marginTop: 2, marginBottom: 2 }}
+                            >
+                                Nueva Imagen
+                            </Button>
+                        </label>
                     </Grid>
 
                     <Grid item xs={6}>
@@ -324,16 +341,6 @@ const InsumoFormulario: React.FC<InsumoFormularioProps> = ({ show, handleClose, 
                     Guardar
                 </Button>
             </DialogActions>
-            {/* Modal para agregar imagen */}
-            {showAgregarImagenModal && (
-                <AgregarImagenModal
-                    show={showAgregarImagenModal}
-                    onSave={handleImagenSeleccionada}
-                    toggleModal={toggleAgregarImagenModal}
-                    imagenes={imagenes}
-                    setImagenes={setImagenes}
-                />
-            )}
             {/* Modal para agregar unidad de medida */}
             <AgregarUnidadMedidaModal
                 show={showNuevaUnidadModal}
@@ -347,8 +354,8 @@ const InsumoFormulario: React.FC<InsumoFormularioProps> = ({ show, handleClose, 
             />
         </Dialog>
     );
-    
-    
+
+
 }
 
 export default InsumoFormulario;

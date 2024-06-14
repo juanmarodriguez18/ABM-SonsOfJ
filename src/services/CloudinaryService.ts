@@ -1,10 +1,11 @@
 import { ArticuloInsumo } from '../types/ArticuloInsumo';
 import { ImagenArticulo } from '../types/ImagenArticulo';
-import  React  from 'react';
+import React from 'react';
 
 const uploadImage = async (
     file: File,
     setArticuloInsumo: React.Dispatch<React.SetStateAction<ArticuloInsumo>>,
+
 ) => {
     try {
         const formData = new FormData();
@@ -16,11 +17,11 @@ const uploadImage = async (
         });
         const data = await response.json();
         const newImage: ImagenArticulo = {
-            id: Math.floor(Math.random() * 1000), // Generar un número aleatorio para el id
+            id: 0, // Generar un número aleatorio para el id
             url: data.secure_url, // URL de la imagen en Cloudinary
             eliminado: false,
         };
-        setArticuloInsumo((prev: ArticuloInsumo) => {
+        setArticuloInsumo((prev) => {
             const newImages = new Set(prev.imagenesArticulo);
             newImages.add(newImage);
             return {
