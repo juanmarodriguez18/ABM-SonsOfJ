@@ -120,7 +120,7 @@ const InsumoForm: React.FC<InsumoFormProps> = ({
     const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (file) {
-            uploadImage(file, setArticuloInsumo); // Llama a la función de utilidad
+            uploadImage(file, setArticuloInsumo); // Pasar el artículo actual
         }
     };
 

@@ -24,7 +24,7 @@ export const getInsumoById = async (id: number) => {
     }
   };
   
- /* export const crearInsumo = async (nuevoInsumo: any) => {
+export const crearInsumo = async (nuevoInsumo: any) => {
     try {
       const response = await axios.post(API_URL, nuevoInsumo);
       return response.data;
@@ -32,7 +32,7 @@ export const getInsumoById = async (id: number) => {
       console.error("Error al crear un insumo:", error);
       throw error;
     }
-  }; */
+  }; 
   
   export const eliminarInsumo = async (id: number) => {
     try {
@@ -64,7 +64,7 @@ export const getInsumoById = async (id: number) => {
     }
   };
 
-  export const crearInsumo = async (nuevoInsumo: any) => {
+ /* export const crearInsumo = async (nuevoInsumo: any) => {
     try {
       console.log('Datos a enviar:', JSON.stringify(nuevoInsumo, null, 2)); // Verificar los datos antes de enviar
       const response = await axios.post(API_URL, nuevoInsumo, {
@@ -77,7 +77,7 @@ export const getInsumoById = async (id: number) => {
       console.error("Error al crear un insumo:", error);
       throw error;
     }
-  };
+  };*/
 
   /*export async function crearInsumo(nuevoInsumo: ArticuloInsumo): Promise<ArticuloInsumo> {
     try {
