@@ -12,7 +12,6 @@ import { TipoEnvio } from '../../types/enums/TipoEnvio';
 import { FormaPago } from '../../types/enums/FormaPago';
 import { ArticuloManufacturado } from '../../types/ArticuloManufacturado';
 import { useDatosSeleccion } from './useDatosSeleccion';
-import { crearFactura } from './Facturacion';
 import CheckoutMP from './MercadoPago/CheckoutMP';
 
 
@@ -99,8 +98,6 @@ export function Carrito() {
         throw new Error('El total del pedido no es válido.');
       }
 
-      const factura = crearFactura(totalPedido, formaPago);
-
       const nuevoPedido = new Pedido(
         0,
         false,
@@ -116,7 +113,6 @@ export function Carrito() {
         empleado,
         pedidoDetalles,
         clienteSeleccionado,
-        factura
       );
 
       setPedido(nuevoPedido); // Almacenamos el pedido en el estado

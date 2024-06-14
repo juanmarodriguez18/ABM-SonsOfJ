@@ -3,7 +3,6 @@ import { TipoEnvio } from './enums/TipoEnvio';
 import { Domicilio } from './Domicilio';
 import { Empleado } from './Empleado';
 import { Cliente } from './Cliente';
-import { Factura } from './Factura';
 import { Estado } from './enums/Estado';
 import { FormaPago } from './enums/FormaPago';
 import { Sucursal } from './Sucursal';
@@ -22,7 +21,6 @@ export class Pedido extends Base {
     empleado: Empleado;
     pedidoDetalles: PedidoDetalle[];
     cliente: Cliente;
-    factura: Factura | null;
 
     constructor(
         id: number = 0,
@@ -39,7 +37,6 @@ export class Pedido extends Base {
         empleado: Empleado,
         pedidoDetalles: PedidoDetalle[] = [],
         cliente: Cliente,
-        factura: Factura | null = null
     ) {
         super(id, eliminado);
         this.horaEstimadaFinalizacion = horaEstimadaFinalizacion;
@@ -54,6 +51,5 @@ export class Pedido extends Base {
         this.empleado = empleado;
         this.pedidoDetalles = pedidoDetalles;
         this.cliente = cliente;
-        this.factura = factura;
     }
 }
