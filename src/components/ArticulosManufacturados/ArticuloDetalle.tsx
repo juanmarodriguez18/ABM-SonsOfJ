@@ -44,7 +44,16 @@ const ArticuloDetalle: React.FC = () => {
   );
 
   return (
-    <Container>
+    <Container
+    sx={{
+      borderRadius: 8,
+      width: "100%",
+      marginTop: 2,
+      bgcolor: "#eee",
+      boxShadow: 2,
+      overflowY: "auto", maxHeight: "95vh" 
+    }}
+    >
       <Grid container spacing={3}>
         <Grid item xs={12}>
           <Typography variant="h2">{articulo.denominacion}</Typography>
@@ -63,42 +72,40 @@ const ArticuloDetalle: React.FC = () => {
         </Grid>
         <Grid item xs={12} md={6}>
           <Card>
-            <CardContent>
-              <Typography variant="body1">Descripción: {articulo.descripcion}</Typography>
-              <Typography variant="body1">Precio: ${articulo.precioVenta}</Typography>
-              <Typography variant="body1">
+            <CardContent sx={{width: 400, height: 400}}>
+              <Typography sx={{height: 100}} variant="h6">Descripción: {articulo.descripcion}</Typography>
+              <Typography sx={{height: 50}} variant="h6">Precio: ${articulo.precioVenta}</Typography>
+              <Typography sx={{height: 50}} variant="h6">
                 <AccessTime /> Demora: {articulo.tiempoEstimadoMinutos} minutos
               </Typography>
-              <Typography variant="body1">Preparación: {articulo.preparacion}</Typography>
+              <Typography variant="h6">Preparación: {articulo.preparacion}</Typography>
             </CardContent>
           </Card>
         </Grid>
+        
         <Grid item xs={12}>
-          <Typography variant="h3">Insumos</Typography>
+          <Typography variant="h3">Insumos:</Typography>
           {detallesArray.map((detalle) => (
             <Card key={detalle.id} style={{ marginBottom: 20 }}>
               <CardContent>
                 <Grid container spacing={3}>
                   <Grid item xs={12} sm={6}>
-                    <Typography variant="body1">
-                      {detalle.articuloInsumo.denominacion}
+                    <Typography variant="h4" sx={{height: 100, textAlign: "right" }}>{detalle.articuloInsumo.denominacion}</Typography>
+                    <Typography variant="h5" sx={{height: 100, textAlign: "right" }}>
+                      <AttachMoney /> Cantidad: {detalle.cantidad}{" "}{detalle.articuloInsumo.unidadMedida.denominacion}
                     </Typography>
                   </Grid>
-                  <Grid item xs={12} sm={6} style={{ textAlign: "center" }}>
+                  <Grid item xs={12} sm={6}>
                     {Array.from(detalle.articuloInsumo.imagenesArticulo).length > 0 && (
-                      <CardMedia
-                        component="img"
-                        height="100"
-                        image={Array.from(detalle.articuloInsumo.imagenesArticulo)[0].url}
-                        alt={detalle.articuloInsumo.denominacion}
-                      />
+                      <Card>
+                        <CardMedia
+                          component="img"
+                          height="300"
+                          image={Array.from(detalle.articuloInsumo.imagenesArticulo)[0].url}
+                          alt={detalle.articuloInsumo.denominacion}
+                        />
+                      </Card>
                     )}
-                  </Grid>
-                  <Grid item xs={12}>
-                    <Typography variant="body1">
-                      <AttachMoney /> Cantidad: {detalle.cantidad}{" "}
-                      {detalle.articuloInsumo.unidadMedida.denominacion}
-                    </Typography>
                   </Grid>
                 </Grid>
               </CardContent>

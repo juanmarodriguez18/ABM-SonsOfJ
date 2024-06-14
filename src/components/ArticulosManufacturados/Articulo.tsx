@@ -11,11 +11,8 @@ import UndoIcon from "@mui/icons-material/Undo";
 import InfoIcon from "@mui/icons-material/Info";
 import { ArticuloManufacturadoDetalle } from "../../types/ArticuloManufacturadoDetalle";
 
-const Articulo: React.FC<{ articulo: ArticuloManufacturado }> = ({
-  articulo,
-}) => {
-  const [manufacturado, setManufacturado] =
-    useState<ArticuloManufacturado>(articulo);
+const Articulo: React.FC<{ articulo: ArticuloManufacturado }> = ({articulo}) => {
+  const [manufacturado, setManufacturado] = useState<ArticuloManufacturado>(articulo);
   const imagenesArray = Array.from(articulo.imagenesArticulo);
   const primeraImagen = imagenesArray[0]?.url;
   const [showForm, setShowForm] = useState(false);
@@ -70,10 +67,11 @@ const Articulo: React.FC<{ articulo: ArticuloManufacturado }> = ({
               sx={{
                 bgcolor: "#ef6c00",
                 color: "#fff",
+                borderRadius: "50%",
                 width: 30,
                 height: 30,
                 p: 0.5,
-                borderRadius: "50%",
+                marginRight:1,
                 "&:hover": {
                   bgcolor: "#e65100",
                   cursor: "pointer",
@@ -85,10 +83,11 @@ const Articulo: React.FC<{ articulo: ArticuloManufacturado }> = ({
               sx={{
                 bgcolor: "#e53935",
                 color: "#fff",
+                borderRadius: "50%",
                 width: 30,
                 height: 30,
                 p: 0.5,
-                borderRadius: "50%",
+                marginRight:1,
                 "&:hover": {
                   bgcolor: "#b71c1c",
                   cursor: "pointer",
@@ -106,6 +105,7 @@ const Articulo: React.FC<{ articulo: ArticuloManufacturado }> = ({
               width: 30,
               height: 30,
               p: 0.5,
+              marginRight:1,
               "&:hover": {
                 bgcolor: "#1a237e",
                 cursor: manufacturado.eliminado ? "not-allowed" : "pointer",

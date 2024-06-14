@@ -17,9 +17,7 @@ import CustomButton from "../Shared/CustomButton";
 
 const ArticuloList: React.FC = () => {
   const [articulos, setArticulos] = useState<ArticuloManufacturado[]>([]);
-  const [filteredArticulos, setFilteredArticulos] = useState<
-    ArticuloManufacturado[]
-  >([]);
+  const [filteredArticulos, setFilteredArticulos] = useState<ArticuloManufacturado[]>([]);
   const [query, setQuery] = useState<string>("");
   const [showModal, setShowModal] = useState<boolean>(false);
   const [categorias, setCategorias] = useState<Categoria[]>([]);
@@ -89,7 +87,7 @@ const ArticuloList: React.FC = () => {
   return (
     <Box p={3}>
       <Typography variant="h4" gutterBottom>
-        Articulos Manufacturados
+        Manufacturados
       </Typography>
       <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
         <CustomButton onClick={() => setShowModal(true)} text="Agregar Manufacturado" icon={<AddIcon />} />
@@ -138,7 +136,7 @@ const ArticuloList: React.FC = () => {
         component={Paper}
         sx={{
           borderRadius: 8,
-          width: "99%",
+          width: "100%",
           marginTop: 2,
           bgcolor: "#eee",
           boxShadow: 2,
@@ -167,9 +165,9 @@ const ArticuloList: React.FC = () => {
               </TableCell>
             </TableRow>
           </TableHead>
-          <TableBody>
+          <TableBody sx={{ display: 'block', overflowY: 'auto', maxHeight: '74vh' }}>
             {filteredArticulos.map((articulo) => (
-              <TableRow key={articulo.id}>
+              <TableRow key={articulo.id} sx={{ display: 'table', width: '100%' }}>
                 <Articulo key={articulo.id} articulo={articulo} />
               </TableRow>
             ))}
