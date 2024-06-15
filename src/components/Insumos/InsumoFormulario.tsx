@@ -154,15 +154,12 @@ const InsumoFormulario: React.FC<InsumoFormularioProps> = ({ show, handleClose, 
         }
     };
 
-    const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        const file = event.target.files?.[0];
-        if (file) {
-            handleUpload(file);
+    const handleUploadImage = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const files = e.target.files;
+        if (files && files.length > 0) {
+            const file = files[0];
+            await uploadImage(file, setInsumo);
         }
-    };
-
-    const handleUpload = async (file: File) => {
-        uploadImage(file, setInsumo);
     };
 
     const toggleNuevaUnidadModal = () => {
@@ -291,7 +288,8 @@ const InsumoFormulario: React.FC<InsumoFormularioProps> = ({ show, handleClose, 
                     <Grid item xs={6}>
                         {insumo.imagenesArticulo.size > 0 ? (
                             <div className="selected-image">
-                                <img className="img" src={Array.from(insumo.imagenesArticulo)[0].url} alt="Imagen seleccionada" />
+                                {/* Mostrar la última imagen agregada */}
+                                <img className="img" src={Array.from(insumo.imagenesArticulo)[insumo.imagenesArticulo.size - 1].url} alt="Imagen seleccionada" />
                             </div>
                         ) : (
                             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%' }}>
@@ -302,7 +300,7 @@ const InsumoFormulario: React.FC<InsumoFormularioProps> = ({ show, handleClose, 
                         <input
                             type="file"
                             accept="image/*"
-                            onChange={handleFileChange}
+                            onChange={handleUploadImage}
                             style={{ display: 'none' }}
                             id="upload-image-input"
                         />
@@ -316,6 +314,7 @@ const InsumoFormulario: React.FC<InsumoFormularioProps> = ({ show, handleClose, 
                             </Button>
                         </label>
                     </Grid>
+
 
                     <Grid item xs={6}>
                         <FormControlLabel
