@@ -8,7 +8,6 @@ import EmpresaPage from "./pages/EmpresaPage";
 import { Carrito } from "./components/Carrito/Carrito";
 import GrillaManufacturados from "./components/ArticulosManufacturados/GrillaManufacturados";
 import PedidosPage from "./pages/PedidosPage";
-import ArticuloInsumoPage from "./pages/ArticuloInsumoPage";
 
 function App() {
   return (
@@ -24,7 +23,6 @@ function App() {
           <Route path="/pedidos" element={<PedidosPage />} />
           <Route path="/carrito" element={<Carrito />} />
           <Route path="/grilla" element={<GrillaManufacturados />} />
-          <Route path="/ArticuloInsumoPage" element={<ArticuloInsumoPage />} />
         </Routes>
       </Layout>
     </BrowserRouter>

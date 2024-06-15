@@ -3,13 +3,13 @@ import { ArticuloManufacturado } from "../../types/ArticuloManufacturado";
 import { Link } from "react-router-dom";
 import { recuperarManufacturado } from "../../services/ArticuloManufacturadoService";
 import { eliminarArticuloManufacturado } from "../../services/ArticuloManufacturadoService";
-import AgregarArticuloManufacturadoModal from "./AgregarArticuloManufacturadoModal";
 import { Box, TableCell } from "@mui/material";
 import ModeEditIcon from "@mui/icons-material/ModeEdit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import UndoIcon from "@mui/icons-material/Undo";
 import InfoIcon from "@mui/icons-material/Info";
 import { ArticuloManufacturadoDetalle } from "../../types/ArticuloManufacturadoDetalle";
+import ManufacturadoFormulario from "./ManufacturadoFormulario";
 
 const Articulo: React.FC<{ articulo: ArticuloManufacturado }> = ({articulo}) => {
   const [manufacturado, setManufacturado] = useState<ArticuloManufacturado>(articulo);
@@ -133,7 +133,7 @@ const Articulo: React.FC<{ articulo: ArticuloManufacturado }> = ({articulo}) => 
         </Box>
       </TableCell>
       {/* Formulario de Modificar */}
-      <AgregarArticuloManufacturadoModal
+      <ManufacturadoFormulario
         show={showForm}
         handleClose={() => setShowForm(false)}
         onSave={(manufacturado: ArticuloManufacturado) => {

@@ -8,8 +8,13 @@ import {
   CardContent,
   CardMedia,
   CircularProgress,
+  TableContainer,
+  Table,
+  TableBody,
+  TableRow,
+  TableCell,
 } from "@mui/material";
-import { AttachMoney, AccessTime } from "@mui/icons-material";
+import { AccessTime } from "@mui/icons-material";
 import { getArticuloManufacturadoById } from "../../services/ArticuloManufacturadoService";
 import { ArticuloManufacturado } from "../../types/ArticuloManufacturado";
 import { ArticuloManufacturadoDetalle } from "../../types/ArticuloManufacturadoDetalle";
@@ -38,6 +43,7 @@ const ArticuloDetalle: React.FC = () => {
     return <CircularProgress />;
   }
 
+  // Convertir sets a arrays para poder acceder a ellos
   const imagenesArticuloArray = Array.from(articulo.imagenesArticulo);
   const detallesArray: ArticuloManufacturadoDetalle[] = Array.from(
     articulo.articuloManufacturadoDetalles
@@ -45,14 +51,15 @@ const ArticuloDetalle: React.FC = () => {
 
   return (
     <Container
-    sx={{
-      borderRadius: 8,
-      width: "100%",
-      marginTop: 2,
-      bgcolor: "#eee",
-      boxShadow: 2,
-      overflowY: "auto", maxHeight: "95vh" 
-    }}
+      sx={{
+        borderRadius: 8,
+        width: "100%",
+        marginTop: 2,
+        bgcolor: "#eee",
+        boxShadow: 2,
+        overflowY: "auto",
+        maxHeight: "95vh",
+      }}
     >
       <Grid container spacing={3}>
         <Grid item xs={12}>
@@ -63,7 +70,7 @@ const ArticuloDetalle: React.FC = () => {
             <Card>
               <CardMedia
                 component="img"
-                height="400"
+                height="100%"
                 image={imagenesArticuloArray[0].url}
                 alt={articulo.denominacion}
               />
@@ -72,45 +79,56 @@ const ArticuloDetalle: React.FC = () => {
         </Grid>
         <Grid item xs={12} md={6}>
           <Card>
-            <CardContent sx={{width: 400, height: 400}}>
-              <Typography sx={{height: 100}} variant="h6">Descripción: {articulo.descripcion}</Typography>
-              <Typography sx={{height: 50}} variant="h6">Precio: ${articulo.precioVenta}</Typography>
-              <Typography sx={{height: 50}} variant="h6">
+            <CardContent sx={{ width: "100%", height: "100%" }}>
+              <Typography sx={{ height: 100 }} variant="h6">
+                Descripción: {articulo.descripcion}
+              </Typography>
+              <Typography sx={{ height: 50 }} variant="h6">
+                Precio: ${articulo.precioVenta}
+              </Typography>
+              <Typography sx={{ height: 50 }} variant="h6">
                 <AccessTime /> Demora: {articulo.tiempoEstimadoMinutos} minutos
               </Typography>
-              <Typography variant="h6">Preparación: {articulo.preparacion}</Typography>
+              <Typography variant="h6">
+                Preparación: {articulo.preparacion}
+              </Typography>
             </CardContent>
           </Card>
         </Grid>
-        
+
         <Grid item xs={12}>
-          <Typography variant="h3">Insumos:</Typography>
-          {detallesArray.map((detalle) => (
-            <Card key={detalle.id} style={{ marginBottom: 20 }}>
-              <CardContent>
-                <Grid container spacing={3}>
-                  <Grid item xs={12} sm={6}>
-                    <Typography variant="h4" sx={{height: 100, textAlign: "right" }}>{detalle.articuloInsumo.denominacion}</Typography>
-                    <Typography variant="h5" sx={{height: 100, textAlign: "right" }}>
-                      <AttachMoney /> Cantidad: {detalle.cantidad}{" "}{detalle.articuloInsumo.unidadMedida.denominacion}
-                    </Typography>
-                  </Grid>
-                  <Grid item xs={12} sm={6}>
-                    {Array.from(detalle.articuloInsumo.imagenesArticulo).length > 0 && (
-                      <Card>
+          <Typography variant="h4">Insumos:</Typography>
+          <TableContainer>
+            <Table>
+              <TableBody>
+                {detallesArray.map((detalle) => (
+                  <TableRow key={detalle.id}>
+                    <TableCell>
+                      <Typography variant="h5">
+                        {detalle.articuloInsumo.denominacion}
+                      </Typography>
+                      <Typography variant="h6">
+                        <span>Cantidad: {detalle.cantidad} </span>
+                        <span>
+                          {detalle.articuloInsumo.unidadMedida.denominacion}
+                        </span>
+                      </Typography>
+                    </TableCell>
+                    <TableCell>
+                      {Array.from(detalle.articuloInsumo.imagenesArticulo).length > 0 && (
                         <CardMedia
                           component="img"
-                          height="300"
                           image={Array.from(detalle.articuloInsumo.imagenesArticulo)[0].url}
                           alt={detalle.articuloInsumo.denominacion}
+                          sx={{ maxWidth: 150, maxHeight: 150 }}
                         />
-                      </Card>
-                    )}
-                  </Grid>
-                </Grid>
-              </CardContent>
-            </Card>
-          ))}
+                      )}
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
         </Grid>
       </Grid>
     </Container>
