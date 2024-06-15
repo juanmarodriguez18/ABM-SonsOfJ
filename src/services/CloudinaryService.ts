@@ -1,37 +1,18 @@
-import { ArticuloInsumo } from '../types/ArticuloInsumo';
-import { ImagenArticulo } from '../types/ImagenArticulo';
-import React from 'react';
+// src/services/CloudinaryService.js
 
-const uploadImage = async (
-    file: File,
-    setArticuloInsumo: React.Dispatch<React.SetStateAction<ArticuloInsumo>>,
+import axios from 'axios';
 
-) => {
+const uploadImage = async (file: string | Blob) => {
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('upload_preset', 'ml_default'); // Ajustar según tu configuración en Cloudinary
+
     try {
-        const formData = new FormData();
-        formData.append('file', file);
-        formData.append('upload_preset', 'ml_default'); // Reemplazar por tu upload preset de Cloudinary
-        const response = await fetch('https://api.cloudinary.com/v1_1/dqb1586ud/image/upload', {
-            method: 'POST',
-            body: formData,
-        });
-        const data = await response.json();
-        const newImage: ImagenArticulo = {
-            id: 0, // Generar un número aleatorio para el id
-            url: data.secure_url, // URL de la imagen en Cloudinary
-            eliminado: false,
-        };
-        setArticuloInsumo((prev) => {
-            const newImages = new Set(prev.imagenesArticulo);
-            newImages.add(newImage);
-            return {
-                ...prev,
-                imagenesArticulo: newImages,
-            };
-        });
+        const response = await axios.post('https://api.cloudinary.com/v1_1/dqb1586ud/image/upload', formData);
+        return response.data.secure_url;
     } catch (error) {
-        console.error('Error al cargar la imagen en Cloudinary:', error);
-        alert('Hubo un error al cargar la imagen. Por favor, inténtalo de nuevo.');
+        console.error('Error uploading image:', error);
+        throw error;
     }
 };
 

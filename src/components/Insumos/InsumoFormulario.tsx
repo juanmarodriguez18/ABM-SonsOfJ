@@ -158,7 +158,14 @@ const InsumoFormulario: React.FC<InsumoFormularioProps> = ({ show, handleClose, 
         const files = e.target.files;
         if (files && files.length > 0) {
             const file = files[0];
-            await uploadImage(file, setInsumo);
+            const url = await uploadImage(file);
+            const nuevaImagen = new ImagenArticulo(0, false, url);
+
+            // Reemplazar la imagen anterior con la nueva
+            setInsumo({
+                ...insumo,
+                imagenesArticulo: new Set<ImagenArticulo>([nuevaImagen])
+            });
         }
     };
 
