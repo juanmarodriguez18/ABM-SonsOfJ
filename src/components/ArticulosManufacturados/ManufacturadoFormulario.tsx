@@ -1,7 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Button, TextField, Grid, MenuItem, DialogTitle, DialogContent, FormControl, InputLabel, Select, DialogActions, Dialog, FormLabel, Autocomplete } from '@mui/material';
-import AgregarArticuloDetalleModal from '../ArticuloManufacturadoDetalles/AgregarArticuloDetalleModal';
-import AgregarImagenModal from '../ImagenesArticulo/AgregarImagenModal';
+import { Button, TextField, Grid, MenuItem, DialogTitle, DialogContent, FormControl, InputLabel, Select, DialogActions, Dialog, FormLabel, Autocomplete, IconButton } from '@mui/material';
 import AgregarCategoriaModal from '../Categorias/AgregarCategoriaModal';
 import { ArticuloManufacturado } from '../../types/ArticuloManufacturado';
 import { ImagenArticulo } from '../../types/ImagenArticulo';
@@ -13,11 +11,13 @@ import { getImagenesArticulo } from '../../services/ImagenArticuloService';
 import { actualizarCategoria, getCategorias } from '../../services/CategoriaService';
 import '../../styles/InsumoFormulario.css';
 import { actualizarArticuloManufacturado, crearArticuloManufacturado } from '../../services/ArticuloManufacturadoService';
-import { crearArticuloManufacturadoDetalle, getArticulosManufacturadosDetalle } from '../../services/ArticuloManufacturadoDetalleService';
+import { getArticulosManufacturadosDetalle } from '../../services/ArticuloManufacturadoDetalleService';
 import { getUnidadesMedida } from '../../services/UnidadMedidaService';
 import { CameraAlt } from '@mui/icons-material';
+import uploadImage from '../../services/CloudinaryService';
+import { Delete as DeleteIcon } from '@mui/icons-material';
 
-interface AgregarArticuloManufacturadoModalProps {
+interface ManufacturadoFormularioProps {
     show: boolean;
     handleClose: () => void;
     onSave: (articulo: ArticuloManufacturado) => void;
@@ -30,15 +30,36 @@ interface AgregarArticuloManufacturadoModalProps {
     setDetalles: React.Dispatch<React.SetStateAction<ArticuloManufacturadoDetalle[]>>;
 }
 
-const AgregarArticuloManufacturadoModal: React.FC<AgregarArticuloManufacturadoModalProps> = ({
+const createEmptyArticuloInsumo = (): ArticuloInsumo => ({
+    id: 0,
+    denominacion: '',
+    precioVenta: 0,
+    precioCompra: 0,
+    stockActual: 0,
+    stockMinimo: 0,
+    unidadMedida: {
+        id: 0,
+        denominacion: '',
+        eliminado: false
+    },
+    categoria: {
+        id: 0,
+        denominacion: '',
+        eliminado: false
+    },
+    esParaElaborar: false,
+    eliminado: false,
+    imagenesArticulo: new Set<ImagenArticulo>(),
+});
+
+const ManufacturadoFormulario: React.FC<ManufacturadoFormularioProps> = ({
     show,
     handleClose,
     onSave,
     isEdit = false,
     articuloManufacturadoInicial,
     articulosInsumo,
-    imagenesArticulo,
-    
+
 }) => {
     const [denominacion, setDenominacion] = useState<string>('');
     const [precioVenta, setPrecioVenta] = useState<number>(0);
@@ -50,11 +71,9 @@ const AgregarArticuloManufacturadoModal: React.FC<AgregarArticuloManufacturadoMo
     const [articuloManufacturadoDetalles, setArticuloManufacturadoDetalles] = useState<ArticuloManufacturadoDetalle[]>([]);
     const [selectedImagen, setSelectedImagen] = useState<ImagenArticulo | null>(null);
     const [categorias, setCategorias] = useState<Categoria[]>([]);
-    const [showDetalleModal, setShowDetalleModal] = useState<boolean>(false);
-    const [showAgregarImagenModal, setShowAgregarImagenModal] = useState<boolean>(false);
     const [showAgregarCategoriaModal, setShowAgregarCategoriaModal] = useState<boolean>(false);
-    const [, setImagenesArticulos] = useState<ImagenArticulo[]>([]);
     const [unidadesMedida, setUnidadesMedida] = useState<UnidadMedida[]>([]);
+    const filteredArticulosInsumo = articulosInsumo.filter((insumo) => insumo.esParaElaborar);
 
 
     useEffect(() => {
@@ -99,6 +118,7 @@ const AgregarArticuloManufacturadoModal: React.FC<AgregarArticuloManufacturadoMo
     }, [show, isEdit, articuloManufacturadoInicial]);
 
     const handleGuardar = async () => {
+
         if (!selectedImagen) {
             console.error('No se ha seleccionado ninguna imagen');
             return;
@@ -143,9 +163,11 @@ const AgregarArticuloManufacturadoModal: React.FC<AgregarArticuloManufacturadoMo
             console.log('JSON enviado al servidor:', JSON.stringify(articuloParaGuardar, null, 2));
 
             if (isEdit && articuloManufacturadoInicial) {
+                console.log('JSON enviado al backend:', JSON.stringify(articuloParaGuardar));
                 await actualizarArticuloManufacturado(nuevoArticuloManufacturado.id, articuloParaGuardar); // Actualizar artículo
                 alert('El ArticuloManufacturado se actualizó correctamente');
             } else {
+                console.log('JSON enviado al backend:', JSON.stringify(articuloParaGuardar));
                 const articuloCreado = await crearArticuloManufacturado(articuloParaGuardar); // Crear nuevo artículo
                 alert('El ArticuloManufacturado se guardó correctamente');
                 onSave(articuloCreado);
@@ -168,36 +190,44 @@ const AgregarArticuloManufacturadoModal: React.FC<AgregarArticuloManufacturadoMo
         }
     };
 
-    const agregarDetalle = async (detalle: ArticuloManufacturadoDetalle) => {
-        try {
-            // Llamada al backend para guardar el detalle usando tu servicio
-            const response = await crearArticuloManufacturadoDetalle(detalle);
+    const agregarDetalle = () => {
+        setArticuloManufacturadoDetalles([...articuloManufacturadoDetalles, {
+            id: 0,
+            cantidad: 0,
+            articuloInsumo: createEmptyArticuloInsumo(),
+            eliminado: false,
+        }]);
+    };
 
-            // Manejar la respuesta como sea necesario (actualización de estado, etc.)
-            console.log('Detalle agregado correctamente:', response);
+    const handleUploadImage = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const files = e.target.files;
+        if (files && files.length > 0) {
+            const file = files[0];
+            const url = await uploadImage(file); // Llamada a tu función de subida de imagen
+            const nuevaImagen = new ImagenArticulo(0, false, url);
 
-            // Ejemplo: Actualizar el estado de detalles si es necesario
-            setArticuloManufacturadoDetalles([...articuloManufacturadoDetalles, response]);
-        } catch (error) {
-            console.error('Error al agregar detalle:', error);
-            // Manejar el error apropiadamente
+            setSelectedImagen(nuevaImagen);
         }
-    };
-
-    const handleImagenSeleccionada = (imagen: ImagenArticulo) => {
-        setSelectedImagen(imagen);
-    };
-
-    const handleSetImagenes = (nuevasImagenes: ImagenArticulo[]) => {
-        setImagenesArticulos(nuevasImagenes);
-    };
-
-    const toggleAgregarImagenModal = () => {
-        setShowAgregarImagenModal(!showAgregarImagenModal);
     };
 
     const toggleAgregarCategoriaModal = () => {
         setShowAgregarCategoriaModal(!showAgregarCategoriaModal);
+    };
+
+    const handleArticuloInsumoChange = (index: number, insumo: ArticuloInsumo | null) => {
+        setArticuloManufacturadoDetalles((prevState) =>
+            prevState.map((prevDetalle, idx) =>
+                idx === index
+                    ? { ...prevDetalle, articuloInsumo: insumo || createEmptyArticuloInsumo() }
+                    : prevDetalle
+            )
+        );
+    };
+
+    const eliminarDetalle = (index: number) => {
+        setArticuloManufacturadoDetalles((prevState) =>
+            prevState.filter((_, idx) => idx !== index)
+        );
     };
 
     return (
@@ -321,75 +351,74 @@ const AgregarArticuloManufacturadoModal: React.FC<AgregarArticuloManufacturadoMo
                                 ) : (
                                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%' }}>
                                         <CameraAlt fontSize="large" color="disabled" />
-                                        <FormLabel sx={{ margin: 2}}>No hay imagen seleccionada</FormLabel>
+                                        <FormLabel sx={{ margin: 2 }}>No hay imagen seleccionada</FormLabel>
                                     </div>
                                 )}
-                                <Button className="btn-Guardar" onClick={toggleAgregarImagenModal} sx={{ marginTop: 2, marginBottom: 2 }}>
-                                    Nueva Imagen
-                                </Button>
+                                <input
+                                    accept="image/*"
+                                    style={{ display: 'none' }}
+                                    id="upload-image"
+                                    type="file"
+                                    onChange={handleUploadImage}
+                                />
+                                <label htmlFor="upload-image">
+                                    <Button component="span" className="btn-Guardar" sx={{ marginTop: 2, marginBottom: 2 }}>
+                                        Nueva Imagen
+                                    </Button>
+                                </label>
                             </FormControl>
                         </Grid>
-                        <Grid item xs={12}>
-                            <FormControl fullWidth margin="dense">
-                                <FormLabel id="detalles-label">Detalles del Artículo Manufacturado</FormLabel>
-                                {articuloManufacturadoDetalles.map((detalle, index) => (
-                                    <Grid container spacing={2} key={index}>
-                                        <Grid item xs={6}>
-                                            <TextField
-                                                margin="dense"
-                                                id={`detalle-cantidad-${index}`}
-                                                label="Cantidad"
-                                                type="number"
-                                                fullWidth
-                                                value={detalle.cantidad}
-                                                onChange={(e) =>
-                                                    setArticuloManufacturadoDetalles((prevState) =>
-                                                        prevState.map((prevDetalle, idx) =>
-                                                            idx === index
-                                                                ? { ...prevDetalle, cantidad: Number(e.target.value) }
-                                                                : prevDetalle
-                                                        )
-                                                    )
-                                                }
-                                            />
-                                        </Grid>
-                                        <Grid item xs={6}>
-                                        <FormControl fullWidth margin="dense">
-                                            <Autocomplete
-                                                id={`detalle-insumo-${index}`}
-                                                options={articulosInsumo}
-                                                getOptionLabel={(option) => option.denominacion}
-                                                value={detalle.articuloInsumo || null}
-                                                onChange={(_event, newValue) =>
-                                                    setArticuloManufacturadoDetalles((prevState) =>
-                                                        prevState.map((prevDetalle, idx) =>
-                                                            idx === index
-                                                                ? {
-                                                                    ...prevDetalle,
-                                                                    articuloInsumo: newValue || prevDetalle.articuloInsumo,
-                                                                }
-                                                                : prevDetalle
-                                                        )
-                                                    )
-                                                }
-                                                renderInput={(params) => (
-                                                    <TextField
-                                                        {...params}
-                                                        label="Insumo"
-                                                        variant="outlined"
-                                                    />
-                                                )}
-                                            />
-                                        </FormControl>
-                                    </Grid>
 
-                                    </Grid>
-                                ))}
-                                <Button className="btn-Guardar" onClick={() => setShowDetalleModal(true)}>
-                                    Agregar Detalle
-                                </Button>
-                            </FormControl>
+                        <Grid item xs={12}>
+                            <Button onClick={agregarDetalle}>Agregar Detalle</Button>
                         </Grid>
+                        {articuloManufacturadoDetalles.map((detalle, index) => (
+                            <Grid container spacing={2} key={index} alignItems="center">
+                                <Grid item xs={3}>
+                                    <TextField
+                                        margin="dense"
+                                        id={`detalle-cantidad-${index}`}
+                                        label="Cantidad"
+                                        type="number"
+                                        fullWidth
+                                        value={detalle.cantidad}
+                                        onChange={(e) =>
+                                            setArticuloManufacturadoDetalles((prevState) =>
+                                                prevState.map((prevDetalle, idx) =>
+                                                    idx === index
+                                                        ? { ...prevDetalle, cantidad: Number(e.target.value) }
+                                                        : prevDetalle
+                                                )
+                                            )
+                                        }
+                                    />
+                                </Grid>
+                                <Grid item xs={7}>
+                                    <FormControl fullWidth>
+                                        <Autocomplete
+                                            id={`autocomplete-articuloInsumo-${index}`}
+                                            options={filteredArticulosInsumo}
+                                            getOptionLabel={(option) => option.denominacion}
+                                            value={detalle.articuloInsumo}
+                                            onChange={(_event, newValue) => handleArticuloInsumoChange(index, newValue)}
+                                            renderInput={(params) => (
+                                                <TextField
+                                                    {...params}
+                                                    label="Artículo Insumo"
+                                                    variant="outlined"
+                                                    fullWidth
+                                                />
+                                            )}
+                                        />
+                                    </FormControl>
+                                </Grid>
+                                <Grid item xs={2}>
+                                    <IconButton onClick={() => eliminarDetalle(index)}>
+                                        <DeleteIcon />
+                                    </IconButton>
+                                </Grid>
+                            </Grid>
+                        ))}
                     </Grid>
                 </DialogContent>
                 <DialogActions>
@@ -401,26 +430,6 @@ const AgregarArticuloManufacturadoModal: React.FC<AgregarArticuloManufacturadoMo
                     </Button>
                 </DialogActions>
             </Dialog>
-
-            <AgregarArticuloDetalleModal
-                show={showDetalleModal}
-                onHide={() => setShowDetalleModal(false)}
-                agregarArticuloDetalle={agregarDetalle}
-                articulosInsumo={articulosInsumo}
-            />
-
-            <div>
-                {showAgregarImagenModal && (
-                    <AgregarImagenModal
-                        show={showAgregarImagenModal}
-                        onSave={handleImagenSeleccionada}
-                        toggleModal={toggleAgregarImagenModal}
-                        imagenes={imagenesArticulo}
-                        setImagenes={handleSetImagenes}
-                    />
-                )}
-            </div>
-
             <AgregarCategoriaModal
                 show={showAgregarCategoriaModal}
                 onHide={toggleAgregarCategoriaModal}
@@ -430,4 +439,4 @@ const AgregarArticuloManufacturadoModal: React.FC<AgregarArticuloManufacturadoMo
     );
 };
 
-export default AgregarArticuloManufacturadoModal;
+export default ManufacturadoFormulario;

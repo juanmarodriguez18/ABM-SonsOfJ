@@ -34,9 +34,9 @@ export const CartContext = createContext<CartContextType>({
 export function CarritoContextProvider({ children }: { children: ReactNode }) {
   const [cart, setCart] = useState<PedidoDetalle[]>([]);
   const [totalPedido, setTotalPedido] = useState<number>(0);
-  const [cliente, setCliente] = useState<Cliente | null>(null);
-  const [empleado, setEmpleado] = useState<Empleado | null>(null);
-  const [sucursal, setSucursal] = useState<Sucursal | null>(null);
+  const [cliente, ] = useState<Cliente | null>(null);
+  const [empleado, ] = useState<Empleado | null>(null);
+  const [sucursal, ] = useState<Sucursal | null>(null);
 
   useEffect(() => {
     const storedCart = localStorage.getItem('cart');

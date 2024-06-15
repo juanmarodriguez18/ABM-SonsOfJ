@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import { getArticulosManufacturados } from "../../services/ArticuloManufacturadoService";
 import Articulo from "./Articulo";
 import SearchBar from "../SearchBar/SearchBar";
-import AgregarArticuloManufacturadoModal from "./AgregarArticuloManufacturadoModal";
 import { ArticuloManufacturado } from "../../types/ArticuloManufacturado";
 import { ArticuloInsumo } from "../../types/ArticuloInsumo";
 import { UnidadMedida } from "../../types/UnidadMedida";
@@ -14,6 +13,7 @@ import { Categoria } from "../../types/Categoria";
 import AddIcon from "@mui/icons-material/Add";
 import { ArticuloManufacturadoDetalle } from "../../types/ArticuloManufacturadoDetalle";
 import CustomButton from "../Shared/CustomButton";
+import ManufacturadoFormulario from "./ManufacturadoFormulario";
 
 const ArticuloList: React.FC = () => {
   const [articulos, setArticulos] = useState<ArticuloManufacturado[]>([]);
@@ -175,7 +175,7 @@ const ArticuloList: React.FC = () => {
         </Table>
       </TableContainer>
 
-      <AgregarArticuloManufacturadoModal
+      <ManufacturadoFormulario
         show={showModal}
         handleClose={() => setShowModal(false)}
         onSave={agregarArticuloManufacturado}
