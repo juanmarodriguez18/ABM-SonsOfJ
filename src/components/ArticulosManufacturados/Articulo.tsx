@@ -1,22 +1,29 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { ArticuloManufacturado } from "../../types/ArticuloManufacturado";
 import { Link } from "react-router-dom";
-import { recuperarManufacturado } from "../../services/ArticuloManufacturadoService";
+import { recuperarManufacturado} from "../../services/ArticuloManufacturadoService";
 import { eliminarArticuloManufacturado } from "../../services/ArticuloManufacturadoService";
 import { Box, TableCell } from "@mui/material";
 import ModeEditIcon from "@mui/icons-material/ModeEdit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import UndoIcon from "@mui/icons-material/Undo";
 import InfoIcon from "@mui/icons-material/Info";
-import { ArticuloManufacturadoDetalle } from "../../types/ArticuloManufacturadoDetalle";
 import ManufacturadoFormulario from "./ManufacturadoFormulario";
+import { getArticuloManufacturadoDetalleById } from "../../services/ArticuloManufacturadoDetalleService";
+import { ArticuloManufacturadoDetalle } from "../../types/ArticuloManufacturadoDetalle";
+import { ArticuloInsumo } from "../../types/ArticuloInsumo";
+import { UnidadMedida } from "../../types/UnidadMedida";
+import { getInsumos } from "../../services/ArticuloInsumoService";
+import { getUnidadesMedida } from "../../services/UnidadMedidaService";
 
-const Articulo: React.FC<{ articulo: ArticuloManufacturado }> = ({articulo}) => {
+const Articulo: React.FC<{ articulo: ArticuloManufacturado }> = ({ articulo }) => {
   const [manufacturado, setManufacturado] = useState<ArticuloManufacturado>(articulo);
   const imagenesArray = Array.from(articulo.imagenesArticulo);
   const primeraImagen = imagenesArray[0]?.url;
   const [showForm, setShowForm] = useState(false);
-  const [detalles, setDetalles] = useState<ArticuloManufacturadoDetalle[]>([]); // Estado para los detalles
+  const [detallesEditar, setDetallesEditar] = useState<ArticuloManufacturadoDetalle[]>([]);
+  const [articulosInsumo, setArticulosInsumo] = useState<ArticuloInsumo[]>([]);
+  const [unidadesMedida, setUnidadesMedida] = useState<UnidadMedida[]>([]);
 
   const handleEliminarRecuperar = async () => {
     try {
@@ -33,9 +40,22 @@ const Articulo: React.FC<{ articulo: ArticuloManufacturado }> = ({articulo}) => 
     }
   };
 
-  const handleModificar = () => {
+  const handleModificar = async () => {
+    const detalles = await getArticuloManufacturadoDetalleById(manufacturado.id);
+    setDetallesEditar(detalles);
     setShowForm(true);
   };
+
+  useEffect(() => {
+    const fetchInsumosYUnidades = async () => {
+      const insumosData = await getInsumos();
+      const unidadesData = await getUnidadesMedida();
+      setArticulosInsumo(insumosData);
+      setUnidadesMedida(unidadesData);
+    };
+
+    fetchInsumosYUnidades();
+  }, []);
 
   return (
     <li className={`row ${manufacturado.eliminado ? "eliminado" : ""}`}>
@@ -71,7 +91,7 @@ const Articulo: React.FC<{ articulo: ArticuloManufacturado }> = ({articulo}) => 
                 width: 30,
                 height: 30,
                 p: 0.5,
-                marginRight:1,
+                marginRight: 1,
                 "&:hover": {
                   bgcolor: "#e65100",
                   cursor: "pointer",
@@ -87,7 +107,7 @@ const Articulo: React.FC<{ articulo: ArticuloManufacturado }> = ({articulo}) => 
                 width: 30,
                 height: 30,
                 p: 0.5,
-                marginRight:1,
+                marginRight: 1,
                 "&:hover": {
                   bgcolor: "#b71c1c",
                   cursor: "pointer",
@@ -105,7 +125,7 @@ const Articulo: React.FC<{ articulo: ArticuloManufacturado }> = ({articulo}) => 
               width: 30,
               height: 30,
               p: 0.5,
-              marginRight:1,
+              marginRight: 1,
               "&:hover": {
                 bgcolor: "#1a237e",
                 cursor: manufacturado.eliminado ? "not-allowed" : "pointer",
@@ -140,15 +160,14 @@ const Articulo: React.FC<{ articulo: ArticuloManufacturado }> = ({articulo}) => 
           console.log("Artículo manufacturado guardado:", manufacturado);
           setShowForm(false);
           setManufacturado(manufacturado);
-        } }
+        }}
         isEdit={true}
         articuloManufacturadoInicial={manufacturado}
-        articulosInsumo={[]}
-        unidadesMedida={[]}
-        imagenesArticulo={[]} 
-        detalles={detalles} // Pasa los detalles al modal
-        setDetalles={setDetalles} // Pasa la función para actualizar los detalles
-        />
+        articulosInsumo={articulosInsumo}
+        unidadesMedida={unidadesMedida}
+        imagenesArticulo={[]}
+        detalles={detallesEditar} // Pasa los detalles al modal
+      />
     </li>
   );
 };

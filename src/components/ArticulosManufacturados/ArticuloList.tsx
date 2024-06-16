@@ -11,7 +11,6 @@ import { getUnidadesMedida } from "../../services/UnidadMedidaService";
 import { getCategorias } from "../../services/CategoriaService";
 import { Categoria } from "../../types/Categoria";
 import AddIcon from "@mui/icons-material/Add";
-import { ArticuloManufacturadoDetalle } from "../../types/ArticuloManufacturadoDetalle";
 import CustomButton from "../Shared/CustomButton";
 import ManufacturadoFormulario from "./ManufacturadoFormulario";
 
@@ -25,7 +24,6 @@ const ArticuloList: React.FC = () => {
     useState<string>("");
   const [articulosInsumo, setArticulosInsumo] = useState<ArticuloInsumo[]>([]);
   const [unidadesMedida, setUnidadesMedida] = useState<UnidadMedida[]>([]);
-  const [detalles, setDetalles] = useState<ArticuloManufacturadoDetalle[]>([]); // Estado para los detalles
 
   useEffect(() => {
     const fetchData = async () => {
@@ -182,8 +180,7 @@ const ArticuloList: React.FC = () => {
         articulosInsumo={articulosInsumo}
         unidadesMedida={unidadesMedida}
         imagenesArticulo={[]} // Pasa las imágenes del artículo si es necesario
-        detalles={detalles} // Pasa los detalles al modal
-        setDetalles={setDetalles} // Pasa la función para actualizar los detalles
+        detalles={[]} // Pasa los detalles al modal
       />
     </Box>
   );
