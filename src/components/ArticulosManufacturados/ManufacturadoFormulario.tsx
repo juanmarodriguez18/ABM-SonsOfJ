@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Button, TextField, Grid, MenuItem, DialogTitle, DialogContent, FormControl, InputLabel, Select, DialogActions, Dialog, FormLabel, Autocomplete, IconButton } from '@mui/material';
+import { Button, TextField, Grid, DialogTitle, DialogContent, FormControl, DialogActions, Dialog, FormLabel, Autocomplete, IconButton, InputLabel, Select, MenuItem } from '@mui/material';
 import AgregarCategoriaModal from '../Categorias/AgregarCategoriaModal';
 import { ArticuloManufacturado } from '../../types/ArticuloManufacturado';
 import { ImagenArticulo } from '../../types/ImagenArticulo';
@@ -7,11 +7,9 @@ import { ArticuloInsumo } from '../../types/ArticuloInsumo';
 import { UnidadMedida } from '../../types/UnidadMedida';
 import { ArticuloManufacturadoDetalle } from '../../types/ArticuloManufacturadoDetalle';
 import { Categoria } from '../../types/Categoria';
-import { getImagenesArticulo } from '../../services/ImagenArticuloService';
 import { actualizarCategoria, getCategorias } from '../../services/CategoriaService';
 import '../../styles/InsumoFormulario.css';
 import { actualizarArticuloManufacturado, crearArticuloManufacturado } from '../../services/ArticuloManufacturadoService';
-import { getArticulosManufacturadosDetalle } from '../../services/ArticuloManufacturadoDetalleService';
 import { getUnidadesMedida } from '../../services/UnidadMedidaService';
 import { CameraAlt } from '@mui/icons-material';
 import uploadImage from '../../services/CloudinaryService';
@@ -27,7 +25,6 @@ interface ManufacturadoFormularioProps {
     unidadesMedida: UnidadMedida[];
     imagenesArticulo: ImagenArticulo[];
     detalles: ArticuloManufacturadoDetalle[];
-    setDetalles: React.Dispatch<React.SetStateAction<ArticuloManufacturadoDetalle[]>>;
 }
 
 const createEmptyArticuloInsumo = (): ArticuloInsumo => ({
@@ -61,57 +58,44 @@ const ManufacturadoFormulario: React.FC<ManufacturadoFormularioProps> = ({
     articulosInsumo,
 
 }) => {
-    const [denominacion, setDenominacion] = useState<string>('');
-    const [precioVenta, setPrecioVenta] = useState<number>(0);
-    const [unidadMedidaId, setUnidadMedidaId] = useState<number>(0);
-    const [descripcion, setDescripcion] = useState<string>('');
-    const [tiempoEstimado, setTiempoEstimado] = useState<number>(0);
-    const [preparacion, setPreparacion] = useState<string>('');
-    const [categoriaId, setCategoriaId] = useState<number>(0);
-    const [articuloManufacturadoDetalles, setArticuloManufacturadoDetalles] = useState<ArticuloManufacturadoDetalle[]>([]);
-    const [selectedImagen, setSelectedImagen] = useState<ImagenArticulo | null>(null);
     const [categorias, setCategorias] = useState<Categoria[]>([]);
     const [showAgregarCategoriaModal, setShowAgregarCategoriaModal] = useState<boolean>(false);
     const [unidadesMedida, setUnidadesMedida] = useState<UnidadMedida[]>([]);
-    const filteredArticulosInsumo = articulosInsumo.filter((insumo) => insumo.esParaElaborar);
+    const [manufacturado, setManufacturado] = useState<ArticuloManufacturado>(new ArticuloManufacturado(0, false, '', 0, new Set<ImagenArticulo>(), new UnidadMedida(), new Categoria(), '', 0, '', new Set<ArticuloManufacturadoDetalle>()));
+    const filteredArticulosInsumo = articulosInsumo.filter((insumo) => insumo.esParaElaborar && insumo.eliminado === false);
 
+    useEffect(() => {
+        if (isEdit && articuloManufacturadoInicial) {
+            setManufacturado(articuloManufacturadoInicial);
+        } else {
+            setManufacturado(new ArticuloManufacturado(0, false, '', 0, new Set<ImagenArticulo>(), new UnidadMedida(), new Categoria(), '', 0, '', new Set<ArticuloManufacturadoDetalle>()));
+        }
+    }, [show, isEdit, articuloManufacturadoInicial]);
 
     useEffect(() => {
         async function cargarDatosIniciales() {
-            const imagenes = await getImagenesArticulo();
-            setSelectedImagen(imagenes);
-
+    
             const categorias = await getCategorias();
             setCategorias(categorias);
 
             const unidadesMedida = await getUnidadesMedida();
             setUnidadesMedida(unidadesMedida);
 
-            const detalles = await getArticulosManufacturadosDetalle();
-            setArticuloManufacturadoDetalles(detalles);
-
             if (isEdit && articuloManufacturadoInicial) {
-                setDenominacion(articuloManufacturadoInicial.denominacion);
-                setPrecioVenta(articuloManufacturadoInicial.precioVenta);
-                setUnidadMedidaId(articuloManufacturadoInicial.unidadMedida.id);
-                setDescripcion(articuloManufacturadoInicial.descripcion);
-                setTiempoEstimado(articuloManufacturadoInicial.tiempoEstimadoMinutos);
-                setPreparacion(articuloManufacturadoInicial.preparacion);
-                setCategoriaId(articuloManufacturadoInicial.categoria.id);
-                setArticuloManufacturadoDetalles(Array.from(articuloManufacturadoInicial.articuloManufacturadoDetalles));
-                setSelectedImagen(Array.from(articuloManufacturadoInicial.imagenesArticulo)[0]);
-            } else {
-                // Reset form if not editing
-                setDenominacion('');
-                setPrecioVenta(0);
-                setUnidadMedidaId(0);
-                setDescripcion('');
-                setTiempoEstimado(0);
-                setPreparacion('');
-                setCategoriaId(0);
-                setArticuloManufacturadoDetalles([]);
-                setSelectedImagen(null);
+                const detallesManufacturado = Array.from(articuloManufacturadoInicial.articuloManufacturadoDetalles).map(detalle => ({
+                    ...detalle,
+                    articuloInsumo: { ...detalle.articuloInsumo },
+                }));
+                setManufacturado({ ...articuloManufacturadoInicial, articuloManufacturadoDetalles: new Set(detallesManufacturado) });
             }
+
+            // Si estamos editando y hay un insumo inicial, configurar las imágenes del insumo
+            if (isEdit && articuloManufacturadoInicial) {
+                // Convertir el Set de imagenesArticulo a un array de ImagenArticulo
+                const imagenesManufacturado = Array.from(articuloManufacturadoInicial.imagenesArticulo).map(imagen => new ImagenArticulo(imagen.id, imagen.eliminado, imagen.url));
+                setManufacturado({ ...articuloManufacturadoInicial, imagenesArticulo: new Set(imagenesManufacturado) });
+            }
+            
         }
 
         cargarDatosIniciales();
@@ -119,53 +103,57 @@ const ManufacturadoFormulario: React.FC<ManufacturadoFormularioProps> = ({
 
     const handleGuardar = async () => {
 
-        if (!selectedImagen) {
-            console.error('No se ha seleccionado ninguna imagen');
+        if (!manufacturado.denominacion || manufacturado.denominacion.trim() === "") {
+            console.error("Ingrese la denominación del producto");
             return;
         }
-
-        const unidadMedidaSeleccionada = unidadesMedida.find((um) => um.id === unidadMedidaId);
-        const categoriaSeleccionada = categorias.find((cat) => cat.id === categoriaId);
-
-        if (!unidadMedidaSeleccionada || !categoriaSeleccionada) {
-            console.error('No se encontró la unidad de medida o la categoría seleccionada');
+        if (!manufacturado.precioVenta || manufacturado.precioVenta <= 0) {
+            console.error("Ingrese un precio válido");
             return;
         }
-
-        const nuevoArticuloManufacturado: ArticuloManufacturado = {
-            id: isEdit && articuloManufacturadoInicial ? articuloManufacturadoInicial.id : 0,
-            denominacion,
-            eliminado: false,
-            precioVenta,
-            unidadMedida: unidadMedidaSeleccionada,
-            categoria: categoriaSeleccionada,
-            descripcion,
-            tiempoEstimadoMinutos: tiempoEstimado,
-            preparacion,
-            imagenesArticulo: new Set([selectedImagen]),
-            articuloManufacturadoDetalles: new Set(articuloManufacturadoDetalles.map((detalle) => ({
-                ...detalle,
-                id: detalle.id,
-                articuloInsumo: detalle.articuloInsumo,
-                eliminado: false,
-            }))),
-        };
+        if (!manufacturado.tiempoEstimadoMinutos || manufacturado.tiempoEstimadoMinutos <= 0) {
+            console.error("Ingrese un tiempo estimado válido");
+            return;
+        }
+        if (!manufacturado.descripcion || manufacturado.descripcion.trim() === "") {
+            console.error("Ingrese la descripción del producto");
+            return;
+        }
+        if (!manufacturado.preparacion || manufacturado.preparacion.trim() === "") {
+            console.error("Ingrese la preparación del producto");
+            return;
+        }
+        if (!manufacturado.unidadMedida || !manufacturado.unidadMedida.id) {
+            console.error("Seleccione una unidad de medida");
+            return;
+        }
+        if (!manufacturado.categoria || !manufacturado.categoria.id) {
+            console.error("Seleccione una categoría");
+            return;
+        }
+        if (manufacturado.imagenesArticulo.size === 0) {
+            console.error("Ingrese al menos una imagen para el producto");
+            return;
+        }
+        if (manufacturado.articuloManufacturadoDetalles.size === 0) {
+            console.error("Ingrese al menos un detalle para el producto");
+            return;
+        }
 
         try {
-            const imagenesArticuloArray = Array.from(nuevoArticuloManufacturado.imagenesArticulo);
-            const detallesArticuloArray = Array.from(nuevoArticuloManufacturado.articuloManufacturadoDetalles);
+            const imagenesArticuloArray = Array.from(manufacturado.imagenesArticulo);
+            const detallesArticuloArray = Array.from(manufacturado.articuloManufacturadoDetalles);
             const articuloParaGuardar = {
-                ...nuevoArticuloManufacturado,
+                ...manufacturado,
                 imagenesArticulo: imagenesArticuloArray,
                 articuloManufacturadoDetalles: detallesArticuloArray
             };
 
-            console.log('JSON enviado al servidor:', JSON.stringify(articuloParaGuardar, null, 2));
-
-            if (isEdit && articuloManufacturadoInicial) {
+            if (isEdit && manufacturado.id) {
                 console.log('JSON enviado al backend:', JSON.stringify(articuloParaGuardar));
-                await actualizarArticuloManufacturado(nuevoArticuloManufacturado.id, articuloParaGuardar); // Actualizar artículo
+                await actualizarArticuloManufacturado(manufacturado.id, articuloParaGuardar); // Actualizar artículo
                 alert('El ArticuloManufacturado se actualizó correctamente');
+                onSave({...manufacturado, imagenesArticulo: manufacturado.imagenesArticulo})
             } else {
                 console.log('JSON enviado al backend:', JSON.stringify(articuloParaGuardar));
                 const articuloCreado = await crearArticuloManufacturado(articuloParaGuardar); // Crear nuevo artículo
@@ -191,13 +179,25 @@ const ManufacturadoFormulario: React.FC<ManufacturadoFormularioProps> = ({
     };
 
     const agregarDetalle = () => {
-        setArticuloManufacturadoDetalles([...articuloManufacturadoDetalles, {
-            id: 0,
-            cantidad: 0,
-            articuloInsumo: createEmptyArticuloInsumo(),
-            eliminado: false,
-        }]);
+        setManufacturado((prevManufacturado) => {
+            const nuevoDetalle = {
+                id: 0,
+                cantidad: 0,
+                articuloInsumo: createEmptyArticuloInsumo(),
+                eliminado: false,
+            };
+
+            // Crear una copia del conjunto actual y agregar el nuevo detalle
+            const nuevosDetalles = new Set(prevManufacturado.articuloManufacturadoDetalles);
+            nuevosDetalles.add(nuevoDetalle);
+
+            return {
+                ...prevManufacturado,
+                articuloManufacturadoDetalles: nuevosDetalles,
+            };
+        });
     };
+
 
     const handleUploadImage = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const files = e.target.files;
@@ -206,7 +206,10 @@ const ManufacturadoFormulario: React.FC<ManufacturadoFormularioProps> = ({
             const url = await uploadImage(file); // Llamada a tu función de subida de imagen
             const nuevaImagen = new ImagenArticulo(0, false, url);
 
-            setSelectedImagen(nuevaImagen);
+            setManufacturado({
+                ...manufacturado,
+                imagenesArticulo: new Set<ImagenArticulo>([nuevaImagen])
+            });
         }
     };
 
@@ -215,19 +218,34 @@ const ManufacturadoFormulario: React.FC<ManufacturadoFormularioProps> = ({
     };
 
     const handleArticuloInsumoChange = (index: number, insumo: ArticuloInsumo | null) => {
-        setArticuloManufacturadoDetalles((prevState) =>
-            prevState.map((prevDetalle, idx) =>
-                idx === index
-                    ? { ...prevDetalle, articuloInsumo: insumo || createEmptyArticuloInsumo() }
-                    : prevDetalle
-            )
-        );
+        setManufacturado((prevManufacturado) => {
+            // Convertir el conjunto a un array para poder utilizar map
+            const detallesArray = Array.from(prevManufacturado.articuloManufacturadoDetalles);
+            detallesArray[index] = {
+                ...detallesArray[index],
+                articuloInsumo: insumo || createEmptyArticuloInsumo(),
+            };
+
+            return {
+                ...prevManufacturado,
+                articuloManufacturadoDetalles: new Set(detallesArray),
+            };
+        });
     };
 
+
+
     const eliminarDetalle = (index: number) => {
-        setArticuloManufacturadoDetalles((prevState) =>
-            prevState.filter((_, idx) => idx !== index)
-        );
+        setManufacturado((prevManufacturado) => {
+            // Convertir el conjunto a un array para poder eliminar el detalle
+            const detallesArray = Array.from(prevManufacturado.articuloManufacturadoDetalles);
+            detallesArray.splice(index, 1);
+
+            return {
+                ...prevManufacturado,
+                articuloManufacturadoDetalles: new Set(detallesArray),
+            };
+        });
     };
 
     return (
@@ -244,8 +262,8 @@ const ManufacturadoFormulario: React.FC<ManufacturadoFormularioProps> = ({
                                 label="Denominación"
                                 type="text"
                                 fullWidth
-                                value={denominacion}
-                                onChange={(e) => setDenominacion(e.target.value)}
+                                value={manufacturado.denominacion}
+                                onChange={(e) => setManufacturado({ ...manufacturado, denominacion: e.target.value })}
                             />
                         </Grid>
 
@@ -256,8 +274,8 @@ const ManufacturadoFormulario: React.FC<ManufacturadoFormularioProps> = ({
                                 label="Precio de Venta"
                                 type="number"
                                 fullWidth
-                                value={precioVenta}
-                                onChange={(e) => setPrecioVenta(Number(e.target.value))}
+                                value={manufacturado.precioVenta}
+                                onChange={(e) => setManufacturado({ ...manufacturado, precioVenta: Number(e.target.value) })}
                             />
                         </Grid>
 
@@ -268,8 +286,8 @@ const ManufacturadoFormulario: React.FC<ManufacturadoFormularioProps> = ({
                                 label="Tiempo Estimado (minutos)"
                                 type="number"
                                 fullWidth
-                                value={tiempoEstimado}
-                                onChange={(e) => setTiempoEstimado(Number(e.target.value))}
+                                value={manufacturado.tiempoEstimadoMinutos}
+                                onChange={(e) => setManufacturado({ ...manufacturado, tiempoEstimadoMinutos: Number(e.target.value) })}
                             />
                         </Grid>
 
@@ -281,8 +299,8 @@ const ManufacturadoFormulario: React.FC<ManufacturadoFormularioProps> = ({
                                 multiline
                                 rows={3}
                                 fullWidth
-                                value={descripcion}
-                                onChange={(e) => setDescripcion(e.target.value)}
+                                value={manufacturado.descripcion}
+                                onChange={(e) => setManufacturado({ ...manufacturado, descripcion: e.target.value })}
                             />
                         </Grid>
 
@@ -294,59 +312,65 @@ const ManufacturadoFormulario: React.FC<ManufacturadoFormularioProps> = ({
                                 multiline
                                 rows={3}
                                 fullWidth
-                                value={preparacion}
-                                onChange={(e) => setPreparacion(e.target.value)}
+                                value={manufacturado.preparacion}
+                                onChange={(e) => setManufacturado({ ...manufacturado, preparacion: e.target.value })}
                             />
                         </Grid>
 
                         <Grid item xs={6}>
-                            <FormControl fullWidth margin="dense">
-                                <InputLabel id="unidad-medida-label">Unidad de Medida</InputLabel>
+                            <FormControl fullWidth>
+                                <InputLabel id="cmbUnidadMedida-label">Unidad de Medida</InputLabel>
                                 <Select
-                                    labelId="unidad-medida-label"
-                                    id="unidadMedida"
-                                    value={unidadMedidaId}
-                                    onChange={(e) => setUnidadMedidaId(Number(e.target.value))}
+                                    labelId="cmbUnidadMedida-label"
+                                    id="cmbUnidadMedida"
                                     label="Unidad de Medida"
+                                    value={manufacturado.unidadMedida.id || ''}
+                                    onChange={e => setManufacturado({ ...manufacturado, unidadMedida: { id: parseInt(e.target.value as string), denominacion: "", eliminado: false } })}
                                 >
-                                    <MenuItem value={0}>Seleccionar unidad de medida...</MenuItem>
-                                    {unidadesMedida.map((um) => (
-                                        <MenuItem key={um.id} value={um.id}>
-                                            {um.denominacion}
-                                        </MenuItem>
+                                    <MenuItem value="">Seleccione una unidad de medida</MenuItem>
+                                    {unidadesMedida.map(unidad => (
+                                        <MenuItem key={unidad.id} value={unidad.id}>{unidad.denominacion}</MenuItem>
                                     ))}
                                 </Select>
                             </FormControl>
                         </Grid>
 
                         <Grid item xs={6}>
-                            <FormControl fullWidth margin="dense">
-                                <InputLabel id="categoria-label">Categoría</InputLabel>
+                            <FormControl fullWidth>
+                                <InputLabel id="cmbCategoria-label">Categoría</InputLabel>
                                 <Select
-                                    labelId="categoria-label"
-                                    id="categoria"
-                                    value={categoriaId}
-                                    onChange={(e) => setCategoriaId(Number(e.target.value))}
+                                    labelId="cmbCategoria-label"
+                                    id="cmbCategoria"
                                     label="Categoría"
+                                    value={manufacturado.categoria?.id || ''}
+                                    onChange={e => setManufacturado({
+                                        ...manufacturado,
+                                        categoria: {
+                                            id: parseInt(e.target.value as string),
+                                            denominacion: categorias.find(c => c.id === parseInt(e.target.value as string))?.denominacion || '',
+                                            eliminado: false
+                                        }
+                                    })}
                                 >
-                                    <MenuItem value={0}>Seleccionar categoría...</MenuItem>
-                                    {categorias.map((cat) => (
-                                        <MenuItem key={cat.id} value={cat.id}>
-                                            {cat.denominacion}
-                                        </MenuItem>
-                                    ))}
+                                    <MenuItem value="">Seleccione una categoría</MenuItem>
+                                    {Array.isArray(categorias) && categorias.length > 0 ? (
+                                        categorias.map(categoria => (
+                                            <MenuItem key={categoria.id} value={categoria.id}>{categoria.denominacion}</MenuItem>
+                                        ))
+                                    ) : (
+                                        <MenuItem disabled>Cargando categorías...</MenuItem>
+                                    )}
                                 </Select>
-                                <Button className='btn-Guardar' onClick={toggleAgregarCategoriaModal} sx={{ marginTop: 2, marginBottom: 2 }}>
-                                    Nueva Categoría
-                                </Button>
                             </FormControl>
+                            <Button className="btn-Guardar" onClick={toggleAgregarCategoriaModal} sx={{ marginTop: 2, marginBottom: 2 }}>Nueva Categoria</Button>
                         </Grid>
 
                         <Grid item xs={12}>
                             <FormControl fullWidth margin="dense">
-                                {selectedImagen ? (
+                                {manufacturado.imagenesArticulo.size > 0 ? (
                                     <div className="selected-image">
-                                        <img src={selectedImagen.url} alt="Imagen seleccionada" />
+                                        {/* Obtener la última imagen */}
+                                        <img className="img" src={Array.from(manufacturado.imagenesArticulo)[manufacturado.imagenesArticulo.size - 1].url} alt="Imagen seleccionada" />
                                     </div>
                                 ) : (
                                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%' }}>
@@ -369,10 +393,11 @@ const ManufacturadoFormulario: React.FC<ManufacturadoFormularioProps> = ({
                             </FormControl>
                         </Grid>
 
+
                         <Grid item xs={12}>
                             <Button onClick={agregarDetalle}>Agregar Detalle</Button>
                         </Grid>
-                        {articuloManufacturadoDetalles.map((detalle, index) => (
+                        {Array.from(manufacturado.articuloManufacturadoDetalles).map((detalle, index) => (
                             <Grid container spacing={2} key={index} alignItems="center">
                                 <Grid item xs={3}>
                                     <TextField
@@ -383,13 +408,17 @@ const ManufacturadoFormulario: React.FC<ManufacturadoFormularioProps> = ({
                                         fullWidth
                                         value={detalle.cantidad}
                                         onChange={(e) =>
-                                            setArticuloManufacturadoDetalles((prevState) =>
-                                                prevState.map((prevDetalle, idx) =>
-                                                    idx === index
-                                                        ? { ...prevDetalle, cantidad: Number(e.target.value) }
-                                                        : prevDetalle
-                                                )
-                                            )
+                                            setManufacturado((prevManufacturado) => {
+                                                const detallesArray = Array.from(prevManufacturado.articuloManufacturadoDetalles);
+                                                detallesArray[index] = {
+                                                    ...detalle,
+                                                    cantidad: Number(e.target.value),
+                                                };
+                                                return {
+                                                    ...prevManufacturado,
+                                                    articuloManufacturadoDetalles: new Set(detallesArray),
+                                                };
+                                            })
                                         }
                                     />
                                 </Grid>
@@ -400,7 +429,10 @@ const ManufacturadoFormulario: React.FC<ManufacturadoFormularioProps> = ({
                                             options={filteredArticulosInsumo}
                                             getOptionLabel={(option) => option.denominacion}
                                             value={detalle.articuloInsumo}
-                                            onChange={(_event, newValue) => handleArticuloInsumoChange(index, newValue)}
+                                            onChange={(_event, newValue) =>
+                                                handleArticuloInsumoChange(index, newValue)
+                                            }
+                                            isOptionEqualToValue={(option, value) => option.id === value.id} // Personalizar la comparación
                                             renderInput={(params) => (
                                                 <TextField
                                                     {...params}
