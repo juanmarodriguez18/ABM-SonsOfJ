@@ -6,7 +6,7 @@ import { eliminarArticuloManufacturado } from "../../services/ArticuloManufactur
 import { Box, TableCell } from "@mui/material";
 import ModeEditIcon from "@mui/icons-material/ModeEdit";
 import DeleteIcon from "@mui/icons-material/Delete";
-import UndoIcon from "@mui/icons-material/Undo";
+import RestoreIcon from '@mui/icons-material/Restore'
 import InfoIcon from "@mui/icons-material/Info";
 import ManufacturadoFormulario from "./ManufacturadoFormulario";
 import { getArticuloManufacturadoDetalleById } from "../../services/ArticuloManufacturadoDetalleService";
@@ -83,7 +83,7 @@ const Articulo: React.FC<{ articulo: ArticuloManufacturado }> = ({ articulo }) =
       <TableCell className="col" sx={{ display: "flex" }} align="center">
         <Box onClick={handleEliminarRecuperar}>
           {manufacturado.eliminado ? (
-            <UndoIcon
+            <RestoreIcon
               sx={{
                 bgcolor: "#ef6c00",
                 color: "#fff",
@@ -97,7 +97,7 @@ const Articulo: React.FC<{ articulo: ArticuloManufacturado }> = ({ articulo }) =
                   cursor: "pointer",
                 },
               }}
-            ></UndoIcon>
+            ></RestoreIcon>
           ) : (
             <DeleteIcon
               sx={{
@@ -133,7 +133,7 @@ const Articulo: React.FC<{ articulo: ArticuloManufacturado }> = ({ articulo }) =
             }}
           />
         </Box>
-        <Box>
+        <Box >
           <Link to={`/articulos/${articulo.id}`}>
             <InfoIcon
               sx={{
@@ -145,7 +145,6 @@ const Articulo: React.FC<{ articulo: ArticuloManufacturado }> = ({ articulo }) =
                 p: 0.5,
                 "&:hover": {
                   bgcolor: "#d84315",
-                  cursor: manufacturado.eliminado ? "not-allowed" : "pointer",
                 },
               }}
             ></InfoIcon>

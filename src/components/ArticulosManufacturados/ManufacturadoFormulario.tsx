@@ -153,7 +153,7 @@ const ManufacturadoFormulario: React.FC<ManufacturadoFormularioProps> = ({
                 console.log('JSON enviado al backend:', JSON.stringify(articuloParaGuardar));
                 await actualizarArticuloManufacturado(manufacturado.id, articuloParaGuardar); // Actualizar artículo
                 alert('El ArticuloManufacturado se actualizó correctamente');
-                onSave({...manufacturado, imagenesArticulo: manufacturado.imagenesArticulo})
+                //onSave({...manufacturado, imagenesArticulo: manufacturado.imagenesArticulo, articuloManufacturadoDetalles: manufacturado.articuloManufacturadoDetalles})
             } else {
                 console.log('JSON enviado al backend:', JSON.stringify(articuloParaGuardar));
                 const articuloCreado = await crearArticuloManufacturado(articuloParaGuardar); // Crear nuevo artículo
