@@ -74,7 +74,7 @@ const ManufacturadoFormulario: React.FC<ManufacturadoFormularioProps> = ({
 
     useEffect(() => {
         async function cargarDatosIniciales() {
-    
+
             const categorias = await getCategorias();
             setCategorias(categorias);
 
@@ -95,7 +95,7 @@ const ManufacturadoFormulario: React.FC<ManufacturadoFormularioProps> = ({
                 const imagenesManufacturado = Array.from(articuloManufacturadoInicial.imagenesArticulo).map(imagen => new ImagenArticulo(imagen.id, imagen.eliminado, imagen.url));
                 setManufacturado({ ...articuloManufacturadoInicial, imagenesArticulo: new Set(imagenesManufacturado) });
             }
-            
+
         }
 
         cargarDatosIniciales();
@@ -427,12 +427,14 @@ const ManufacturadoFormulario: React.FC<ManufacturadoFormularioProps> = ({
                                         <Autocomplete
                                             id={`autocomplete-articuloInsumo-${index}`}
                                             options={filteredArticulosInsumo}
-                                            getOptionLabel={(option) => option.denominacion}
-                                            value={detalle.articuloInsumo}
+                                            getOptionLabel={(option) => option.denominacion || ""}
+                                            value={detalle.articuloInsumo.id !== 0 ? detalle.articuloInsumo : null}
                                             onChange={(_event, newValue) =>
                                                 handleArticuloInsumoChange(index, newValue)
                                             }
-                                            isOptionEqualToValue={(option, value) => option.id === value.id} // Personalizar la comparación
+                                            isOptionEqualToValue={(option, value) =>
+                                                value && value.id ? option.id === value.id : option.denominacion === value.denominacion
+                                            }
                                             renderInput={(params) => (
                                                 <TextField
                                                     {...params}

@@ -3,7 +3,7 @@ import { ArticuloManufacturado } from "../../types/ArticuloManufacturado";
 import { Link } from "react-router-dom";
 import { recuperarManufacturado} from "../../services/ArticuloManufacturadoService";
 import { eliminarArticuloManufacturado } from "../../services/ArticuloManufacturadoService";
-import { Box, TableCell } from "@mui/material";
+import { Box, TableCell, TableRow } from "@mui/material";
 import ModeEditIcon from "@mui/icons-material/ModeEdit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import RestoreIcon from '@mui/icons-material/Restore'
@@ -58,9 +58,9 @@ const Articulo: React.FC<{ articulo: ArticuloManufacturado }> = ({ articulo }) =
   }, []);
 
   return (
-    <li className={`row ${manufacturado.eliminado ? "eliminado" : ""}`}>
+    <TableRow className={`row ${manufacturado.eliminado ? "eliminado" : ""}`} sx={{ display: "flex", flexDirection: "row" }}>
       <TableCell className="col" align="center">
-        <p>{articulo.denominacion}</p>
+        {articulo.denominacion}
       </TableCell>
       <TableCell className="col" align="center">
         {primeraImagen && (
@@ -72,13 +72,13 @@ const Articulo: React.FC<{ articulo: ArticuloManufacturado }> = ({ articulo }) =
         )}
       </TableCell>
       <TableCell className="col" align="center">
-        <p>{articulo.descripcion}</p>
+        {articulo.descripcion}
       </TableCell>
       <TableCell className="col" align="center">
-        <p>${articulo.precioVenta}</p>
+        ${articulo.precioVenta}
       </TableCell>
       <TableCell className="col" align="center">
-        <p>{articulo.tiempoEstimadoMinutos} minutos</p>
+        {articulo.tiempoEstimadoMinutos} minutos
       </TableCell>
       <TableCell className="col" sx={{ display: "flex" }} align="center">
         <Box onClick={handleEliminarRecuperar}>
@@ -97,7 +97,7 @@ const Articulo: React.FC<{ articulo: ArticuloManufacturado }> = ({ articulo }) =
                   cursor: "pointer",
                 },
               }}
-            ></RestoreIcon>
+            />
           ) : (
             <DeleteIcon
               sx={{
@@ -113,7 +113,7 @@ const Articulo: React.FC<{ articulo: ArticuloManufacturado }> = ({ articulo }) =
                   cursor: "pointer",
                 },
               }}
-            ></DeleteIcon>
+            />
           )}
         </Box>
         <Box onClick={manufacturado.eliminado ? undefined : handleModificar}>
@@ -133,7 +133,7 @@ const Articulo: React.FC<{ articulo: ArticuloManufacturado }> = ({ articulo }) =
             }}
           />
         </Box>
-        <Box >
+        <Box>
           <Link to={`/articulos/${articulo.id}`}>
             <InfoIcon
               sx={{
@@ -147,7 +147,7 @@ const Articulo: React.FC<{ articulo: ArticuloManufacturado }> = ({ articulo }) =
                   bgcolor: "#d84315",
                 },
               }}
-            ></InfoIcon>
+            />
           </Link>
         </Box>
       </TableCell>
@@ -155,7 +155,7 @@ const Articulo: React.FC<{ articulo: ArticuloManufacturado }> = ({ articulo }) =
       <ManufacturadoFormulario
         show={showForm}
         handleClose={() => setShowForm(false)}
-        onSave={(manufacturado: ArticuloManufacturado) => {
+        onSave={(manufacturado) => {
           console.log("Artículo manufacturado guardado:", manufacturado);
           setShowForm(false);
           setManufacturado(manufacturado);
@@ -167,7 +167,7 @@ const Articulo: React.FC<{ articulo: ArticuloManufacturado }> = ({ articulo }) =
         imagenesArticulo={[]}
         detalles={detallesEditar} // Pasa los detalles al modal
       />
-    </li>
+    </TableRow>
   );
 };
 

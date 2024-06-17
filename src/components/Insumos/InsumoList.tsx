@@ -156,9 +156,7 @@ const InsumoList: React.FC = () => {
           </TableHead>
           <TableBody sx={{ display: 'block', overflowY: 'auto', maxHeight: '74vh' }}>
             {filteredInsumos.map((insumo) => (
-              <TableRow key={insumo.id} sx={{ display: 'table', width: '100%' }}>
-                <Insumo articulo={insumo} />
-              </TableRow>
+                <Insumo key={insumo.id} articulo={insumo} />
             ))}
           </TableBody>
         </Table>

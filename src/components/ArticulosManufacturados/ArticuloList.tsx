@@ -165,9 +165,7 @@ const ArticuloList: React.FC = () => {
           </TableHead>
           <TableBody sx={{ display: 'block', overflowY: 'auto', maxHeight: '74vh' }}>
             {filteredArticulos.map((articulo) => (
-              <TableRow key={articulo.id} sx={{ display: 'table', width: '100%' }}>
-                <Articulo key={articulo.id} articulo={articulo} />
-              </TableRow>
+                <Articulo key={articulo.id} articulo={articulo} />   
             ))}
           </TableBody>
         </Table>
