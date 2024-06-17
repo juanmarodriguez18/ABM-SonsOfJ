@@ -13,6 +13,7 @@ import { FormaPago } from '../../types/enums/FormaPago';
 import { ArticuloManufacturado } from '../../types/ArticuloManufacturado';
 import { useDatosSeleccion } from './useDatosSeleccion';
 import CheckoutMP from './MercadoPago/CheckoutMP';
+import { ArticuloInsumo } from '../../types/ArticuloInsumo';
 
 
 interface CartItemProps {
@@ -51,10 +52,10 @@ function CartItem({ detalle, onRemove }: CartItemProps) {
 
 export function Carrito() {
   const { cart, removeCarrito, limpiarCarrito, totalPedido } = useCarrito();
-  const { 
+  const {
     sucursales, clientes, tipoEnvio, setTipoEnvio, formaPago, setFormaPago,
-    sucursalSeleccionada, setSucursalSeleccionada, clienteSeleccionado, setClienteSeleccionado, 
-    domicilioSeleccionado, setDomicilioSeleccionado, empleado 
+    sucursalSeleccionada, setSucursalSeleccionada, clienteSeleccionado, setClienteSeleccionado,
+    domicilioSeleccionado, setDomicilioSeleccionado, empleado
   } = useDatosSeleccion();
 
   const [loading, setLoading] = useState(false);
@@ -75,11 +76,19 @@ export function Carrito() {
     try {
       const pedidoDetalles = cart.map(({ articulo, cantidad }) => {
         const subTotal = articulo.precioVenta * cantidad;
-        return new PedidoDetalle(0, false, cantidad, subTotal, articulo as ArticuloManufacturado);
+        return new PedidoDetalle(0, false, cantidad, subTotal, articulo);
       });
 
       const horaActual = new Date();
-      const maxTiempoEstimado = Math.max(...cart.map(detalle => (detalle.articulo as ArticuloManufacturado).tiempoEstimadoMinutos));
+      const maxTiempoEstimado = Math.max(
+        ...cart.map(detalle => {
+          if (detalle.articulo instanceof ArticuloManufacturado) {
+            return detalle.articulo.tiempoEstimadoMinutos;
+          }
+          // Si es ArticuloInsumo, puedes retornar un valor por defecto o manejarlo como necesites
+          return 0;
+        })
+      );
       const horaEstimadaFinalizacion = new Date(horaActual.getTime() + maxTiempoEstimado * 60000);
 
       if (!sucursalSeleccionada) {
@@ -112,7 +121,7 @@ export function Carrito() {
         domicilioSeleccionado,
         empleado,
         pedidoDetalles,
-        clienteSeleccionado,
+        clienteSeleccionado
       );
 
       setPedido(nuevoPedido); // Almacenamos el pedido en el estado
@@ -139,12 +148,12 @@ export function Carrito() {
       <Typography variant="h4" gutterBottom>
         Carrito de Compras
       </Typography>
-      <List sx={{ bgcolor: '#F5F5F5', borderRadius: 2, marginBottom: 4}}>
+      <List sx={{ bgcolor: '#F5F5F5', borderRadius: 2, marginBottom: 4 }}>
         {cart.map((detalle) => (
           <CartItem
             key={detalle.articulo.id}
             detalle={detalle}
-            onRemove={() => removeCarrito(detalle.articulo as ArticuloManufacturado)}
+            onRemove={() => removeCarrito(detalle.articulo as ArticuloManufacturado | ArticuloInsumo)}
           />
         ))}
       </List>
@@ -152,86 +161,86 @@ export function Carrito() {
         Total Pedido: ${totalPedido}
       </Typography>
 
-        <Grid container spacing={2}>
-          <Grid item xs={3}>
-            <FormControl fullWidth margin="normal">
-              <InputLabel id="tipo-envio-label">Tipo de Envío</InputLabel>
-              <Select
-                labelId="tipo-envio-label"
-                label="Tipo de Envío"
-                value={tipoEnvio}
-                onChange={(e) => setTipoEnvio(e.target.value as TipoEnvio)}
-              >
-                <MenuItem value={TipoEnvio.DELIVERY}>Delivery</MenuItem>
-                <MenuItem value={TipoEnvio.TAKE_AWAY}>Retirar</MenuItem>
-              </Select>
-            </FormControl>
-          </Grid>
-
-          <Grid item xs={3}>
-            <FormControl fullWidth margin="normal">
-              <InputLabel id="forma-pago-label">Forma de Pago</InputLabel>
-              <Select
-                labelId="forma-pago-label"
-                label="Forma de Pago"
-                value={formaPago}
-                onChange={(e) => setFormaPago(e.target.value as FormaPago)}
-              >
-                <MenuItem value={FormaPago.EFECTIVO}>Efectivo</MenuItem>
-                <MenuItem value={FormaPago.MERCADO_PAGO}>Mercado Pago</MenuItem>
-              </Select>
-            </FormControl>
-          </Grid>
-
-          <Grid item xs={3}>
-            <FormControl fullWidth margin="normal">
-              <InputLabel id="sucursal-label">Sucursal</InputLabel>
-              <Select
-                labelId="sucursal-label"
-                label="Sucursal"
-                value={sucursalSeleccionada?.id || ''}
-                onChange={(e) => setSucursalSeleccionada(sucursales.find(s => s.id === e.target.value) || null)}
-              >
-                {sucursales.map(sucursal => (
-                  <MenuItem key={sucursal.id} value={sucursal.id}>{sucursal.nombre}</MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-          </Grid>
-
-          <Grid item xs={3}>
-            <FormControl fullWidth margin="normal">
-              <InputLabel id="cliente-label">Cliente</InputLabel>
-              <Select
-                labelId="cliente-label"
-                label="Cliente"
-                value={clienteSeleccionado?.id || ''}
-                onChange={(e) => setClienteSeleccionado(clientes.find(c => c.id === e.target.value) || null)}
-              >
-                {clientes.map(cliente => (
-                  <MenuItem key={cliente.id} value={cliente.id}>{cliente.nombre} {cliente.apellido}</MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-          </Grid>
-
-          <Grid item xs={6}>
-            <FormControl fullWidth margin="normal">
-              <InputLabel id="domicilio-label">Domicilio</InputLabel>
-              <Select
-                labelId="domicilio-label"
-                label="Domicilio"
-                value={domicilioSeleccionado?.id || ''}
-                onChange={(e) => setDomicilioSeleccionado(clienteSeleccionado?.domicilios.find(d => d.id === e.target.value) || null)}
-                disabled={!clienteSeleccionado}
-              >
-                {clienteSeleccionado?.domicilios.map(domicilio => (
-                  <MenuItem key={domicilio.id} value={domicilio.id}>{domicilio.calle} {domicilio.numero}, {domicilio.localidad.nombre}, {domicilio.localidad.provincia.nombre}</MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-          </Grid>
+      <Grid container spacing={2}>
+        <Grid item xs={3}>
+          <FormControl fullWidth margin="normal">
+            <InputLabel id="tipo-envio-label">Tipo de Envío</InputLabel>
+            <Select
+              labelId="tipo-envio-label"
+              label="Tipo de Envío"
+              value={tipoEnvio}
+              onChange={(e) => setTipoEnvio(e.target.value as TipoEnvio)}
+            >
+              <MenuItem value={TipoEnvio.DELIVERY}>Delivery</MenuItem>
+              <MenuItem value={TipoEnvio.TAKE_AWAY}>Retirar</MenuItem>
+            </Select>
+          </FormControl>
         </Grid>
+
+        <Grid item xs={3}>
+          <FormControl fullWidth margin="normal">
+            <InputLabel id="forma-pago-label">Forma de Pago</InputLabel>
+            <Select
+              labelId="forma-pago-label"
+              label="Forma de Pago"
+              value={formaPago}
+              onChange={(e) => setFormaPago(e.target.value as FormaPago)}
+            >
+              <MenuItem value={FormaPago.EFECTIVO}>Efectivo</MenuItem>
+              <MenuItem value={FormaPago.MERCADO_PAGO}>Mercado Pago</MenuItem>
+            </Select>
+          </FormControl>
+        </Grid>
+
+        <Grid item xs={3}>
+          <FormControl fullWidth margin="normal">
+            <InputLabel id="sucursal-label">Sucursal</InputLabel>
+            <Select
+              labelId="sucursal-label"
+              label="Sucursal"
+              value={sucursalSeleccionada?.id || ''}
+              onChange={(e) => setSucursalSeleccionada(sucursales.find(s => s.id === e.target.value) || null)}
+            >
+              {sucursales.map(sucursal => (
+                <MenuItem key={sucursal.id} value={sucursal.id}>{sucursal.nombre}</MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+        </Grid>
+
+        <Grid item xs={3}>
+          <FormControl fullWidth margin="normal">
+            <InputLabel id="cliente-label">Cliente</InputLabel>
+            <Select
+              labelId="cliente-label"
+              label="Cliente"
+              value={clienteSeleccionado?.id || ''}
+              onChange={(e) => setClienteSeleccionado(clientes.find(c => c.id === e.target.value) || null)}
+            >
+              {clientes.map(cliente => (
+                <MenuItem key={cliente.id} value={cliente.id}>{cliente.nombre} {cliente.apellido}</MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+        </Grid>
+
+        <Grid item xs={6}>
+          <FormControl fullWidth margin="normal">
+            <InputLabel id="domicilio-label">Domicilio</InputLabel>
+            <Select
+              labelId="domicilio-label"
+              label="Domicilio"
+              value={domicilioSeleccionado?.id || ''}
+              onChange={(e) => setDomicilioSeleccionado(clienteSeleccionado?.domicilios.find(d => d.id === e.target.value) || null)}
+              disabled={!clienteSeleccionado}
+            >
+              {clienteSeleccionado?.domicilios.map(domicilio => (
+                <MenuItem key={domicilio.id} value={domicilio.id}>{domicilio.calle} {domicilio.numero}, {domicilio.localidad.nombre}, {domicilio.localidad.provincia.nombre}</MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+        </Grid>
+      </Grid>
 
       <Box sx={{ display: 'flex', justifyContent: 'space-between', marginTop: 2 }}>
         <Button

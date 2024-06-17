@@ -4,14 +4,15 @@ import { Cliente } from '../../types/Cliente';
 import { Empleado } from '../../types/Empleado';
 import { Sucursal } from '../../types/Sucursal';
 import { PedidoDetalle } from '../../types/PedidoDetalle'; // Asegúrate de importar PedidoDetalle
+import { ArticuloInsumo } from '../../types/ArticuloInsumo';
 
 interface CartContextType {
   cart: PedidoDetalle[]; // Cambiar el tipo a PedidoDetalle
-  addCarrito: (product: ArticuloManufacturado) => void;
-  removeCarrito: (product: ArticuloManufacturado) => void;
-  removeItemCarrito: (product: ArticuloManufacturado) => void;
+  addCarrito: (product: ArticuloManufacturado | ArticuloInsumo) => void;
+  removeCarrito: (product: ArticuloManufacturado | ArticuloInsumo) => void;
+  removeItemCarrito: (product: ArticuloManufacturado | ArticuloInsumo) => void;
   limpiarCarrito: () => void;
-  updateCarrito: (articulo: ArticuloManufacturado, cantidad: number) => void;
+  updateCarrito: (articulo: ArticuloManufacturado | ArticuloInsumo, cantidad: number) => void;
   totalPedido?: number;
   cliente?: Cliente | null;
   empleado?: Empleado | null;
@@ -50,7 +51,7 @@ export function CarritoContextProvider({ children }: { children: ReactNode }) {
     calcularTotalCarrito();
   }, [cart]);
 
-  const addCarrito = (product: ArticuloManufacturado) => {
+  const addCarrito = (product: ArticuloManufacturado | ArticuloInsumo) => {
     const existingItemIndex = cart.findIndex(item => item.articulo.id === product.id);
     if (existingItemIndex !== -1) {
       const updatedCart = [...cart];
@@ -61,7 +62,7 @@ export function CarritoContextProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  const updateCarrito = (articulo: ArticuloManufacturado, cantidad: number) => {
+  const updateCarrito = (articulo: ArticuloManufacturado | ArticuloInsumo, cantidad: number) => {
     setCart(prevCarrito => {
       if (cantidad <= 0) {
         return prevCarrito.filter(item => item.articulo.id !== articulo.id);
@@ -72,11 +73,11 @@ export function CarritoContextProvider({ children }: { children: ReactNode }) {
     });
   };
 
-  const removeCarrito = (product: ArticuloManufacturado) => {
+  const removeCarrito = (product: ArticuloManufacturado | ArticuloInsumo) => {
     setCart(prevCart => prevCart.filter(item => item.articulo.id !== product.id));
   };
 
-  const removeItemCarrito = (product: ArticuloManufacturado) => {
+  const removeItemCarrito = (product: ArticuloManufacturado | ArticuloInsumo) => {
     const existingItem = cart.find(item => item.articulo.id === product.id);
     if (existingItem) {
       if (existingItem.cantidad > 1) {
