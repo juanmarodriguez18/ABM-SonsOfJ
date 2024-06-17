@@ -30,6 +30,8 @@ const InsumoFormulario: React.FC<InsumoFormularioProps> = ({ show, handleClose, 
     const [txtValidacion, setTxtValidacion] = useState<string>("");
     const [showNuevaUnidadModal, setShowNuevaUnidadModal] = useState<boolean>(false);
     const [showAgregarCategoriaModal, setAgregarCategoriaModal] = useState<boolean>(false);
+    const filteredUnidadesMedida = unidadesMedida.filter((um) => um.eliminado === false);
+    const filteredCategorias = categorias.filter((cat) => cat.eliminado === false);
 
 
     useEffect(() => {
@@ -262,7 +264,7 @@ const InsumoFormulario: React.FC<InsumoFormularioProps> = ({ show, handleClose, 
                             >
                                 <MenuItem value="">Seleccione una categoría</MenuItem>
                                 {Array.isArray(categorias) && categorias.length > 0 ? (
-                                    categorias.map(categoria => (
+                                    filteredCategorias.map(categoria => (
                                         <MenuItem key={categoria.id} value={categoria.id}>{categoria.denominacion}</MenuItem>
                                     ))
                                 ) : (
@@ -284,7 +286,7 @@ const InsumoFormulario: React.FC<InsumoFormularioProps> = ({ show, handleClose, 
                                 onChange={e => setInsumo({ ...insumo, unidadMedida: { id: parseInt(e.target.value as string), denominacion: "", eliminado: false } })}
                             >
                                 <MenuItem value="">Seleccione una unidad de medida</MenuItem>
-                                {unidadesMedida.map(unidad => (
+                                {filteredUnidadesMedida.map(unidad => (
                                     <MenuItem key={unidad.id} value={unidad.id}>{unidad.denominacion}</MenuItem>
                                 ))}
                             </Select>
@@ -347,7 +349,6 @@ const InsumoFormulario: React.FC<InsumoFormularioProps> = ({ show, handleClose, 
                     Guardar
                 </Button>
             </DialogActions>
-            {/* Modal para agregar unidad de medida */}
             <AgregarUnidadMedidaModal
                 show={showNuevaUnidadModal}
                 onHide={() => setShowNuevaUnidadModal(false)}

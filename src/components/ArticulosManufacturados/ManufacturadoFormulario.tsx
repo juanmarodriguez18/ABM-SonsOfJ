@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Button, TextField, Grid, DialogTitle, DialogContent, FormControl, DialogActions, Dialog, FormLabel, Autocomplete, IconButton, InputLabel, Select, MenuItem } from '@mui/material';
+import AddIcon from '@mui/icons-material/Add';
 import AgregarCategoriaModal from '../Categorias/AgregarCategoriaModal';
 import { ArticuloManufacturado } from '../../types/ArticuloManufacturado';
 import { ImagenArticulo } from '../../types/ImagenArticulo';
@@ -10,10 +11,11 @@ import { Categoria } from '../../types/Categoria';
 import { actualizarCategoria, getCategorias } from '../../services/CategoriaService';
 import '../../styles/InsumoFormulario.css';
 import { actualizarArticuloManufacturado, crearArticuloManufacturado } from '../../services/ArticuloManufacturadoService';
-import { getUnidadesMedida } from '../../services/UnidadMedidaService';
+import { crearUnidadMedida, getUnidadesMedida } from '../../services/UnidadMedidaService';
 import { CameraAlt } from '@mui/icons-material';
 import uploadImage from '../../services/CloudinaryService';
 import { Delete as DeleteIcon } from '@mui/icons-material';
+import AgregarUnidadMedidaModal from '../UnidadesMedida/AgregarUnidadMedidaModal';
 
 interface ManufacturadoFormularioProps {
     show: boolean;
@@ -60,9 +62,12 @@ const ManufacturadoFormulario: React.FC<ManufacturadoFormularioProps> = ({
 }) => {
     const [categorias, setCategorias] = useState<Categoria[]>([]);
     const [showAgregarCategoriaModal, setShowAgregarCategoriaModal] = useState<boolean>(false);
+    const [showAgregarUM, setShowAgregarUM] = useState<boolean>(false);
     const [unidadesMedida, setUnidadesMedida] = useState<UnidadMedida[]>([]);
     const [manufacturado, setManufacturado] = useState<ArticuloManufacturado>(new ArticuloManufacturado(0, false, '', 0, new Set<ImagenArticulo>(), new UnidadMedida(), new Categoria(), '', 0, '', new Set<ArticuloManufacturadoDetalle>()));
     const filteredArticulosInsumo = articulosInsumo.filter((insumo) => insumo.esParaElaborar && insumo.eliminado === false);
+    const filteredUnidadesMedida = unidadesMedida.filter((um) => um.eliminado === false);
+    const filteredCategorias = categorias.filter((cat) => cat.eliminado === false);
 
     useEffect(() => {
         if (isEdit && articuloManufacturadoInicial) {
@@ -167,6 +172,17 @@ const ManufacturadoFormulario: React.FC<ManufacturadoFormularioProps> = ({
         }
     };
 
+    const handleNuevaUnidadMedida = async (denominacion: string) => {
+        try {
+            const nuevaUnidadMedida = await crearUnidadMedida({ denominacion });
+            setUnidadesMedida([...unidadesMedida, nuevaUnidadMedida]);
+            setManufacturado({ ...manufacturado, unidadMedida: nuevaUnidadMedida });
+            setShowAgregarUM(false);
+        } catch (error) {
+            console.error("Error al crear una nueva unidad de medida:", error);
+        }
+    };
+
     const handleActualizarCategoria = async (id: number, datosActualizados: any) => {
         try {
             await actualizarCategoria(id, datosActualizados);
@@ -211,6 +227,10 @@ const ManufacturadoFormulario: React.FC<ManufacturadoFormularioProps> = ({
                 imagenesArticulo: new Set<ImagenArticulo>([nuevaImagen])
             });
         }
+    };
+
+    const toggleAgregarUMModal = () => {
+        setShowAgregarUM(!showAgregarUM);
     };
 
     const toggleAgregarCategoriaModal = () => {
@@ -328,11 +348,12 @@ const ManufacturadoFormulario: React.FC<ManufacturadoFormularioProps> = ({
                                     onChange={e => setManufacturado({ ...manufacturado, unidadMedida: { id: parseInt(e.target.value as string), denominacion: "", eliminado: false } })}
                                 >
                                     <MenuItem value="">Seleccione una unidad de medida</MenuItem>
-                                    {unidadesMedida.map(unidad => (
+                                    {filteredUnidadesMedida.map(unidad => (
                                         <MenuItem key={unidad.id} value={unidad.id}>{unidad.denominacion}</MenuItem>
                                     ))}
                                 </Select>
                             </FormControl>
+                            <Button className="btn-Guardar" onClick={toggleAgregarUMModal} sx={{ marginTop: 2, marginBottom: 2 }}>Nueva U. Medida</Button>
                         </Grid>
 
                         <Grid item xs={6}>
@@ -354,7 +375,7 @@ const ManufacturadoFormulario: React.FC<ManufacturadoFormularioProps> = ({
                                 >
                                     <MenuItem value="">Seleccione una categoría</MenuItem>
                                     {Array.isArray(categorias) && categorias.length > 0 ? (
-                                        categorias.map(categoria => (
+                                        filteredCategorias.map(categoria => (
                                             <MenuItem key={categoria.id} value={categoria.id}>{categoria.denominacion}</MenuItem>
                                         ))
                                     ) : (
@@ -393,9 +414,10 @@ const ManufacturadoFormulario: React.FC<ManufacturadoFormularioProps> = ({
                             </FormControl>
                         </Grid>
 
-
                         <Grid item xs={12}>
-                            <Button onClick={agregarDetalle}>Agregar Detalle</Button>
+                            <Button onClick={agregarDetalle} variant="contained" color="primary" startIcon={<AddIcon />} sx={{ marginBottom: 2 }}>
+                                Agregar Detalle
+                            </Button>
                         </Grid>
                         {Array.from(manufacturado.articuloManufacturadoDetalles).map((detalle, index) => (
                             <Grid container spacing={2} key={index} alignItems="center">
@@ -464,6 +486,11 @@ const ManufacturadoFormulario: React.FC<ManufacturadoFormularioProps> = ({
                     </Button>
                 </DialogActions>
             </Dialog>
+            <AgregarUnidadMedidaModal
+                show={showAgregarUM}
+                onHide={() => setShowAgregarUM(false)}
+                agregarUnidadMedida={handleNuevaUnidadMedida}
+            />
             <AgregarCategoriaModal
                 show={showAgregarCategoriaModal}
                 onHide={toggleAgregarCategoriaModal}
