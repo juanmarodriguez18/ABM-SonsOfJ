@@ -11,6 +11,7 @@ import InfoIcon from "@mui/icons-material/Info";
 export const GrillaManufacturados: React.FC = () => {
   const [articulos, setArticulos] = useState<ArticuloManufacturado[]>([]);
   const { addCarrito, updateCarrito, cart } = useCarrito();
+  const filteredArticulos = articulos.filter((articulo) => articulo.eliminado === false);
 
   useEffect(() => {
     const fetchArticulos = async () => {
@@ -45,7 +46,7 @@ export const GrillaManufacturados: React.FC = () => {
       <Box sx={{ overflowY: 'auto', maxHeight: '80vh', width: '100%' }}>
         <Box width={1500} display="flex" alignItems="center" mb={2}>
           <Grid container spacing={4}>
-            {articulos.map((articulo) => (
+            {filteredArticulos.map((articulo) => (
               <Grid item key={articulo.id} xs={12} sm={6} md={4} sx={{ maxWidth: '300px' }}>
                 <Card sx={{ width: '100%' }}>
                   <CardMedia
