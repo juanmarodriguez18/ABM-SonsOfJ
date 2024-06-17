@@ -1,6 +1,5 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import ArticulosPage from "./pages/ArticulosPage";
-import ArticuloDetalle from "./components/ArticulosManufacturados/ArticuloDetalle";
 import InsumoPage from "./pages/InsumoPage";
 import UnidadesMedidaPage from "./pages/UnidadMedidaPage";
 import Layout from "./components/Layout/Layout";
@@ -8,6 +7,7 @@ import EmpresaPage from "./pages/EmpresaPage";
 import { Carrito } from "./components/Carrito/Carrito";
 import GrillaManufacturados from "./components/ArticulosManufacturados/GrillaManufacturados";
 import PedidosPage from "./pages/PedidosPage";
+import ArticuloDetalle from "./components/ArticuloManufacturadoDetalles/ArticuloDetalle";
 
 function App() {
   return (

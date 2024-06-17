@@ -3,7 +3,7 @@ import { ArticuloInsumo } from '../../types/ArticuloInsumo';
 import '../../styles/Articulo.css';
 import { eliminarInsumo, recuperarInsumo } from '../../services/ArticuloInsumoService';
 import InsumoFormulario from './InsumoFormulario';
-import { Box, TableCell } from '@mui/material';
+import { Box, TableCell, TableRow } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import RestoreIcon from '@mui/icons-material/Restore';
 import EditIcon from '@mui/icons-material/Edit';
@@ -34,9 +34,9 @@ const Insumo: React.FC<{ articulo: ArticuloInsumo }> = ({ articulo }) => {
     };
 
     return (
-        <li className={`row ${insumo.eliminado ? 'eliminado' : ''}`}>
+        <TableRow className={`row ${insumo.eliminado ? 'eliminado' : ''}`} sx={{ display: "flex", flexDirection: "row" }}>
             <TableCell className="col" align="center">
-                <p>{insumo.denominacion}</p>
+                {insumo.denominacion}
             </TableCell>
             <TableCell className="col" align="center">
                 {primeraImagen && (
@@ -48,16 +48,16 @@ const Insumo: React.FC<{ articulo: ArticuloInsumo }> = ({ articulo }) => {
                 )}
             </TableCell>
             <TableCell className="col" align="center">
-                <p>{insumo.precioCompra}</p>
+                {insumo.precioCompra}
             </TableCell>
             <TableCell className="col" align="center">
-                <p>{insumo.stockActual}</p>
+                {insumo.stockActual}
             </TableCell>
             <TableCell className="col" align="center">
-                <p>{insumo.stockMinimo}</p>
+                {insumo.stockMinimo}
             </TableCell>
             <TableCell className="col" align="center">
-            <p>{insumo.esParaElaborar ? "Sí" : "No"}</p>
+            {insumo.esParaElaborar ? "Sí" : "No"}
             </TableCell>
             <TableCell className="col" sx={{ display: "flex" }} align="center">
                 <Box onClick={handleEliminarRecuperar}>
@@ -124,7 +124,7 @@ const Insumo: React.FC<{ articulo: ArticuloInsumo }> = ({ articulo }) => {
                 isEdit={true}
                 insumo={articulo}
             />
-        </li>
+        </TableRow>
     );
 };
 
