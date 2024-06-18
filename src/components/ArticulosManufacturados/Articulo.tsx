@@ -16,7 +16,7 @@ import { UnidadMedida } from "../../types/UnidadMedida";
 import { getInsumos } from "../../services/ArticuloInsumoService";
 import { getUnidadesMedida } from "../../services/UnidadMedidaService";
 
-const Articulo: React.FC<{ articulo: ArticuloManufacturado }> = ({ articulo }) => {
+const Articulo: React.FC<{ articulo: ArticuloManufacturado, onSave: (articulo: ArticuloManufacturado) => void}> = ({ articulo, onSave }) => {
   const [manufacturado, setManufacturado] = useState<ArticuloManufacturado>(articulo);
   const imagenesArray = Array.from(articulo.imagenesArticulo);
   const primeraImagen = imagenesArray[0]?.url;
@@ -38,6 +38,11 @@ const Articulo: React.FC<{ articulo: ArticuloManufacturado }> = ({ articulo }) =
       console.error("Error al actualizar el estado del manufacturado:", error);
       // Manejo de errores
     }
+  };
+
+  const handleSave = (updatedArticulo: ArticuloManufacturado) => {
+    setManufacturado(updatedArticulo);
+    onSave(updatedArticulo); // Actualiza el artículo en la lista de artículos en el componente padre
   };
 
   const handleModificar = async () => {
@@ -155,11 +160,7 @@ const Articulo: React.FC<{ articulo: ArticuloManufacturado }> = ({ articulo }) =
       <ManufacturadoFormulario
         show={showForm}
         handleClose={() => setShowForm(false)}
-        onSave={(manufacturado) => {
-          console.log("Artículo manufacturado guardado:", manufacturado);
-          setShowForm(false);
-          setManufacturado(manufacturado);
-        }}
+        onSave={handleSave}
         isEdit={true}
         articuloManufacturadoInicial={manufacturado}
         articulosInsumo={articulosInsumo}

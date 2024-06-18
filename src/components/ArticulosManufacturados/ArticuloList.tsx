@@ -20,8 +20,7 @@ const ArticuloList: React.FC = () => {
   const [query, setQuery] = useState<string>("");
   const [showModal, setShowModal] = useState<boolean>(false);
   const [categorias, setCategorias] = useState<Categoria[]>([]);
-  const [categoriaSeleccionada, setCategoriaSeleccionada] =
-    useState<string>("");
+  const [categoriaSeleccionada, setCategoriaSeleccionada] = useState<string>("");
   const [articulosInsumo, setArticulosInsumo] = useState<ArticuloInsumo[]>([]);
   const [unidadesMedida, setUnidadesMedida] = useState<UnidadMedida[]>([]);
 
@@ -75,11 +74,22 @@ const ArticuloList: React.FC = () => {
     fetchInsumosYUnidades();
   }, []);
 
-  const agregarArticuloManufacturado = (
-    nuevoArticulo: ArticuloManufacturado
-  ) => {
+  const agregarArticuloManufacturado = (nuevoArticulo: ArticuloManufacturado) => {
     setArticulos([...articulos, nuevoArticulo]);
     setFilteredArticulos([...articulos, nuevoArticulo]);
+  };
+
+  const actualizarArticuloManufacturado = (articuloActualizado: ArticuloManufacturado) => {
+    setArticulos(prevArticulos =>
+      prevArticulos.map(articulo =>
+        articulo.id === articuloActualizado.id ? articuloActualizado : articulo
+      )
+    );
+    setFilteredArticulos(prevFilteredArticulos =>
+      prevFilteredArticulos.map(articulo =>
+        articulo.id === articuloActualizado.id ? articuloActualizado : articulo
+      )
+    );
   };
 
   return (
@@ -165,7 +175,11 @@ const ArticuloList: React.FC = () => {
           </TableHead>
           <TableBody sx={{ display: 'block', overflowY: 'auto', maxHeight: '74vh' }}>
             {filteredArticulos.map((articulo) => (
-                <Articulo key={articulo.id} articulo={articulo} />   
+                <Articulo 
+                  key={articulo.id} 
+                  articulo={articulo} 
+                  onSave={actualizarArticuloManufacturado} 
+                />   
             ))}
           </TableBody>
         </Table>
@@ -185,4 +199,3 @@ const ArticuloList: React.FC = () => {
 };
 
 export default ArticuloList;
-
