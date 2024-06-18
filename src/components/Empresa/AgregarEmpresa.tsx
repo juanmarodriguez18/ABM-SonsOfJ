@@ -25,13 +25,14 @@ const AgregarEmpresaModal: React.FC<AgregarEmpresaModalProps> = ({
     const [cuil, setCuil] = useState<number>(0);
     const [imagenesEmpresa, setImagenesEmpresa] = useState<ImagenEmpresa[]>([]);
     const [sucursales, setSucursales] = useState<any[]>([]);
+    const [errors, setErrors] = useState<{ nombre?: string, razonSocial?: string, cuil?: string, imagenesEmpresa?: string[] }>({});
 
     useEffect(() => {
         if (isEdit && empresaInicial) {
             setNombre(empresaInicial.nombre);
             setRazonSocial(empresaInicial.razonSocial);
             setCuil(empresaInicial.cuil);
-            setImagenesEmpresa([...empresaInicial.imagenesEmpresa]);
+            setImagenesEmpresa(empresaInicial.imagenesEmpresa.map(img => new ImagenEmpresa(img.id, img.eliminado, img.url)));
             setSucursales([...empresaInicial.sucursales]);
         } else {
             setNombre('');
@@ -42,7 +43,20 @@ const AgregarEmpresaModal: React.FC<AgregarEmpresaModalProps> = ({
         }
     }, [show, isEdit, empresaInicial]);
 
+    const validateFields = () => {
+        const newErrors: { nombre?: string, razonSocial?: string, cuil?: string, imagenesEmpresa?: string[] } = {};
+        if (!nombre) newErrors.nombre = 'El nombre es obligatorio';
+        if (!razonSocial) newErrors.razonSocial = 'La razón social es obligatoria';
+        if (!cuil) newErrors.cuil = 'El CUIL es obligatorio';
+        const imagenErrors = imagenesEmpresa.map((imagen, index) => (!imagen.url ? `La URL de la imagen ${index + 1} es obligatoria` : ''));
+        if (imagenErrors.some(error => error !== '')) newErrors.imagenesEmpresa = imagenErrors;
+        setErrors(newErrors);
+        return Object.keys(newErrors).length === 0;
+    };
+
     const handleGuardar = async () => {
+        if (!validateFields()) return;
+
         const nuevaEmpresa: Empresa = {
             id: isEdit && empresaInicial ? empresaInicial.id : 0,
             nombre,
@@ -52,7 +66,7 @@ const AgregarEmpresaModal: React.FC<AgregarEmpresaModalProps> = ({
             sucursales,
             eliminado: false,
         };
-    
+
         try {
             if (isEdit && empresaInicial) {
                 await actualizarEmpresa(nuevaEmpresa.id, nuevaEmpresa);
@@ -63,13 +77,12 @@ const AgregarEmpresaModal: React.FC<AgregarEmpresaModalProps> = ({
                 alert('La Empresa se guardó correctamente');
                 onSave(empresaCreada);
             }
-    
+
             handleClose();
         } catch (error) {
             console.error('Error al guardar la empresa:', error);
         }
     };
-    
 
     const handleAgregarImagen = () => {
         setImagenesEmpresa([...imagenesEmpresa, new ImagenEmpresa()]);
@@ -93,6 +106,8 @@ const AgregarEmpresaModal: React.FC<AgregarEmpresaModalProps> = ({
                     fullWidth
                     value={nombre}
                     onChange={(e) => setNombre(e.target.value)}
+                    error={!!errors.nombre}
+                    helperText={errors.nombre}
                 />
                 <TextField
                     margin="dense"
@@ -102,6 +117,8 @@ const AgregarEmpresaModal: React.FC<AgregarEmpresaModalProps> = ({
                     fullWidth
                     value={razonSocial}
                     onChange={(e) => setRazonSocial(e.target.value)}
+                    error={!!errors.razonSocial}
+                    helperText={errors.razonSocial}
                 />
                 <TextField
                     margin="dense"
@@ -111,6 +128,8 @@ const AgregarEmpresaModal: React.FC<AgregarEmpresaModalProps> = ({
                     fullWidth
                     value={cuil}
                     onChange={(e) => setCuil(Number(e.target.value))}
+                    error={!!errors.cuil}
+                    helperText={errors.cuil}
                 />
                 <Button variant="contained" color="primary" onClick={handleAgregarImagen}>
                     Agregar Imagen
@@ -124,6 +143,8 @@ const AgregarEmpresaModal: React.FC<AgregarEmpresaModalProps> = ({
                         fullWidth
                         value={imagen.url}
                         onChange={(e) => handleImagenChange(index, e.target.value)}
+                        error={errors.imagenesEmpresa && errors.imagenesEmpresa[index] !== ''}
+                        helperText={errors.imagenesEmpresa && errors.imagenesEmpresa[index]}
                     />
                 ))}
             </DialogContent>
