@@ -5,14 +5,17 @@ import { CssBaseline, ThemeProvider } from "@mui/material";
 import "@fontsource/poppins";
 import Theme from "./themes/Theme";
 import { CarritoContextProvider } from "./components/Carrito/CarritoContext";
+import { PedidosProvider } from "./components/Pedido/PedidosContext";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
     <CssBaseline />
-      <ThemeProvider theme={Theme}>
-        <CarritoContextProvider>
+    <ThemeProvider theme={Theme}>
+      <CarritoContextProvider>
+        <PedidosProvider>
           <App />
-        </CarritoContextProvider>
-      </ThemeProvider>
+        </PedidosProvider>
+      </CarritoContextProvider>
+    </ThemeProvider>
   </React.StrictMode>
 );
