@@ -64,7 +64,9 @@ const ManufacturadoFormulario: React.FC<ManufacturadoFormularioProps> = ({
     const [showAgregarCategoriaModal, setShowAgregarCategoriaModal] = useState<boolean>(false);
     const [showAgregarUM, setShowAgregarUM] = useState<boolean>(false);
     const [unidadesMedida, setUnidadesMedida] = useState<UnidadMedida[]>([]);
-    const [manufacturado, setManufacturado] = useState<ArticuloManufacturado>(new ArticuloManufacturado(0, false, '', 0, new Set<ImagenArticulo>(), new UnidadMedida(), new Categoria(), '', 0, '', new Set<ArticuloManufacturadoDetalle>()));
+    const [manufacturado, setManufacturado] = useState<ArticuloManufacturado>(new ArticuloManufacturado(0, false, '', 0, new Set<ImagenArticulo>(),
+        new UnidadMedida(), new Categoria(), '', 0, '', new Set<ArticuloManufacturadoDetalle>()));
+    const [txtValidacion, setTxtValidacion] = useState<string>("");
     const filteredArticulosInsumo = articulosInsumo.filter((insumo) => insumo.esParaElaborar && insumo.eliminado === false);
     const filteredUnidadesMedida = unidadesMedida.filter((um) => um.eliminado === false);
     const filteredCategorias = categorias.filter((cat) => cat.eliminado === false);
@@ -79,69 +81,71 @@ const ManufacturadoFormulario: React.FC<ManufacturadoFormularioProps> = ({
 
     useEffect(() => {
         async function cargarDatosIniciales() {
+            try {
+                const categorias = await getCategorias();
+                setCategorias(categorias);
 
-            const categorias = await getCategorias();
-            setCategorias(categorias);
+                const unidadesMedida = await getUnidadesMedida();
+                setUnidadesMedida(unidadesMedida);
 
-            const unidadesMedida = await getUnidadesMedida();
-            setUnidadesMedida(unidadesMedida);
+                if (isEdit && articuloManufacturadoInicial) {
+                    const detallesManufacturado = Array.from(articuloManufacturadoInicial.articuloManufacturadoDetalles).map(detalle => ({
+                        ...detalle,
+                        articuloInsumo: { ...detalle.articuloInsumo },
+                    }));
+                    setManufacturado({ ...articuloManufacturadoInicial, articuloManufacturadoDetalles: new Set(detallesManufacturado) });
+                }
 
-            if (isEdit && articuloManufacturadoInicial) {
-                const detallesManufacturado = Array.from(articuloManufacturadoInicial.articuloManufacturadoDetalles).map(detalle => ({
-                    ...detalle,
-                    articuloInsumo: { ...detalle.articuloInsumo },
-                }));
-                setManufacturado({ ...articuloManufacturadoInicial, articuloManufacturadoDetalles: new Set(detallesManufacturado) });
+                // Si estamos editando y hay un insumo inicial, configurar las imágenes del insumo
+                if (isEdit && articuloManufacturadoInicial) {
+                    // Convertir el Set de imagenesArticulo a un array de ImagenArticulo
+                    const imagenesManufacturado = Array.from(articuloManufacturadoInicial.imagenesArticulo).map(imagen => new ImagenArticulo(imagen.id, imagen.eliminado, imagen.url));
+                    setManufacturado({ ...articuloManufacturadoInicial, imagenesArticulo: new Set(imagenesManufacturado) });
+                }
+            } catch (error) {
+                console.error("Error al cargar datos iniciales:", error);
+                setTxtValidacion("Error al cargar datos iniciales. Por favor, inténtelo de nuevo más tarde.");
             }
-
-            // Si estamos editando y hay un insumo inicial, configurar las imágenes del insumo
-            if (isEdit && articuloManufacturadoInicial) {
-                // Convertir el Set de imagenesArticulo a un array de ImagenArticulo
-                const imagenesManufacturado = Array.from(articuloManufacturadoInicial.imagenesArticulo).map(imagen => new ImagenArticulo(imagen.id, imagen.eliminado, imagen.url));
-                setManufacturado({ ...articuloManufacturadoInicial, imagenesArticulo: new Set(imagenesManufacturado) });
-            }
-
         }
-
         cargarDatosIniciales();
     }, [show, isEdit, articuloManufacturadoInicial]);
 
     const handleGuardar = async () => {
-
+        // Validación de campos
         if (!manufacturado.denominacion || manufacturado.denominacion.trim() === "") {
-            console.error("Ingrese la denominación del producto");
+            setTxtValidacion("Ingrese la denominación del producto");
             return;
         }
         if (!manufacturado.precioVenta || manufacturado.precioVenta <= 0) {
-            console.error("Ingrese un precio válido");
+            setTxtValidacion("Ingrese un precio válido");
             return;
         }
         if (!manufacturado.tiempoEstimadoMinutos || manufacturado.tiempoEstimadoMinutos <= 0) {
-            console.error("Ingrese un tiempo estimado válido");
+            setTxtValidacion("Ingrese un tiempo estimado válido");
             return;
         }
         if (!manufacturado.descripcion || manufacturado.descripcion.trim() === "") {
-            console.error("Ingrese la descripción del producto");
+            setTxtValidacion("Ingrese la descripción del producto");
             return;
         }
         if (!manufacturado.preparacion || manufacturado.preparacion.trim() === "") {
-            console.error("Ingrese la preparación del producto");
+            setTxtValidacion("Ingrese la preparación del producto");
             return;
         }
         if (!manufacturado.unidadMedida || !manufacturado.unidadMedida.id) {
-            console.error("Seleccione una unidad de medida");
+            setTxtValidacion("Seleccione una unidad de medida");
             return;
         }
         if (!manufacturado.categoria || !manufacturado.categoria.id) {
-            console.error("Seleccione una categoría");
+            setTxtValidacion("Seleccione una categoría");
             return;
         }
         if (manufacturado.imagenesArticulo.size === 0) {
-            console.error("Ingrese al menos una imagen para el producto");
+            setTxtValidacion("Ingrese al menos una imagen para el producto");
             return;
         }
         if (manufacturado.articuloManufacturadoDetalles.size === 0) {
-            console.error("Ingrese al menos un detalle para el producto");
+            setTxtValidacion("Ingrese al menos un detalle para el producto");
             return;
         }
 
@@ -158,7 +162,11 @@ const ManufacturadoFormulario: React.FC<ManufacturadoFormularioProps> = ({
                 console.log('JSON enviado al backend:', JSON.stringify(articuloParaGuardar));
                 await actualizarArticuloManufacturado(manufacturado.id, articuloParaGuardar); // Actualizar artículo
                 alert('El ArticuloManufacturado se actualizó correctamente');
-                //onSave({...manufacturado, imagenesArticulo: manufacturado.imagenesArticulo, articuloManufacturadoDetalles: manufacturado.articuloManufacturadoDetalles})
+                onSave({
+                    ...articuloParaGuardar,
+                    imagenesArticulo: new Set(imagenesArticuloArray),
+                    articuloManufacturadoDetalles: new Set(detallesArticuloArray)
+                });
             } else {
                 console.log('JSON enviado al backend:', JSON.stringify(articuloParaGuardar));
                 const articuloCreado = await crearArticuloManufacturado(articuloParaGuardar); // Crear nuevo artículo
@@ -169,6 +177,7 @@ const ManufacturadoFormulario: React.FC<ManufacturadoFormularioProps> = ({
             handleClose();
         } catch (error) {
             console.error('Error al guardar el artículo manufacturado:', error);
+            setTxtValidacion("Error al guardar el Articulo. Por favor, inténtelo de nuevo más tarde.");
         }
     };
 
@@ -475,6 +484,9 @@ const ManufacturadoFormulario: React.FC<ManufacturadoFormularioProps> = ({
                                 </Grid>
                             </Grid>
                         ))}
+                        <Grid item xs={12}>
+                            <p style={{ color: 'red', lineHeight: 5, padding: 5 }}>{txtValidacion}</p>
+                        </Grid>
                     </Grid>
                 </DialogContent>
                 <DialogActions>
