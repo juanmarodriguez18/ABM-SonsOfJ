@@ -1,3 +1,4 @@
+import axios from "axios";
 import { Pedido } from "../types/Pedido";
 
 const urlPedidos = 'http://localhost:8080/pedidos';
@@ -63,3 +64,14 @@ export async function getPedidoById(id: number): Promise<Pedido | null> {
         return null;
     }
 }
+
+export const actualizarPedido = async (id: number, datosActualizados: any) => {
+    try {
+      const response = await axios.put(`${urlPedidos}/${id}`, datosActualizados);
+      return response.data;
+    } catch (error) {
+      console.error("Error al actualizar un pedido:", error);
+      throw error;
+    }
+  };
+  

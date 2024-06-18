@@ -8,6 +8,9 @@ import { Carrito } from "./components/Carrito/Carrito";
 import GrillaManufacturados from "./components/ArticulosManufacturados/GrillaManufacturados";
 import PedidosPage from "./pages/PedidosPage";
 import ArticuloDetalle from "./components/ArticuloManufacturadoDetalles/ArticuloDetalle";
+import CajeroPedidos from "./pages/Cajero/CajeroPedidos";
+import CocineroPedidos from "./pages/Cocinero/CocineroPedidos";
+import DeliveryPedidos from "./pages/Delivery/DeliveryPedidos";
 
 function App() {
   return (
@@ -23,6 +26,9 @@ function App() {
           <Route path="/pedidos" element={<PedidosPage />} />
           <Route path="/carrito" element={<Carrito />} />
           <Route path="/grilla" element={<GrillaManufacturados />} />
+          <Route path="/cajeroPedidos" element={<CajeroPedidos />} />
+          <Route path="/cocineroPedidos" element={<CocineroPedidos />} />
+          <Route path="/deliveryPedidos" element={<DeliveryPedidos />} />
         </Routes>
       </Layout>
     </BrowserRouter>
