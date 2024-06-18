@@ -167,6 +167,72 @@ const Sidebar: React.FC = () => {
                 disableRipple
                 disableTouchRipple
                 className="btn-list-sidebar"
+                startIcon={<GradingIcon />}
+                sx={{
+                  color: "#555",
+                  fontSize: 12,
+                  pl: 2,
+                  borderRadius: 8,
+                  textTransform: "none",
+                  "&:hover": {
+                    bgcolor: "#eee",
+                    color: "#3f51b5",
+                  },
+                }}
+                onClick={() => navigate("/cajeroPedidos")}
+              >
+                Cajero Pedidos
+              </Button>
+            </ListItem>
+            <ListItem>
+              <Button
+                disableRipple
+                disableTouchRipple
+                className="btn-list-sidebar"
+                startIcon={<GradingIcon />}
+                sx={{
+                  color: "#555",
+                  fontSize: 12,
+                  pl: 2,
+                  borderRadius: 8,
+                  textTransform: "none",
+                  "&:hover": {
+                    bgcolor: "#eee",
+                    color: "#3f51b5",
+                  },
+                }}
+                onClick={() => navigate("/cocineroPedidos")}
+              >
+                Cocinero Pedidos
+              </Button>
+            </ListItem>
+            <ListItem>
+              <Button
+                disableRipple
+                disableTouchRipple
+                className="btn-list-sidebar"
+                startIcon={<GradingIcon />}
+                sx={{
+                  color: "#555",
+                  fontSize: 12,
+                  pl: 2,
+                  borderRadius: 8,
+                  textTransform: "none",
+                  "&:hover": {
+                    bgcolor: "#eee",
+                    color: "#3f51b5",
+                  },
+                }}
+                onClick={() => navigate("/deliveryPedidos")}
+              >
+                Delivery Pedidos
+              </Button>
+            </ListItem>
+            <ListItem>
+              <Button
+                disableRipple
+                disableTouchRipple
+                className="btn-list-sidebar"
                 startIcon={
                   <Badge badgeContent={cantidadTotal} color="primary">
                     <ShoppingCartIcon sx={{ fontSize: 20 }} />
