@@ -24,10 +24,25 @@ import SidebarItem from "./SidebarItem";
 import { useNavigate } from "react-router-dom";
 import { useCarrito } from "../Carrito/useCarrito"; // Asegúrate de ajustar la ruta según tu estructura de carpetas
 import "../../styles/InsumoFormulario.css";
+import { usePedidos } from "../Pedido/PedidosContext";
+import { Estado } from "../../types/enums/Estado";
 
 const Sidebar: React.FC = () => {
   const navigate = useNavigate();
   const { cart } = useCarrito();
+  const { pedidos } = usePedidos();
+
+  // Función para contar la cantidad de pedidos en cada estado
+  const contarPedidosPorEstado = (estado: Estado): number => {
+    return pedidos.filter((pedido) => pedido.estado === estado).length;
+  };
+
+  // Calcula la cantidad de pedidos en cada estado
+  const cantidadPendientes = contarPedidosPorEstado(Estado.PENDIENTE);
+  const cantidadEnPreparacion = contarPedidosPorEstado(Estado.PREPARACION);
+  const cantidadEnDelivery = contarPedidosPorEstado(Estado.EN_DELIVERY);
+  const cantidadParaEntregar = contarPedidosPorEstado(Estado.LISTO_PARA_ENTREGA);
+  const cantidadCajero = cantidadPendientes + cantidadParaEntregar;
 
   const cantidadTotal = cart.reduce((total, item) => total + item.cantidad, 0);
 
@@ -167,7 +182,7 @@ const Sidebar: React.FC = () => {
                 disableRipple
                 disableTouchRipple
                 className="btn-list-sidebar"
-                startIcon={<GradingIcon />}
+                startIcon={<Badge badgeContent={cantidadCajero} color="primary"><GradingIcon /></Badge>}
                 sx={{
                   color: "#555",
                   fontSize: 12,
@@ -189,7 +204,7 @@ const Sidebar: React.FC = () => {
                 disableRipple
                 disableTouchRipple
                 className="btn-list-sidebar"
-                startIcon={<GradingIcon />}
+                startIcon={<Badge badgeContent={cantidadEnPreparacion} color="primary"><GradingIcon /></Badge>}
                 sx={{
                   color: "#555",
                   fontSize: 12,
@@ -211,7 +226,7 @@ const Sidebar: React.FC = () => {
                 disableRipple
                 disableTouchRipple
                 className="btn-list-sidebar"
-                startIcon={<GradingIcon />}
+                startIcon={<Badge badgeContent={cantidadEnDelivery} color="primary"><GradingIcon /></Badge>}
                 sx={{
                   color: "#555",
                   fontSize: 12,
