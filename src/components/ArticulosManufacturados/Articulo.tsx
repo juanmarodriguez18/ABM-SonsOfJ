@@ -63,28 +63,19 @@ const Articulo: React.FC<{ articulo: ArticuloManufacturado, onSave: (articulo: A
   }, []);
 
   return (
-    <TableRow className={`row ${manufacturado.eliminado ? "eliminado" : ""}`} sx={{ display: "flex", flexDirection: "row" }}>
-      <TableCell className="col" align="center">
-        {articulo.denominacion}
-      </TableCell>
+    <TableRow
+      className={`row ${manufacturado.eliminado ? "eliminado" : ""}`}
+      sx={{ display: "flex", flexDirection: "row" }}
+    >
+      <TableCell className="col" align="center">{articulo.denominacion}</TableCell>
       <TableCell className="col" align="center">
         {primeraImagen && (
-          <img
-            className="img"
-            src={primeraImagen}
-            alt={articulo.denominacion}
-          />
+          <img className="img" src={primeraImagen} alt={articulo.denominacion} />
         )}
       </TableCell>
-      <TableCell className="col" align="center">
-        {articulo.descripcion}
-      </TableCell>
-      <TableCell className="col" align="center">
-        ${articulo.precioVenta}
-      </TableCell>
-      <TableCell className="col" align="center">
-        {articulo.tiempoEstimadoMinutos} minutos
-      </TableCell>
+      <TableCell className="col" align="center">{articulo.descripcion}</TableCell>
+      <TableCell className="col" align="center">${articulo.precioVenta}</TableCell>
+      <TableCell className="col" align="center">{articulo.tiempoEstimadoMinutos} minutos</TableCell>
       <TableCell className="col" sx={{ display: "flex" }} align="center">
         <Box onClick={handleEliminarRecuperar}>
           {manufacturado.eliminado ? (

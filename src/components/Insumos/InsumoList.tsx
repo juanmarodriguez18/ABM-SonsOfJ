@@ -6,15 +6,16 @@ import InsumoFormulario from './InsumoFormulario';
 import { getInsumos } from '../../services/ArticuloInsumoService';
 import { getCategorias } from '../../services/CategoriaService';
 import { Categoria } from '../../types/Categoria';
-import { FormControl, MenuItem, Select, Typography, Box, Paper, Table, TableHead, TableRow, TableCell, TableBody, TableContainer } from '@mui/material';
+import { Typography, Box, Paper, Table, TableHead, TableRow, TableCell, TableBody, TableContainer } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import CustomButton from '../Shared/CustomButton';
+import CategoriaFiltro from '../Categorias/CategoriaFiltro';
 
 const InsumoList: React.FC = () => {
   const [insumos, setInsumos] = useState<ArticuloInsumo[]>([]);
   const [filteredInsumos, setFilteredInsumos] = useState<ArticuloInsumo[]>([]);
-  const [query, setQuery] = useState<string>('');
   const [showForm, setShowForm] = useState<boolean>(false);
+  const [query, setQuery] = useState<string>('');
   const [categorias, setCategorias] = useState<Categoria[]>([]); // Array de objetos Categoria
   const [categoriaSeleccionada, setCategoriaSeleccionada] = useState<string>('');
 
@@ -74,48 +75,15 @@ const InsumoList: React.FC = () => {
       <Typography variant="h4" gutterBottom>
         Insumos
       </Typography>
+      
       <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
         <CustomButton onClick={() => setShowForm(true)} text="Agregar Insumo" icon={<AddIcon />} />
         <SearchBar onSearch={setQuery} />
-        <Box sx={{ display: 'flex', alignItems: 'center', ml: 2 }}>
-          <Typography variant="subtitle2" sx={{ mr: 1 }}>Filtrar por categoría:</Typography>
-          <FormControl
-            variant="outlined"
-            sx={{
-              '& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline': {
-                borderColor: '#3f51b5',
-              },
-            }}
-          >
-            <Select
-              size="small"
-              id="categorias"
-              className="form-select"
-              onChange={(e) => {
-                const categoria = e.target.value;
-                setCategoriaSeleccionada(categoria);
-              }}
-              value={categoriaSeleccionada}
-              sx={{
-                width: 200, // Ajusta el ancho aquí
-                ml: 1,
-                bgcolor: '#ccc',
-              }}
-            >
-              <MenuItem value="">Seleccionar categoría...</MenuItem>
-              {categorias.map((categoria, index) => (
-                <MenuItem
-                  key={index}
-                  value={categoria.denominacion}
-                >
-                  <Typography variant="subtitle2">
-                    {categoria.denominacion}
-                  </Typography>
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-        </Box>
+        <CategoriaFiltro
+          categorias={categorias}
+          categoriaSeleccionada={categoriaSeleccionada}
+          setCategoriaSeleccionada={setCategoriaSeleccionada}
+        />
       </Box>
 
       <TableContainer
@@ -131,32 +99,21 @@ const InsumoList: React.FC = () => {
         <Table sx={{ minWidth: 700 }}>
           <TableHead sx={{ bgcolor: '#aaa' }}>
             <TableRow sx={{ display: 'flex', flexDirection: 'row' }}>
-              <TableCell align="center" className="col">
-                Denominación
-              </TableCell>
-              <TableCell align="center" className="col">
-                Imagen
-              </TableCell>
-              <TableCell align="center" className="col">
-                Precio Compra
-              </TableCell>
-              <TableCell align="center" className="col">
-                Stock Actual
-              </TableCell>
-              <TableCell align="center" className="col">
-                Stock Mínimo
-              </TableCell>
-              <TableCell align="center" className="col">
-                Es para elaborar
-              </TableCell>
-              <TableCell align="center" className="col">
-                Operaciones
-              </TableCell>
+              <TableCell align="center" className="col">Denominación</TableCell>
+              <TableCell align="center" className="col">Imagen</TableCell>
+              <TableCell align="center" className="col">Precio Compra</TableCell>
+              <TableCell align="center" className="col">Stock Actual</TableCell>
+              <TableCell align="center" className="col">Stock Mínimo</TableCell>
+              <TableCell align="center" className="col">Es para elaborar</TableCell>
+              <TableCell align="center" className="col">Operaciones</TableCell>
             </TableRow>
           </TableHead>
           <TableBody sx={{ display: 'block', overflowY: 'auto', maxHeight: '74vh' }}>
             {filteredInsumos.map((insumo) => (
-                <Insumo key={insumo.id} articulo={insumo} />
+                <Insumo
+                  key={insumo.id}
+                  articulo={insumo}
+                />
             ))}
           </TableBody>
         </Table>
