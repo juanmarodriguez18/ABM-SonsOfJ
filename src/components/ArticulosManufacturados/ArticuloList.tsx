@@ -5,7 +5,7 @@ import SearchBar from "../SearchBar/SearchBar";
 import { ArticuloManufacturado } from "../../types/ArticuloManufacturado";
 import { ArticuloInsumo } from "../../types/ArticuloInsumo";
 import { UnidadMedida } from "../../types/UnidadMedida";
-import { FormControl, MenuItem, TableContainer, Typography, Box, Select, Paper, Table, TableHead, TableRow, TableCell, TableBody } from "@mui/material";
+import { TableContainer, Typography, Box, Paper, Table, TableHead, TableRow, TableCell, TableBody } from "@mui/material";
 import { getInsumos } from "../../services/ArticuloInsumoService";
 import { getUnidadesMedida } from "../../services/UnidadMedidaService";
 import { getCategorias } from "../../services/CategoriaService";
@@ -13,6 +13,7 @@ import { Categoria } from "../../types/Categoria";
 import AddIcon from "@mui/icons-material/Add";
 import CustomButton from "../Shared/CustomButton";
 import ManufacturadoFormulario from "./ManufacturadoFormulario";
+import CategoriaFiltro from "../Categorias/CategoriaFiltro";
 
 const ArticuloList: React.FC = () => {
   const [articulos, setArticulos] = useState<ArticuloManufacturado[]>([]);
@@ -54,9 +55,7 @@ const ArticuloList: React.FC = () => {
 
     if (categoriaSeleccionada) {
       filtered = filtered.filter((articulo) =>
-        articulo.categoria.denominacion
-          .toLowerCase()
-          .includes(categoriaSeleccionada.toLowerCase())
+        articulo.categoria.denominacion.toLowerCase().includes(categoriaSeleccionada.toLowerCase())
       );
     }
 
@@ -101,45 +100,11 @@ const ArticuloList: React.FC = () => {
       <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
         <CustomButton onClick={() => setShowModal(true)} text="Agregar Manufacturado" icon={<AddIcon />} />
         <SearchBar onSearch={setQuery} />
-        <Box sx={{ display: 'flex', alignItems: 'center', ml: 2 }}>
-          <Typography variant="subtitle2" sx={{ mr: 1 }}>Filtrar por categoría:</Typography>
-          <FormControl
-            variant="outlined"
-            sx={{
-              '& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline': {
-                borderColor: '#3f51b5',
-              },
-            }}
-          >
-            <Select
-              size="small"
-              id="categorias"
-              className="form-select"
-              onChange={(e) => {
-                const categoria = e.target.value;
-                setCategoriaSeleccionada(categoria);
-              }}
-              value={categoriaSeleccionada}
-              sx={{
-                width: 200, // Ajusta el ancho aquí
-                ml: 1,
-                bgcolor: '#ccc',
-              }}
-            >
-              <MenuItem value="">Seleccionar categoría...</MenuItem>
-              {categorias.map((categoria, index) => (
-                <MenuItem
-                  key={index}
-                  value={categoria.denominacion}
-                >
-                  <Typography variant="subtitle2">
-                    {categoria.denominacion}
-                  </Typography>
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-        </Box>
+        <CategoriaFiltro
+          categorias={categorias}
+          categoriaSeleccionada={categoriaSeleccionada}
+          setCategoriaSeleccionada={setCategoriaSeleccionada}
+        />
       </Box>
 
       <TableContainer
@@ -155,24 +120,12 @@ const ArticuloList: React.FC = () => {
         <Table sx={{ minWidth: 700 }}>
           <TableHead sx={{ bgcolor: "#aaa" }}>
             <TableRow sx={{ display: "flex", flexDirection: "row" }}>
-              <TableCell align="center" className="col">
-                Denominacion
-              </TableCell>
-              <TableCell align="center" className="col">
-                Imagen
-              </TableCell>
-              <TableCell align="center" className="col">
-                Descripción
-              </TableCell>
-              <TableCell align="center" className="col">
-                Precio
-              </TableCell>
-              <TableCell align="center" className="col">
-                Tiempo estimado
-              </TableCell>
-              <TableCell align="center" className="col">
-                Operaciones
-              </TableCell>
+              <TableCell align="center" className="col">Denominacion</TableCell>
+              <TableCell align="center" className="col">Imagen</TableCell>
+              <TableCell align="center" className="col">Descripción</TableCell>
+              <TableCell align="center" className="col">Precio</TableCell>
+              <TableCell align="center" className="col">Tiempo estimado</TableCell>
+              <TableCell align="center" className="col">Operaciones</TableCell>
             </TableRow>
           </TableHead>
           <TableBody sx={{ display: 'block', overflowY: 'auto', maxHeight: '74vh' }}>

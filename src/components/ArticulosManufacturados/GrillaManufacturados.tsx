@@ -9,6 +9,7 @@ import { getArticulosManufacturados } from '../../services/ArticuloManufacturado
 import { Link } from "react-router-dom";
 import InfoIcon from "@mui/icons-material/Info";
 import { getInsumos } from '../../services/ArticuloInsumoService';
+import SearchBar from '../SearchBar/SearchBar';
 
 export const GrillaManufacturados: React.FC = () => {
   const [articulosManufacturados, setArticulosManufacturados] = useState<ArticuloManufacturado[]>([]);
@@ -17,6 +18,7 @@ export const GrillaManufacturados: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const filteredManufacturados = articulosManufacturados.filter((manufacturado) => manufacturado.eliminado === false);
   const filteredInsumos = articulosInsumos.filter((insumo) => insumo.esParaElaborar === false && insumo.eliminado === false);
+  const [query, setQuery] = useState<string>('');
 
   useEffect(() => {
     const fetchArticulos = async () => {
@@ -50,18 +52,28 @@ export const GrillaManufacturados: React.FC = () => {
 
   const articulos = [...filteredManufacturados, ...filteredInsumos];
 
+  // Filtrar artículos por query
+  const filteredArticulos = articulos.filter((articulo) =>
+    articulo.denominacion.toLowerCase().includes(query.toLowerCase())
+  );
+
   return (
     <Box p={3}>
       <Typography variant="h4" gutterBottom>
         Menú
       </Typography>
+
+      <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+        <SearchBar onSearch={setQuery} />
+      </Box>
+
       <Box sx={{ overflowY: 'auto', maxHeight: '80vh', width: '100%' }}>
         <Box width={1500} display="flex" alignItems="center" mb={2}>
           <Grid container spacing={4}>
             {loading ? (
               <Typography variant="body1">Cargando...</Typography>
             ) : (
-              articulos.map((articulo) => (
+              filteredArticulos.map((articulo) => (
                 <Grid item key={articulo.id} xs={12} sm={6} md={4} sx={{ maxWidth: '300px' }}>
                   <Card sx={{ width: '100%' }}>
                     <CardMedia
