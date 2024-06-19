@@ -18,6 +18,7 @@ import {
   LunchDining as LunchDiningIcon,
   EggAlt as EggAltIcon,
   Straighten as StraightenIcon,
+  Category as CategoryIcon,
 } from "@mui/icons-material";
 import SidebarItem from "./SidebarItem";
 import { useNavigate } from "react-router-dom";
@@ -261,6 +262,18 @@ const Sidebar: React.FC = () => {
                 onClick={() => navigate("/unidades-medida")}
               >
                 Unidades Medida
+              </Button>
+            </ListItem>
+            <ListItem>
+              <Button
+                disableRipple
+                disableTouchRipple
+                className="btn-list-sidebar"
+                startIcon={<CategoryIcon />}
+                sx={buttonStyles}
+                onClick={() => navigate("/categorias")}
+              >
+                Categorias
               </Button>
             </ListItem>
           </SidebarItem>
