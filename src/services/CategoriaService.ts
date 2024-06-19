@@ -40,11 +40,21 @@ export const crearCategoria = async (nuevaCategoria: any): Promise<Categoria> =>
 // Función para eliminar lógicamente una categoría
 export const eliminarCategoria = async (id: number): Promise<void> => {
   try {
-    const response = await axios.patch(`${API_URL}/${id}`, { eliminado: true });
+    const response = await axios.patch(`${API_URL}/${id}/eliminar`, { eliminado: true });
     return response.data;
   } catch (error) {
     console.error("Error al eliminar lógicamente una categoria:", error);
     throw error;
+  }
+};
+
+export const recuperarCategoria = async (id: number) => {
+  try {
+      const response = await axios.patch(`${API_URL}/${id}/recuperar`, { eliminado: false });
+      return response.data;
+  } catch (error) {
+      console.error("Error al recuperar una categoria:", error);
+      throw error;
   }
 };
 

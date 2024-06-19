@@ -11,6 +11,7 @@ import ArticuloDetalle from "./components/ArticuloManufacturadoDetalles/Articulo
 import CajeroPedidos from "./pages/Cajero/CajeroPedidos";
 import CocineroPedidos from "./pages/Cocinero/CocineroPedidos";
 import DeliveryPedidos from "./pages/Delivery/DeliveryPedidos";
+import CategoriaPage from "./pages/CategoriaPage";
 
 function App() {
   return (
@@ -23,6 +24,7 @@ function App() {
           <Route path="/articulos/:id" element={<ArticuloDetalle />} />
           <Route path="/insumos" element={<InsumoPage />} />
           <Route path="/unidades-medida" element={<UnidadesMedidaPage />} />
+          <Route path="/categorias" element={<CategoriaPage />} />
           <Route path="/pedidos" element={<PedidosPage />} />
           <Route path="/carrito" element={<Carrito />} />
           <Route path="/grilla" element={<GrillaManufacturados />} />
