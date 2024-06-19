@@ -7,6 +7,7 @@ import { Pedido } from "../../../types/Pedido";
 interface CheckoutMPProps {
     montoCarrito: number;
     pedido: Pedido;
+    onPagoCompleto?: () => void; // Esta función es opcional
 }
 
 function CheckoutMP({ montoCarrito, pedido }: CheckoutMPProps) {

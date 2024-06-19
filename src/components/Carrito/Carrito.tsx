@@ -15,7 +15,6 @@ import { useDatosSeleccion } from './useDatosSeleccion';
 import CheckoutMP from './MercadoPago/CheckoutMP';
 import { ArticuloInsumo } from '../../types/ArticuloInsumo';
 
-
 interface CartItemProps {
   detalle: PedidoDetalle;
   onRemove: () => void;
@@ -59,7 +58,7 @@ export function Carrito() {
   } = useDatosSeleccion();
 
   const [loading, setLoading] = useState(false);
-  const [pedido, setPedido] = useState<Pedido | null>(null); // Estado para almacenar el pedido
+  const [pedido, setPedido] = useState<Pedido | null>(null);
 
   const mostrarCarritoJSON = () => {
     console.log(cart);
@@ -85,7 +84,6 @@ export function Carrito() {
           if (detalle.articulo instanceof ArticuloManufacturado) {
             return detalle.articulo.tiempoEstimadoMinutos;
           }
-          // Si es ArticuloInsumo, puedes retornar un valor por defecto o manejarlo como necesites
           return 0;
         })
       );
@@ -124,14 +122,18 @@ export function Carrito() {
         clienteSeleccionado
       );
 
-      setPedido(nuevoPedido); // Almacenamos el pedido en el estado
+      setPedido(nuevoPedido);
 
-      console.log('Pedido a enviar:', JSON.stringify(nuevoPedido)); // Aquí se imprime el JSON completo del pedido
+      console.log('Pedido a enviar:', JSON.stringify(nuevoPedido));
 
       await guardarPedidoEnBD(nuevoPedido);
 
-      alert(`El pedido se guardó correctamente.`);
-      //limpiarCarrito();
+      if (formaPago === FormaPago.EFECTIVO) {
+        alert('El pedido se guardó correctamente.');
+        limpiarCarrito();
+      } else {
+        alert('El pedido se guardó correctamente. Complete el pago con Mercado Pago.');
+      }
     } catch (error) {
       console.error('Error al confirmar la compra:', error);
       alert('Ocurrió un error al confirmar la compra. Inténtalo de nuevo más tarde.');
@@ -140,7 +142,10 @@ export function Carrito() {
     }
   };
 
-  // Verificamos que totalPedido tenga un valor numérico antes de pasarlo
+  const handlePagoCompleto = () => {
+    limpiarCarrito();
+  };
+
   const montoCarrito = typeof totalPedido === 'number' ? totalPedido : 0;
 
   return (
@@ -268,7 +273,7 @@ export function Carrito() {
         </Button>
       </Box>
       {formaPago === FormaPago.MERCADO_PAGO && pedido && (
-        <CheckoutMP montoCarrito={montoCarrito} pedido={pedido} />
+        <CheckoutMP montoCarrito={montoCarrito} pedido={pedido} onPagoCompleto={handlePagoCompleto} />
       )}
     </Box>
   );

@@ -97,6 +97,7 @@ const ArticuloList: React.FC = () => {
       <Typography variant="h4" gutterBottom>
         Manufacturados
       </Typography>
+      
       <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
         <CustomButton onClick={() => setShowModal(true)} text="Agregar Manufacturado" icon={<AddIcon />} />
         <SearchBar onSearch={setQuery} />
@@ -140,6 +141,7 @@ const ArticuloList: React.FC = () => {
           </FormControl>
         </Box>
       </Box>
+
       <TableContainer
         component={Paper}
         sx={{

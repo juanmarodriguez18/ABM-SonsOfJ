@@ -1,4 +1,4 @@
 export enum TipoEnvio{
-    DELIVERY,
-    TAKE_AWAY
+    DELIVERY = "DELIVERY",
+    TAKE_AWAY = "TAKE_AWAY",
 }
