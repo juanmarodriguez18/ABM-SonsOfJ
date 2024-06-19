@@ -4,7 +4,6 @@ import {
   Dashboard as DashboardIcon,
   RestaurantMenu as RestaurantMenuIcon,
   Fastfood as FastfoodIcon,
-  Liquor as LiquorIcon,
   MonetizationOn as MonetizationOnIcon,
   AttachMoney as AttachMoneyIcon,
   Assignment as AssignmentIcon,
@@ -48,6 +47,18 @@ const Sidebar: React.FC = () => {
 
   const [maxHeight, setMaxHeight] = useState("97vh");
 
+  const buttonStyles = {
+    color: "#555",
+    fontSize: 12,
+    pl: 2,
+    borderRadius: 8,
+    textTransform: "none",
+    "&:hover": {
+      bgcolor: "#eee",
+      color: "#3f51b5",
+    },
+  };
+
   return (
     <>
       <Box
@@ -76,7 +87,6 @@ const Sidebar: React.FC = () => {
           sx={{
             width: "80%",
             height: "auto",
-            //background: "black",
             objectFit: "cover",
             borderRadius: 8,
             marginBottom: 2, // Espacio debajo de la imagen
@@ -91,42 +101,10 @@ const Sidebar: React.FC = () => {
                 disableTouchRipple
                 className="btn-list-sidebar"
                 startIcon={<FastfoodIcon />}
-                sx={{
-                  color: "#555",
-                  fontSize: 12,
-                  pl: 2,
-                  borderRadius: 8,
-                  textTransform: "none",
-                  "&:hover": {
-                    bgcolor: "#eee",
-                    color: "#3f51b5",
-                  },
-                }}
+                sx={buttonStyles}
                 onClick={() => navigate("/grilla")}
               >
-                Productos Manufacturados
-              </Button>
-            </ListItem>
-            <ListItem>
-              <Button
-                disableRipple
-                disableTouchRipple
-                className="btn-list-sidebar"
-                startIcon={<LiquorIcon />}
-                sx={{
-                  color: "#555",
-                  fontSize: 12,
-                  pl: 2,
-                  borderRadius: 8,
-                  textTransform: "none",
-                  "&:hover": {
-                    bgcolor: "#eee",
-                    color: "#3f51b5",
-                  },
-                }}
-                onClick={() => navigate("")}
-              >
-                Bebidas
+                Lista Menú
               </Button>
             </ListItem>
           </SidebarItem>
@@ -137,17 +115,7 @@ const Sidebar: React.FC = () => {
                 disableTouchRipple
                 className="btn-list-sidebar"
                 startIcon={<AttachMoneyIcon />}
-                sx={{
-                  color: "#555",
-                  fontSize: 12,
-                  pl: 2,
-                  borderRadius: 8,
-                  textTransform: "none",
-                  "&:hover": {
-                    bgcolor: "#eee",
-                    color: "#3f51b5",
-                  },
-                }}
+                sx={buttonStyles}
                 onClick={() => navigate("")}
               >
                 Listado de Promociones
@@ -161,17 +129,7 @@ const Sidebar: React.FC = () => {
                 disableTouchRipple
                 className="btn-list-sidebar"
                 startIcon={<GradingIcon />}
-                sx={{
-                  color: "#555",
-                  fontSize: 12,
-                  pl: 2,
-                  borderRadius: 8,
-                  textTransform: "none",
-                  "&:hover": {
-                    bgcolor: "#eee",
-                    color: "#3f51b5",
-                  },
-                }}
+                sx={buttonStyles}
                 onClick={() => navigate("/pedidos")}
               >
                 Listado de pedidos
@@ -182,18 +140,11 @@ const Sidebar: React.FC = () => {
                 disableRipple
                 disableTouchRipple
                 className="btn-list-sidebar"
-                startIcon={<Badge badgeContent={cantidadCajero} color="primary"><GradingIcon /></Badge>}
-                sx={{
-                  color: "#555",
-                  fontSize: 12,
-                  pl: 2,
-                  borderRadius: 8,
-                  textTransform: "none",
-                  "&:hover": {
-                    bgcolor: "#eee",
-                    color: "#3f51b5",
-                  },
-                }}
+                startIcon={
+                  <Badge badgeContent={cantidadCajero} color="primary">
+                    <GradingIcon sx={{ fontSize: 20 }} />
+                  </Badge>}
+                sx={buttonStyles}
                 onClick={() => navigate("/cajeroPedidos")}
               >
                 Cajero Pedidos
@@ -204,18 +155,11 @@ const Sidebar: React.FC = () => {
                 disableRipple
                 disableTouchRipple
                 className="btn-list-sidebar"
-                startIcon={<Badge badgeContent={cantidadEnPreparacion} color="primary"><GradingIcon /></Badge>}
-                sx={{
-                  color: "#555",
-                  fontSize: 12,
-                  pl: 2,
-                  borderRadius: 8,
-                  textTransform: "none",
-                  "&:hover": {
-                    bgcolor: "#eee",
-                    color: "#3f51b5",
-                  },
-                }}
+                startIcon={
+                  <Badge badgeContent={cantidadEnPreparacion} color="primary">
+                    <GradingIcon sx={{ fontSize: 20 }} />
+                  </Badge>}
+                sx={buttonStyles}
                 onClick={() => navigate("/cocineroPedidos")}
               >
                 Cocinero Pedidos
@@ -226,18 +170,11 @@ const Sidebar: React.FC = () => {
                 disableRipple
                 disableTouchRipple
                 className="btn-list-sidebar"
-                startIcon={<Badge badgeContent={cantidadEnDelivery} color="primary"><GradingIcon /></Badge>}
-                sx={{
-                  color: "#555",
-                  fontSize: 12,
-                  pl: 2,
-                  borderRadius: 8,
-                  textTransform: "none",
-                  "&:hover": {
-                    bgcolor: "#eee",
-                    color: "#3f51b5",
-                  },
-                }}
+                startIcon={
+                  <Badge badgeContent={cantidadEnDelivery} color="primary">
+                    <GradingIcon  sx={{ fontSize: 20 }} />
+                  </Badge>}
+                sx={buttonStyles}
                 onClick={() => navigate("/deliveryPedidos")}
               >
                 Delivery Pedidos
@@ -253,17 +190,7 @@ const Sidebar: React.FC = () => {
                     <ShoppingCartIcon sx={{ fontSize: 20 }} />
                   </Badge>
                 }
-                sx={{
-                  color: "#555",
-                  fontSize: 12,
-                  pl: 2,
-                  borderRadius: 8,
-                  textTransform: "none",
-                  "&:hover": {
-                    bgcolor: "#eee",
-                    color: "#3f51b5",
-                  },
-                }}
+                sx={buttonStyles}
                 onClick={() => navigate("/carrito")}
               >
                 Carrito
@@ -277,17 +204,7 @@ const Sidebar: React.FC = () => {
                 disableTouchRipple
                 className="btn-list-sidebar"
                 startIcon={<ApartmentIcon />}
-                sx={{
-                  color: "#555",
-                  fontSize: 12,
-                  pl: 2,
-                  borderRadius: 8,
-                  textTransform: "none",
-                  "&:hover": {
-                    bgcolor: "#eee",
-                    color: "#3f51b5",
-                  },
-                }}
+                sx={buttonStyles}
                 onClick={() => navigate("/empresas")}
               >
                 Lista de Empresas
@@ -301,17 +218,7 @@ const Sidebar: React.FC = () => {
                 disableTouchRipple
                 className="btn-list-sidebar"
                 startIcon={<AddBusinessIcon />}
-                sx={{
-                  color: "#555",
-                  fontSize: 12,
-                  pl: 2,
-                  borderRadius: 8,
-                  textTransform: "none",
-                  "&:hover": {
-                    bgcolor: "#eee",
-                    color: "#3f51b5",
-                  },
-                }}
+                sx={buttonStyles}
                 onClick={() => navigate("/empresas")}
               >
                 Lista de Sucursales
@@ -326,17 +233,7 @@ const Sidebar: React.FC = () => {
                 disableTouchRipple
                 className="btn-list-sidebar"
                 startIcon={<LunchDiningIcon />}
-                sx={{
-                  color: "#555",
-                  fontSize: 12,
-                  pl: 2,
-                  borderRadius: 8,
-                  textTransform: "none",
-                  "&:hover": {
-                    bgcolor: "#eee",
-                    color: "#3f51b5",
-                  },
-                }}
+                sx={buttonStyles}
                 onClick={() => navigate("/articulos")}
               >
                 Manufacturados
@@ -348,17 +245,7 @@ const Sidebar: React.FC = () => {
                 disableTouchRipple
                 className="btn-list-sidebar"
                 startIcon={<EggAltIcon />}
-                sx={{
-                  color: "#555",
-                  fontSize: 12,
-                  pl: 2,
-                  borderRadius: 8,
-                  textTransform: "none",
-                  "&:hover": {
-                    bgcolor: "#eee",
-                    color: "#3f51b5",
-                  },
-                }}
+                sx={buttonStyles}
                 onClick={() => navigate("/insumos")}
               >
                 Insumos
@@ -370,17 +257,7 @@ const Sidebar: React.FC = () => {
                 disableTouchRipple
                 className="btn-list-sidebar"
                 startIcon={<StraightenIcon />}
-                sx={{
-                  color: "#555",
-                  fontSize: 12,
-                  pl: 2,
-                  borderRadius: 8,
-                  textTransform: "none",
-                  "&:hover": {
-                    bgcolor: "#eee",
-                    color: "#3f51b5",
-                  },
-                }}
+                sx={buttonStyles}
                 onClick={() => navigate("/unidades-medida")}
               >
                 Unidades Medida
