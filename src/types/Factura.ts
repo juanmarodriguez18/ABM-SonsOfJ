@@ -5,10 +5,10 @@ import { FormaPago } from './enums/FormaPago';
 
 export class Factura extends Base {
     fechaFacturacion: Date;  // Puedes usar Date si prefieres manejar fechas como objetos Date
-    mpPaymentId: number;
-    mpMerchantOrderId: number;
-    mpPreferenceId: string;
-    mpPaymentType: string;
+    mpPaymentId?: number;
+    mpMerchantOrderId?: number;
+    mpPreferenceId?: string;
+    mpPaymentType?: string;
     formaPago: FormaPago;
     totalVenta: number;
     pedido: Pedido | undefined;

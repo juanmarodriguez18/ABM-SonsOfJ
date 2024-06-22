@@ -17,7 +17,7 @@ import {
 import { KeyboardArrowDown, KeyboardArrowUp } from "@mui/icons-material";
 import { format } from "date-fns";
 import { Pedido } from "../../types/Pedido";
-import { actualizarPedido, getAllPedidos } from "../../services/PedidoService"; // Asegúrate de tener esta función en tu servicio
+import { actualizarPedido, facturarPedido, getAllPedidos } from "../../services/PedidoService"; // Asegúrate de tener esta función en tu servicio
 import { Estado } from "../../types/enums/Estado";
 import { TipoEnvio } from "../../types/enums/TipoEnvio";
 
@@ -61,6 +61,7 @@ const CajeroPedidos: React.FC = () => {
     try {
       const pedidoActualizado = { ...pedido, estado: nuevoEstado };
       await actualizarPedido(pedido.id, pedidoActualizado);
+      nuevoEstado === Estado.ENTREGADO ? await facturarPedido(pedido, pedido.cliente.email) : 
       setPedidos((prevPedidos) =>
         prevPedidos.map((p) => (p.id === pedido.id ? pedidoActualizado : p))
       );
@@ -84,7 +85,8 @@ const CajeroPedidos: React.FC = () => {
     return (
       fechaPedido.includes(filtroFecha) &&
       pedido.id.toString().includes(filtroCodigo) &&
-      pedido.estado === "LISTO_PARA_ENTREGA"
+      pedido.estado === "LISTO_PARA_ENTREGA" ||
+      pedido.estado === "ENTREGADO"
     );
   });
 
@@ -328,17 +330,17 @@ const CajeroPedidos: React.FC = () => {
                           onClick={() => handleChangeEstado(pedido, Estado.EN_DELIVERY)}
                           style={{ marginRight: 8 }}
                         >
-                          Delivery
+                          {pedido.estado === Estado.ENTREGADO ? "Facturar" : "Delivery"}
                         </Button>
                       )}
                       {pedido.tipoEnvio === TipoEnvio.TAKE_AWAY && (
                         <Button
                           variant="contained"
                           color="success"
-                          onClick={() => handleChangeEstado(pedido, Estado.ENTREGADO)}
+                          onClick={() => handleChangeEstado(pedido, pedido.estado === Estado.ENTREGADO ? Estado.FACTURADO : Estado.ENTREGADO)}
                           style={{ marginRight: 8 }}
                         >
-                          Take Away
+                          {pedido.estado === Estado.ENTREGADO ? "Facturar" : "Take Away"}
                         </Button>
                       )}
                       <Button
