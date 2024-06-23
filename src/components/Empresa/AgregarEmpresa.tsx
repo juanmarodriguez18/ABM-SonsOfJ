@@ -1,4 +1,3 @@
-// src/components/Empresa/AgregarEmpresa.tsx
 import React, { useState, useEffect } from 'react';
 import { Button, TextField, DialogTitle, DialogContent, DialogActions, Dialog } from '@mui/material';
 import { Empresa } from '../../types/Empresa';
@@ -25,7 +24,12 @@ const AgregarEmpresaModal: React.FC<AgregarEmpresaModalProps> = ({
     const [cuil, setCuil] = useState<number>(0);
     const [imagenesEmpresa, setImagenesEmpresa] = useState<ImagenEmpresa[]>([]);
     const [sucursales, setSucursales] = useState<any[]>([]);
-    const [errors, setErrors] = useState<{ nombre?: string, razonSocial?: string, cuil?: string, imagenesEmpresa?: string[] }>({});
+    const [errors, setErrors] = useState<{ 
+        nombre?: string,
+        razonSocial?: string,
+        cuil?: string,
+        imagenesEmpresa?: string[]
+    }>({});
 
     useEffect(() => {
         if (isEdit && empresaInicial) {
@@ -44,12 +48,18 @@ const AgregarEmpresaModal: React.FC<AgregarEmpresaModalProps> = ({
     }, [show, isEdit, empresaInicial]);
 
     const validateFields = () => {
-        const newErrors: { nombre?: string, razonSocial?: string, cuil?: string, imagenesEmpresa?: string[] } = {};
+        const newErrors: {
+            nombre?: string,
+            razonSocial?: string,
+            cuil?: string,
+            imagenesEmpresa?: string[]
+        } = {};
         if (!nombre) newErrors.nombre = 'El nombre es obligatorio';
         if (!razonSocial) newErrors.razonSocial = 'La razón social es obligatoria';
         if (!cuil) newErrors.cuil = 'El CUIL es obligatorio';
         const imagenErrors = imagenesEmpresa.map((imagen, index) => (!imagen.url ? `La URL de la imagen ${index + 1} es obligatoria` : ''));
         if (imagenErrors.some(error => error !== '')) newErrors.imagenesEmpresa = imagenErrors;
+
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
     };
@@ -138,7 +148,7 @@ const AgregarEmpresaModal: React.FC<AgregarEmpresaModalProps> = ({
                     <TextField
                         key={index}
                         margin="dense"
-                        label={`Imagen ${index + 1}`}
+                        label={`Imagen Empresa ${index + 1}`}
                         type="text"
                         fullWidth
                         value={imagen.url}
