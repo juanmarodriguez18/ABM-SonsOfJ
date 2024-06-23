@@ -103,7 +103,7 @@ const Sidebar: React.FC = () => {
                 className="btn-list-sidebar"
                 startIcon={<FastfoodIcon />}
                 sx={buttonStyles}
-                onClick={() => navigate("/grilla")}
+                onClick={() => navigate("/grilla-manufacturados")}
               >
                 Lista Menú
               </Button>
@@ -117,7 +117,7 @@ const Sidebar: React.FC = () => {
                 className="btn-list-sidebar"
                 startIcon={<AttachMoneyIcon />}
                 sx={buttonStyles}
-                onClick={() => navigate("")}
+                onClick={() => navigate("/grilla-promociones")}
               >
                 Listado de Promociones
               </Button>
@@ -220,7 +220,7 @@ const Sidebar: React.FC = () => {
                 className="btn-list-sidebar"
                 startIcon={<AddBusinessIcon />}
                 sx={buttonStyles}
-                onClick={() => navigate("/empresas")}
+                onClick={() => navigate("/sucursales")}
               >
                 Lista de Sucursales
               </Button>

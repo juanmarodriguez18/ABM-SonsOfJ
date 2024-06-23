@@ -5,6 +5,7 @@ import { Promocion } from './Promocion';
 import { Categoria } from './Categoria';
 import { Empleado } from './Empleado';
 import { Pedido } from './Pedido';
+import { ImagenSucursal } from './ImagenSucursal';
 
 export class Sucursal extends Base {
     nombre: string;
@@ -16,6 +17,7 @@ export class Sucursal extends Base {
     categorias: Categoria[];
     empleados: Empleado[];
     pedidos: Pedido[];
+    imagenesSucursal: ImagenSucursal[];
 
     constructor(
         id: number = 0,
@@ -28,7 +30,8 @@ export class Sucursal extends Base {
         promociones: Promocion[] = [],
         categorias: Categoria[] = [],
         empleados: Empleado[] = [],
-        pedidos: Pedido[] = []
+        pedidos: Pedido[] = [],
+        imagenesSucursal: ImagenSucursal[] = []
     ) {
         super(id, eliminado);
         this.nombre = nombre;
@@ -40,5 +43,6 @@ export class Sucursal extends Base {
         this.categorias = categorias;
         this.empleados = empleados;
         this.pedidos = pedidos;
+        this.imagenesSucursal = imagenesSucursal;
     }
 }
