@@ -60,11 +60,13 @@ const CajeroPedidos: React.FC = () => {
   const handleChangeEstado = async (pedido: Pedido, nuevoEstado: Estado) => {
     try {
       const pedidoActualizado = { ...pedido, estado: nuevoEstado };
-      await actualizarPedido(pedido.id, pedidoActualizado);
-      nuevoEstado === Estado.ENTREGADO ? await facturarPedido(pedido, pedido.cliente.email) : 
+      await actualizarPedido(pedido.id, pedidoActualizado); 
       setPedidos((prevPedidos) =>
         prevPedidos.map((p) => (p.id === pedido.id ? pedidoActualizado : p))
       );
+      if(nuevoEstado === Estado.FACTURADO) {
+        await facturarPedido(pedido, pedido.cliente.email);
+      } 
     } catch (error) {
       console.error("Error al actualizar el estado del pedido:", error);
       // Manejar el error, por ejemplo, mostrando un mensaje al usuario
@@ -327,7 +329,7 @@ const CajeroPedidos: React.FC = () => {
                         <Button
                           variant="contained"
                           color="warning"
-                          onClick={() => handleChangeEstado(pedido, Estado.EN_DELIVERY)}
+                          onClick={() => handleChangeEstado(pedido, pedido.estado === Estado.ENTREGADO ? Estado.FACTURADO : Estado.EN_DELIVERY)}
                           style={{ marginRight: 8 }}
                         >
                           {pedido.estado === Estado.ENTREGADO ? "Facturar" : "Delivery"}

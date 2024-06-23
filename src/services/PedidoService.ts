@@ -79,7 +79,7 @@ export const actualizarPedido = async (id: number, datosActualizados: any) => {
 export const facturarPedido = async (pedido: Pedido, email: string) => {
     try {
         const factura: Factura = new Factura(
-            undefined, false, new Date(), undefined, undefined, undefined, undefined, pedido.formaPago, pedido.total
+            0, false, new Date(), pedido.formaPago, pedido.total, pedido
         );
 
         const response = await fetch(`http://localhost:8080/facturacion/emitir?emailCliente=${email}`, {
