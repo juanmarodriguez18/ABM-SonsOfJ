@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
 import ArticulosPage from "./pages/ArticulosPage";
 import InsumoPage from "./pages/InsumoPage";
 import UnidadesMedidaPage from "./pages/UnidadMedidaPage";
@@ -12,13 +12,38 @@ import CajeroPedidos from "./pages/Cajero/CajeroPedidos";
 import CocineroPedidos from "./pages/Cocinero/CocineroPedidos";
 import DeliveryPedidos from "./pages/Delivery/DeliveryPedidos";
 import CategoriaPage from "./pages/CategoriaPage";
+import Header from "./components/Header/Header";
+import { AuthenticationGuard } from "./components/Auth0/AuthenticationGuard";
+import AdminPage from "./pages/ViewsAuth0/AdminPage";
+import ClientPage from "./pages/ViewsAuth0/ClientPage";
+import ClientProfilePage from "./pages/ViewsAuth0/ClientProfilePage";
+import CallbackPage from "./components/Auth0/CallbackPage";
+import ErrorPage from "./pages/ViewsAuth0/ErrorPage";
+import Home from "./pages/Home";
+
+
 
 function App() {
   return (
-    <BrowserRouter>
-      <Layout>
+    <Layout>
+      <Header />
         <Routes>
-          <Route path="/" element={<EmpresaPage />} />
+        <Route path="/" element={<Home />} />
+        <Route
+          path="/admin"
+          element={<AuthenticationGuard component={AdminPage} />}
+        />
+        <Route
+          path="/cliente"
+          element={<AuthenticationGuard component={ClientPage} />}
+        />
+        <Route
+          path="/cliente/perfil"
+          element={<AuthenticationGuard component={ClientProfilePage} />}
+        />
+        <Route path="/callback" element={<CallbackPage />} />
+        <Route path="*" element={<ErrorPage />} />
+
           <Route path="/empresas" element={<EmpresaPage />} />
           <Route path="/articulos" element={<ArticulosPage />} />
           <Route path="/articulos/:id" element={<ArticuloDetalle />} />
@@ -32,8 +57,7 @@ function App() {
           <Route path="/cocineroPedidos" element={<CocineroPedidos />} />
           <Route path="/deliveryPedidos" element={<DeliveryPedidos />} />
         </Routes>
-      </Layout>
-    </BrowserRouter>
+    </Layout>
   );
 }
 
