@@ -1,6 +1,6 @@
 import { Base } from './Base';
 
-export class ImagenArticulo extends Base {
+export class ImagenSucursal extends Base {
     url: string;
 
     constructor(

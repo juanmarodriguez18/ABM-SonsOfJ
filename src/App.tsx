@@ -6,6 +6,7 @@ import Layout from "./components/Layout/Layout";
 import EmpresaPage from "./pages/EmpresaPage";
 import { Carrito } from "./components/Carrito/Carrito";
 import GrillaManufacturados from "./components/ArticulosManufacturados/GrillaManufacturados";
+import GrillaPromociones from "./components/Promocion/GrillaPromociones";
 import PedidosPage from "./pages/PedidosPage";
 import ArticuloDetalle from "./components/ArticuloManufacturadoDetalles/ArticuloDetalle";
 import CajeroPedidos from "./pages/Cajero/CajeroPedidos";
@@ -20,7 +21,7 @@ import ClientProfilePage from "./pages/ViewsAuth0/ClientProfilePage";
 import CallbackPage from "./components/Auth0/CallbackPage";
 import ErrorPage from "./pages/ViewsAuth0/ErrorPage";
 import Home from "./pages/Home";
-
+import SucursalPage from "./pages/SucursalPage";
 
 
 function App() {
@@ -45,6 +46,7 @@ function App() {
         <Route path="*" element={<ErrorPage />} />
 
           <Route path="/empresas" element={<EmpresaPage />} />
+          <Route path="/sucursales" element={<SucursalPage />} />
           <Route path="/articulos" element={<ArticulosPage />} />
           <Route path="/articulos/:id" element={<ArticuloDetalle />} />
           <Route path="/insumos" element={<InsumoPage />} />
@@ -52,7 +54,8 @@ function App() {
           <Route path="/categorias" element={<CategoriaPage />} />
           <Route path="/pedidos" element={<PedidosPage />} />
           <Route path="/carrito" element={<Carrito />} />
-          <Route path="/grilla" element={<GrillaManufacturados />} />
+          <Route path="/grilla-manufacturados" element={<GrillaManufacturados />} />
+          <Route path="/grilla-promociones" element={<GrillaPromociones />} />
           <Route path="/cajeroPedidos" element={<CajeroPedidos />} />
           <Route path="/cocineroPedidos" element={<CocineroPedidos />} />
           <Route path="/deliveryPedidos" element={<DeliveryPedidos />} />
