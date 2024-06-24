@@ -17,7 +17,7 @@ import {
 import { KeyboardArrowDown, KeyboardArrowUp } from "@mui/icons-material";
 import { format } from "date-fns";
 import { Pedido } from "../../types/Pedido";
-import { actualizarPedido, getAllPedidos } from "../../services/PedidoService"; // Asegúrate de tener esta función en tu servicio
+import { actualizarPedido, facturarPedido, getAllPedidos } from "../../services/PedidoService"; // Asegúrate de tener esta función en tu servicio
 import { Estado } from "../../types/enums/Estado";
 import { TipoEnvio } from "../../types/enums/TipoEnvio";
 
@@ -60,10 +60,13 @@ const CajeroPedidos: React.FC = () => {
   const handleChangeEstado = async (pedido: Pedido, nuevoEstado: Estado) => {
     try {
       const pedidoActualizado = { ...pedido, estado: nuevoEstado };
-      await actualizarPedido(pedido.id, pedidoActualizado);
+      await actualizarPedido(pedido.id, pedidoActualizado); 
       setPedidos((prevPedidos) =>
         prevPedidos.map((p) => (p.id === pedido.id ? pedidoActualizado : p))
       );
+      if(nuevoEstado === Estado.FACTURADO) {
+        await facturarPedido(pedido, pedido.cliente.email);
+      } 
     } catch (error) {
       console.error("Error al actualizar el estado del pedido:", error);
       // Manejar el error, por ejemplo, mostrando un mensaje al usuario
@@ -84,7 +87,8 @@ const CajeroPedidos: React.FC = () => {
     return (
       fechaPedido.includes(filtroFecha) &&
       pedido.id.toString().includes(filtroCodigo) &&
-      pedido.estado === "LISTO_PARA_ENTREGA"
+      pedido.estado === "LISTO_PARA_ENTREGA" ||
+      pedido.estado === "ENTREGADO"
     );
   });
 
@@ -325,20 +329,20 @@ const CajeroPedidos: React.FC = () => {
                         <Button
                           variant="contained"
                           color="warning"
-                          onClick={() => handleChangeEstado(pedido, Estado.EN_DELIVERY)}
+                          onClick={() => handleChangeEstado(pedido, pedido.estado === Estado.ENTREGADO ? Estado.FACTURADO : Estado.EN_DELIVERY)}
                           style={{ marginRight: 8 }}
                         >
-                          Delivery
+                          {pedido.estado === Estado.ENTREGADO ? "Facturar" : "Delivery"}
                         </Button>
                       )}
                       {pedido.tipoEnvio === TipoEnvio.TAKE_AWAY && (
                         <Button
                           variant="contained"
                           color="success"
-                          onClick={() => handleChangeEstado(pedido, Estado.ENTREGADO)}
+                          onClick={() => handleChangeEstado(pedido, pedido.estado === Estado.ENTREGADO ? Estado.FACTURADO : Estado.ENTREGADO)}
                           style={{ marginRight: 8 }}
                         >
-                          Take Away
+                          {pedido.estado === Estado.ENTREGADO ? "Facturar" : "Take Away"}
                         </Button>
                       )}
                       <Button

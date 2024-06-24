@@ -1,5 +1,6 @@
 import axios from "axios";
 import { Pedido } from "../types/Pedido";
+import { Factura } from "../types/Factura";
 
 const urlPedidos = 'http://localhost:8080/pedidos';
 
@@ -74,4 +75,25 @@ export const actualizarPedido = async (id: number, datosActualizados: any) => {
       throw error;
     }
   };
+
+export const facturarPedido = async (pedido: Pedido, email: string) => {
+    try {
+        const factura: Factura = new Factura(
+            0, false, new Date(), pedido.formaPago, pedido.total, pedido
+        );
+
+        const response = await fetch(`http://localhost:8080/facturacion/emitir?emailCliente=${email}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Access-Control-Allow-Origin': '*'
+            },
+            body: JSON.stringify(factura)
+        });
+
+        return response.json;
+    } catch(error) {
+        console.log(error);
+    }
+}
   
