@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Box, Button, List, ListItem, Badge } from "@mui/material";
 import {
   Dashboard as DashboardIcon,
@@ -26,11 +26,15 @@ import { useCarrito } from "../Carrito/useCarrito"; // Asegúrate de ajustar la 
 import "../../styles/InsumoFormulario.css";
 import { usePedidos } from "../Pedido/PedidosContext";
 import { Estado } from "../../types/enums/Estado";
+import { useAuth } from "../ControlAcceso/AuthContext";
+import { Rol } from "../../types/enums/Rol";
 
 const Sidebar: React.FC = () => {
   const navigate = useNavigate();
   const { cart } = useCarrito();
   const { pedidos } = usePedidos();
+  const { empleado } = useAuth();
+  const [maxHeight, setMaxHeight] = useState("97vh");
 
   // Función para contar la cantidad de pedidos en cada estado
   const contarPedidosPorEstado = (estado: Estado): number => {
@@ -46,7 +50,13 @@ const Sidebar: React.FC = () => {
 
   const cantidadTotal = cart.reduce((total, item) => total + item.cantidad, 0);
 
-  const [maxHeight, setMaxHeight] = useState("97vh");
+  useEffect(() => {
+    if (empleado && empleado.tipoEmpleado === Rol.EMPLEADO_COMUN) {
+      setMaxHeight("calc(97vh - 50px)");
+    } else {
+      setMaxHeight("97vh");
+    }
+  }, [empleado]);
 
   const buttonStyles = {
     color: "#555",
@@ -94,189 +104,235 @@ const Sidebar: React.FC = () => {
           }}
         />
         <List sx={{ width: "100%" }}>
-          <SidebarItem icon={<DashboardIcon />} text="Dashboard" />
-          <SidebarItem icon={<RestaurantMenuIcon />} text="Menú">
-            <ListItem>
-              <Button
-                disableRipple
-                disableTouchRipple
-                className="btn-list-sidebar"
-                startIcon={<FastfoodIcon />}
-                sx={buttonStyles}
-                onClick={() => navigate("/grilla-manufacturados")}
-              >
-                Lista Menú
-              </Button>
-            </ListItem>
-          </SidebarItem>
-          <SidebarItem icon={<MonetizationOnIcon />} text="Promociones">
-            <ListItem>
-              <Button
-                disableRipple
-                disableTouchRipple
-                className="btn-list-sidebar"
-                startIcon={<AttachMoneyIcon />}
-                sx={buttonStyles}
-                onClick={() => navigate("/grilla-promociones")}
-              >
-                Listado de Promociones
-              </Button>
-            </ListItem>
-          </SidebarItem>
-          <SidebarItem icon={<AssignmentIcon />} text="Pedidos">
-            <ListItem>
-              <Button
-                disableRipple
-                disableTouchRipple
-                className="btn-list-sidebar"
-                startIcon={<GradingIcon />}
-                sx={buttonStyles}
-                onClick={() => navigate("/pedidos")}
-              >
-                Listado de pedidos
-              </Button>
-            </ListItem>
-            <ListItem>
-              <Button
-                disableRipple
-                disableTouchRipple
-                className="btn-list-sidebar"
-                startIcon={
-                  <Badge badgeContent={cantidadCajero} color="primary">
-                    <GradingIcon sx={{ fontSize: 20 }} />
-                  </Badge>}
-                sx={buttonStyles}
-                onClick={() => navigate("/cajeroPedidos")}
-              >
-                Cajero Pedidos
-              </Button>
-            </ListItem>
-            <ListItem>
-              <Button
-                disableRipple
-                disableTouchRipple
-                className="btn-list-sidebar"
-                startIcon={
-                  <Badge badgeContent={cantidadEnPreparacion} color="primary">
-                    <GradingIcon sx={{ fontSize: 20 }} />
-                  </Badge>}
-                sx={buttonStyles}
-                onClick={() => navigate("/cocineroPedidos")}
-              >
-                Cocinero Pedidos
-              </Button>
-            </ListItem>
-            <ListItem>
-              <Button
-                disableRipple
-                disableTouchRipple
-                className="btn-list-sidebar"
-                startIcon={
-                  <Badge badgeContent={cantidadEnDelivery} color="primary">
-                    <GradingIcon  sx={{ fontSize: 20 }} />
-                  </Badge>}
-                sx={buttonStyles}
-                onClick={() => navigate("/deliveryPedidos")}
-              >
-                Delivery Pedidos
-              </Button>
-            </ListItem>
-            <ListItem>
-              <Button
-                disableRipple
-                disableTouchRipple
-                className="btn-list-sidebar"
-                startIcon={
-                  <Badge badgeContent={cantidadTotal} color="primary">
-                    <ShoppingCartIcon sx={{ fontSize: 20 }} />
-                  </Badge>
-                }
-                sx={buttonStyles}
-                onClick={() => navigate("/carrito")}
-              >
-                Carrito
-              </Button>
-            </ListItem>
-          </SidebarItem>
-          <SidebarItem icon={<BusinessIcon />} text="Empresas">
-            <ListItem>
-              <Button
-                disableRipple
-                disableTouchRipple
-                className="btn-list-sidebar"
-                startIcon={<ApartmentIcon />}
-                sx={buttonStyles}
-                onClick={() => navigate("/empresas")}
-              >
-                Lista de Empresas
-              </Button>
-            </ListItem>
-          </SidebarItem>
-          <SidebarItem icon={<StoreIcon />} text="Sucursales">
-            <ListItem>
-              <Button
-                disableRipple
-                disableTouchRipple
-                className="btn-list-sidebar"
-                startIcon={<AddBusinessIcon />}
-                sx={buttonStyles}
-                onClick={() => navigate("/sucursales")}
-              >
-                Lista de Sucursales
-              </Button>
-            </ListItem>
-          </SidebarItem>
-          <SidebarItem icon={<GroupIcon />} text="Empleados" />
-          <SidebarItem icon={<EggIcon />} text="Articulos">
-            <ListItem>
-              <Button
-                disableRipple
-                disableTouchRipple
-                className="btn-list-sidebar"
-                startIcon={<LunchDiningIcon />}
-                sx={buttonStyles}
-                onClick={() => navigate("/articulos")}
-              >
-                Manufacturados
-              </Button>
-            </ListItem>
-            <ListItem>
-              <Button
-                disableRipple
-                disableTouchRipple
-                className="btn-list-sidebar"
-                startIcon={<EggAltIcon />}
-                sx={buttonStyles}
-                onClick={() => navigate("/insumos")}
-              >
-                Insumos
-              </Button>
-            </ListItem>
-            <ListItem>
-              <Button
-                disableRipple
-                disableTouchRipple
-                className="btn-list-sidebar"
-                startIcon={<StraightenIcon />}
-                sx={buttonStyles}
-                onClick={() => navigate("/unidades-medida")}
-              >
-                Unidades Medida
-              </Button>
-            </ListItem>
-            <ListItem>
-              <Button
-                disableRipple
-                disableTouchRipple
-                className="btn-list-sidebar"
-                startIcon={<CategoryIcon />}
-                sx={buttonStyles}
-                onClick={() => navigate("/categorias")}
-              >
-                Categorias
-              </Button>
-            </ListItem>
-          </SidebarItem>
+          {empleado && empleado.tipoEmpleado === Rol.ADMIN && (
+            <SidebarItem icon={<DashboardIcon />} text="Dashboard" />
+          )}
+          {empleado && empleado.tipoEmpleado === Rol.ADMIN && (
+            <>
+              <SidebarItem icon={<RestaurantMenuIcon />} text="Menú">
+                <ListItem>
+                  <Button
+                    disableRipple
+                    disableTouchRipple
+                    className="btn-list-sidebar"
+                    startIcon={<FastfoodIcon />}
+                    sx={buttonStyles}
+                    onClick={() => navigate("/grilla-manufacturados")}
+                  >
+                    Lista Menú
+                  </Button>
+                </ListItem>
+                <ListItem>
+                  <Button
+                    disableRipple
+                    disableTouchRipple
+                    className="btn-list-sidebar"
+                    startIcon={
+                      <Badge badgeContent={cantidadTotal} color="primary">
+                        <ShoppingCartIcon sx={{ fontSize: 20 }} />
+                      </Badge>
+                    }
+                    sx={buttonStyles}
+                    onClick={() => navigate("/carrito")}
+                  >
+                    Carrito
+                  </Button>
+                </ListItem>
+              </SidebarItem>
+            </>
+          )}
+          {empleado && empleado.tipoEmpleado === Rol.ADMIN && (
+            <>
+              <SidebarItem icon={<MonetizationOnIcon />} text="Promociones">
+                <ListItem>
+                  <Button
+                    disableRipple
+                    disableTouchRipple
+                    className="btn-list-sidebar"
+                    startIcon={<AttachMoneyIcon />}
+                    sx={buttonStyles}
+                    onClick={() => navigate("/grilla-promociones")}
+                  >
+                    Listado de Promociones
+                  </Button>
+                </ListItem>
+              </SidebarItem>
+            </>
+          )}
+          {empleado && empleado.tipoEmpleado !== Rol.EMPLEADO_COMUN && (
+            <>
+              <SidebarItem icon={<AssignmentIcon />} text="Pedidos">
+              {empleado && empleado.tipoEmpleado === Rol.ADMIN && (
+                <ListItem>
+                  <Button
+                    disableRipple
+                    disableTouchRipple
+                    className="btn-list-sidebar"
+                    startIcon={<GradingIcon />}
+                    sx={buttonStyles}
+                    onClick={() => navigate("/pedidos")}
+                  >
+                    Listado de pedidos
+                  </Button>
+                </ListItem>
+              )}
+              {/* Cajero Pedidos */}
+              {(empleado.tipoEmpleado === Rol.ADMIN || empleado.tipoEmpleado === Rol.CAJERO) && (
+                <ListItem>
+                  <Button
+                    disableRipple
+                    disableTouchRipple
+                    className="btn-list-sidebar"
+                    startIcon={
+                      <Badge badgeContent={cantidadCajero} color="primary">
+                        <GradingIcon sx={{ fontSize: 20 }} />
+                      </Badge>
+                    }
+                    sx={buttonStyles}
+                    onClick={() => navigate("/cajeroPedidos")}
+                  >
+                    Cajero Pedidos
+                  </Button>
+                </ListItem>
+              )}
+              {/* Cocinero Pedidos */}
+              {(empleado.tipoEmpleado === Rol.ADMIN || empleado.tipoEmpleado === Rol.COCINERO) && ( 
+                <ListItem>
+                  <Button
+                    disableRipple
+                    disableTouchRipple
+                    className="btn-list-sidebar"
+                    startIcon={
+                      <Badge badgeContent={cantidadEnPreparacion} color="primary">
+                        <GradingIcon sx={{ fontSize: 20 }} />
+                      </Badge>
+                    }
+                    sx={buttonStyles}
+                    onClick={() => navigate("/cocineroPedidos")}
+                  >
+                    Cocinero Pedidos
+                  </Button>
+                </ListItem>
+              )}
+              {/* Delivery Pedidos */}
+              {(empleado.tipoEmpleado === Rol.ADMIN || empleado.tipoEmpleado === Rol.DELIVERY) && (
+                <ListItem>
+                  <Button
+                    disableRipple
+                    disableTouchRipple
+                    className="btn-list-sidebar"
+                    startIcon={
+                      <Badge badgeContent={cantidadEnDelivery} color="primary">
+                        <GradingIcon sx={{ fontSize: 20 }} />
+                      </Badge>
+                    }
+                    sx={buttonStyles}
+                    onClick={() => navigate("/deliveryPedidos")}
+                  >
+                    Delivery Pedidos
+                  </Button>
+                </ListItem>
+              )}
+              </SidebarItem>
+            </>
+          )}
+          {empleado && empleado.tipoEmpleado === Rol.ADMIN && (
+          <>
+            <SidebarItem icon={<BusinessIcon />} text="Empresas">
+              <ListItem>
+                <Button
+                  disableRipple
+                  disableTouchRipple
+                  className="btn-list-sidebar"
+                  startIcon={<ApartmentIcon />}
+                  sx={buttonStyles}
+                  onClick={() => navigate("/empresas")}
+                >
+                  Lista de Empresas
+                </Button>
+              </ListItem>
+            </SidebarItem>
+          </>
+          )}
+          {empleado && empleado.tipoEmpleado === Rol.ADMIN && (
+          <>
+            <SidebarItem icon={<StoreIcon />} text="Sucursales">
+              <ListItem>
+                <Button
+                  disableRipple
+                  disableTouchRipple
+                  className="btn-list-sidebar"
+                  startIcon={<AddBusinessIcon />}
+                  sx={buttonStyles}
+                  onClick={() => navigate("/sucursales")}
+                >
+                  Lista de Sucursales
+                </Button>
+              </ListItem>
+            </SidebarItem>
+          </>
+          )}
+          {empleado && empleado.tipoEmpleado === Rol.ADMIN && (
+            <SidebarItem icon={<GroupIcon />} text="Empleados" />
+          )}
+          {empleado && (empleado.tipoEmpleado === Rol.ADMIN || empleado.tipoEmpleado === Rol.COCINERO) && (
+          <>
+            <SidebarItem icon={<EggIcon />} text="Articulos">
+              <ListItem>
+                <Button
+                  disableRipple
+                  disableTouchRipple
+                  className="btn-list-sidebar"
+                  startIcon={<LunchDiningIcon />}
+                  sx={buttonStyles}
+                  onClick={() => navigate("/articulos")}
+                >
+                  Manufacturados
+                </Button>
+              </ListItem>
+              {empleado.tipoEmpleado === Rol.ADMIN && (
+              <>
+              <ListItem>
+                <Button
+                  disableRipple
+                  disableTouchRipple
+                  className="btn-list-sidebar"
+                  startIcon={<EggAltIcon />}
+                  sx={buttonStyles}
+                  onClick={() => navigate("/insumos")}
+                >
+                  Insumos
+                </Button>
+              </ListItem>
+              <ListItem>
+                <Button
+                  disableRipple
+                  disableTouchRipple
+                  className="btn-list-sidebar"
+                  startIcon={<StraightenIcon />}
+                  sx={buttonStyles}
+                  onClick={() => navigate("/unidades-medida")}
+                >
+                  Unidades Medida
+                </Button>
+              </ListItem>
+              <ListItem>
+                <Button
+                  disableRipple
+                  disableTouchRipple
+                  className="btn-list-sidebar"
+                  startIcon={<CategoryIcon />}
+                  sx={buttonStyles}
+                  onClick={() => navigate("/categorias")}
+                >
+                  Categorias
+                </Button>
+              </ListItem>
+              </>
+              )}
+            </SidebarItem>
+          </>
+          )}
         </List>
         <List sx={{ height: 150 }} />
       </Box>
@@ -285,3 +341,4 @@ const Sidebar: React.FC = () => {
 };
 
 export default Sidebar;
+
