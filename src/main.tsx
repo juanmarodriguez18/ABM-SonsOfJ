@@ -6,16 +6,22 @@ import "@fontsource/poppins";
 import Theme from "./themes/Theme";
 import { CarritoContextProvider } from "./components/Carrito/CarritoContext";
 import { PedidosProvider } from "./components/Pedido/PedidosContext";
+import { AuthProvider } from "./components/ControlAcceso/AuthContext";
+import { BrowserRouter } from "react-router-dom";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
-    <CssBaseline />
-    <ThemeProvider theme={Theme}>
-      <CarritoContextProvider>
-        <PedidosProvider>
-          <App />
-        </PedidosProvider>
-      </CarritoContextProvider>
-    </ThemeProvider>
+    <AuthProvider>
+      <CssBaseline />
+      <ThemeProvider theme={Theme}>
+        <CarritoContextProvider>
+          <PedidosProvider>
+            <BrowserRouter>
+              <App />
+            </BrowserRouter>
+          </PedidosProvider>
+        </CarritoContextProvider>
+      </ThemeProvider>
+    </AuthProvider>
   </React.StrictMode>
 );
