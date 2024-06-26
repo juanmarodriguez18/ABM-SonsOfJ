@@ -1,7 +1,7 @@
 // src/services/api.ts
 import axios from 'axios';
 
-const API_URL = 'http://localhost:8080/articulos-detalle';
+const API_URL = import.meta.env.VITE_API_URL + '/articulos-detalle';
 
 export const crearArticuloManufacturadoDetalle = async (nuevoDetalle: any) => {
   try {

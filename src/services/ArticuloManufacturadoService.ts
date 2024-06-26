@@ -1,7 +1,7 @@
 // src/services/api.ts
 import axios from 'axios';
 
-const API_URL = 'http://localhost:8080/articulos-manufacturados';
+const API_URL = import.meta.env.VITE_API_URL + '/articulos-manufacturados';
 
 export const getArticulosManufacturados = async () => {
   try {

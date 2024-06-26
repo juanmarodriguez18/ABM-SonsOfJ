@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { Empresa } from '../types/Empresa';
 
-const API_URL = 'http://localhost:8080/empresas';
+const API_URL = import.meta.env.VITE_API_URL + '/empresas';
 
 export const getEmpresas = async () => {
   try {

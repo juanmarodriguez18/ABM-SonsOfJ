@@ -2,7 +2,7 @@
 import axios from 'axios';
 //import { ArticuloInsumo } from '../types/ArticuloInsumo';
 
-const API_URL = 'http://localhost:8080/insumos';
+const API_URL = import.meta.env.VITE_API_URL + '/insumos';
 
 export const getInsumos = async () => {
   try {

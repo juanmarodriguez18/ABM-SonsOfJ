@@ -1,7 +1,7 @@
 import { Pedido } from "../types/Pedido";
 
 export async function createPreferenceMP(pedido: Pedido) {
-    const response = await fetch('http://localhost:8080/create-preference-mp', {
+    const response = await fetch(import.meta.env.VITE_API_URL + '/create-preference-mp', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',

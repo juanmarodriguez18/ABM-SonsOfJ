@@ -3,7 +3,7 @@ import axios from 'axios';
 import { Empleado } from '../types/Empleado';
  // Asegúrate de importar y definir correctamente el modelo de Empleado
 
-const API_URL = 'http://localhost:8080/empleados';
+const API_URL = import.meta.env.VITE_API_URL + '/empleados';
 
 export const getEmpleados = async () => {
   try {

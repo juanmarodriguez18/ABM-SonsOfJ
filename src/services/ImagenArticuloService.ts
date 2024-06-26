@@ -2,7 +2,7 @@
 import axios from 'axios';
 import { ImagenArticulo } from '../types/ImagenArticulo';
 
-const API_URL = 'http://localhost:8080/imagen-articulo';
+const API_URL = import.meta.env.VITE_API_URL + '/imagen-articulo';
 
 export const crearImagenArticulo = async (nuevaImagen: any): Promise<ImagenArticulo> => {
   try {
