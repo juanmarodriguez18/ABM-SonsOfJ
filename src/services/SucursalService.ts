@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { Sucursal } from '../types/Sucursal';
 
-const API_URL = 'http://localhost:8080/sucursales';
+const API_URL = import.meta.env.VITE_API_URL + '/sucursales';
 
 export const getSucursales = async () => {
   try {

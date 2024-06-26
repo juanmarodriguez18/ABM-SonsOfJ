@@ -3,6 +3,8 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { TextField, Button, Typography, Container, Box, Alert } from '@mui/material';
 
+const API_URL = import.meta.env.VITE_API_URL + '/auth/register'
+
 const RegisterEmpleado: React.FC = () => {
     const navigate = useNavigate();
     const [nombre, setNombre] = useState('');
@@ -25,7 +27,7 @@ const RegisterEmpleado: React.FC = () => {
                 fechaNacimiento,
                 tipoEmpleado: 'EMPLEADO_COMUN' // Se establece directamente el tipo de empleado
             };
-            const response = await axios.post('http://localhost:8080/auth/register', empleado);
+            const response = await axios.post(API_URL, empleado);
             alert('Empleado registrado exitosamente');
             navigate('/loginEmpleado'); // Redirige a la página de login
         } catch (error) {

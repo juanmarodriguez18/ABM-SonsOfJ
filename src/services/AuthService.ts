@@ -3,7 +3,7 @@ import axios from 'axios';
 import { Empleado } from '../types/Empleado';
 
 
-const API_URL = 'http://localhost:8080/auth';
+const API_URL = import.meta.env.VITE_API_URL + '/auth';
 
 export async function login(email: string, clave: string): Promise<Empleado> {
     try {

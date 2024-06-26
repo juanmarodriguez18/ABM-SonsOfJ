@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { Promocion } from '../types/Promocion';
 
-const API_URL = 'http://localhost:8080/promociones';
+const API_URL = import.meta.env.VITE_API_URL + '/promociones';
 
 export const getPromociones = async () => {
   try {

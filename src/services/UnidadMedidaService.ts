@@ -1,7 +1,7 @@
 // src/services/UnidadMedidaService.ts
 import axios from 'axios';
 
-const API_URL = 'http://localhost:8080/unidad-medida';
+const API_URL = import.meta.env.VITE_API_URL + '/unidad-medida';
 
 export const getUnidadesMedida = async () => {
   try {

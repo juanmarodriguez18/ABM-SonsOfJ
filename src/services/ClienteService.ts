@@ -1,7 +1,7 @@
 // src/services/ClienteService.ts
 import axios from 'axios';
 
-const API_URL = 'http://localhost:8080/clientes';
+const API_URL = import.meta.env.VITE_API_URL + '/clientes';
 
 export const getClientes = async () => {
   try {

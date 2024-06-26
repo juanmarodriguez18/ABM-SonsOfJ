@@ -2,7 +2,7 @@ import axios from "axios";
 import { Pedido } from "../types/Pedido";
 import { Factura } from "../types/Factura";
 
-const urlPedidos = 'http://localhost:8080/pedidos';
+const urlPedidos = import.meta.env.VITE_API_URL + '/pedidos';
 
 // Función para guardar un pedido en la base de datos
 export async function guardarPedidoEnBD(pedido: Pedido): Promise<void> {
