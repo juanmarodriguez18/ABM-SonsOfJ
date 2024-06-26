@@ -9,8 +9,8 @@ import { ImagenSucursal } from './ImagenSucursal';
 
 export class Sucursal extends Base {
     nombre: string;
-    horarioApertura: Date; // Cambiado a Date para manejar fechas y horas en TypeScript
-    horarioCierre: Date; // Cambiado a Date para manejar fechas y horas en TypeScript
+    horarioApertura: string; 
+    horarioCierre: string; 
     empresa: Empresa;
     domicilio: Domicilio;
     promociones: Promocion[];
@@ -23,8 +23,8 @@ export class Sucursal extends Base {
         id: number = 0,
         eliminado: boolean = false,
         nombre: string = '',
-        horarioApertura: Date = new Date(),
-        horarioCierre: Date = new Date(),
+        horarioApertura: string = '',
+        horarioCierre: string = '',
         empresa: Empresa,
         domicilio: Domicilio,
         promociones: Promocion[] = [],
