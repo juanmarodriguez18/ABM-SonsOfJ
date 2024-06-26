@@ -19,6 +19,7 @@ import {
   EggAlt as EggAltIcon,
   Straighten as StraightenIcon,
   Category as CategoryIcon,
+  Badge as BadgeIcon,
 } from "@mui/icons-material";
 import SidebarItem from "./SidebarItem";
 import { useNavigate } from "react-router-dom";
@@ -273,7 +274,20 @@ const Sidebar: React.FC = () => {
           </>
           )}
           {empleado && empleado.tipoEmpleado === Rol.ADMIN && (
-            <SidebarItem icon={<GroupIcon />} text="Empleados" />
+            <SidebarItem icon={<GroupIcon />} text="Empleados">
+              <ListItem>
+                <Button
+                  disableRipple
+                  disableTouchRipple
+                  className="btn-list-sidebar"
+                  startIcon={<BadgeIcon />}
+                  sx={buttonStyles}
+                  onClick={() => navigate("/grillaEmpleados")}
+                >
+                  Gestión Empleados
+                </Button>
+              </ListItem>
+            </SidebarItem>
           )}
           {empleado && (empleado.tipoEmpleado === Rol.ADMIN || empleado.tipoEmpleado === Rol.COCINERO) && (
           <>

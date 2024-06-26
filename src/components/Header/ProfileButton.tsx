@@ -8,7 +8,7 @@ const ProfileButton = () => {
     <Button
       variant="contained"
       color="primary"
-      onClick={() => navigate("/")}
+      onClick={() => navigate("/perfilEmpleado")}
       sx={{
         px: 2,
         py: 1,
