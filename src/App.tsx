@@ -21,6 +21,8 @@ import LoginEmpleado from "./components/ControlAcceso/LoginEmpleado";
 import RegisterEmpleado from "./components/ControlAcceso/RegisterEmpleado";
 import Header from "./components/Header/Header";
 import Home from "./pages/Home";
+import PerfilEmpleado from "./pages/Empleado/PerfilEmpleado";
+import GrillaEmpleados from "./pages/Empleado/GrillaEmpleados";
 
 function App() {
   return (
@@ -29,8 +31,16 @@ function App() {
       <Routes>
         <Route path="/" element={<Home />} />
 
+        <Route element={<RolEmpleado rol={[Rol.ADMIN, Rol.CAJERO, Rol.COCINERO, Rol.DELIVERY, Rol.EMPLEADO_COMUN]} />}>
+          <Route path="/perfilEmpleado" element={<PerfilEmpleado />} />
+        </Route>
+
         <Route element={<RolEmpleado rol={[Rol.ADMIN]} />}>
           <Route path="/empresas" element={<EmpresaPage />} />
+        </Route>
+
+        <Route element={<RolEmpleado rol={[Rol.ADMIN]} />}>
+          <Route path="/grillaEmpleados" element={<GrillaEmpleados />} />
         </Route>
 
         <Route element={<RolEmpleado rol={[Rol.ADMIN]} />}>

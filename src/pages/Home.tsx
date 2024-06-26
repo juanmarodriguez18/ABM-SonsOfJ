@@ -17,7 +17,7 @@ import {
             Bienvenidos a El Buen Sabor
           </Typography>
           <Typography variant="body1" paragraph>
-            En El Buen Sabor nos dedicamos a ofrecerte los mejores platos y sabores para satisfacer tu paladar.
+          "Gestionando la excelencia en cada plato, cada día."
           </Typography>
   
           {/* Sección de actividades */}
