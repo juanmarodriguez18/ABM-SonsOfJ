@@ -96,4 +96,14 @@ export const facturarPedido = async (pedido: Pedido, email: string) => {
         console.log(error);
     }
 }
+
+export const getPedidosBySucursal = async (sucursalId: number): Promise<Pedido[]> => {
+    try {
+      const response = await axios.get(`${import.meta.env.VITE_API_URL}/sucursales/${sucursalId}/pedidos`);
+      return response.data;
+    } catch (error) {
+      console.error(`Error fetching pedidos para sucursal con ID ${sucursalId}:`, error);
+      throw error;
+    }
+  };
   
