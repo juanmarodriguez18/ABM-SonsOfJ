@@ -13,6 +13,11 @@ import {
   Box,
   TextField,
   Button,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogContentText,
+  DialogActions,
 } from "@mui/material";
 import { KeyboardArrowDown, KeyboardArrowUp } from "@mui/icons-material";
 import { format } from "date-fns";
@@ -26,6 +31,9 @@ const CajeroPedidos: React.FC = () => {
   const [pedidoDetalleVisible, setPedidoDetalleVisible] = useState< number | null >(null);
   const [filtroFecha, setFiltroFecha] = useState<string>("");
   const [filtroCodigo, setFiltroCodigo] = useState<string>("");
+  const [openDialog, setOpenDialog] = useState<boolean>(false);
+  const [pedidoToChange, setPedidoToChange] = useState<Pedido | null>(null);
+  const [actionType, setActionType] = useState<"CANCELAR" | "RECHAZAR" | null>(null);
 
   useEffect(() => {
     const fetchPedidos = async () => {
@@ -57,6 +65,18 @@ const CajeroPedidos: React.FC = () => {
     setFiltroCodigo(event.target.value);
   };
 
+  const handleOpenDialog = (pedido: Pedido, action: "CANCELAR" | "RECHAZAR") => {
+    setPedidoToChange(pedido);
+    setActionType(action);
+    setOpenDialog(true);
+  };
+
+  const handleCloseDialog = () => {
+    setOpenDialog(false);
+    setPedidoToChange(null);
+    setActionType(null);
+  };
+
   const handleChangeEstado = async (pedido: Pedido, nuevoEstado: Estado) => {
     try {
       const pedidoActualizado = { ...pedido, estado: nuevoEstado };
@@ -70,6 +90,14 @@ const CajeroPedidos: React.FC = () => {
     } catch (error) {
       console.error("Error al actualizar el estado del pedido:", error);
       // Manejar el error, por ejemplo, mostrando un mensaje al usuario
+    }
+  };
+
+  const handleConfirmAction = async () => {
+    if (pedidoToChange && actionType) {
+      const nuevoEstado = actionType === "CANCELAR" ? Estado.CANCELADO : Estado.RECHAZADO;
+      await handleChangeEstado(pedidoToChange, nuevoEstado);
+      handleCloseDialog();
     }
   };
 
@@ -184,7 +212,7 @@ const CajeroPedidos: React.FC = () => {
                       <Button
                         variant="contained"
                         color="secondary"
-                        onClick={() => handleChangeEstado(pedido, Estado.RECHAZADO)}
+                        onClick={() => handleOpenDialog(pedido, "RECHAZAR")}
                       >
                         Rechazar
                       </Button>
@@ -348,7 +376,7 @@ const CajeroPedidos: React.FC = () => {
                       <Button
                         variant="contained"
                         color="secondary"
-                        onClick={() => handleChangeEstado(pedido, Estado.CANCELADO)}
+                        onClick={() => handleOpenDialog(pedido, "CANCELAR")}
                       >
                         Cancelar
                       </Button>
@@ -418,6 +446,27 @@ const CajeroPedidos: React.FC = () => {
           </Table>
         </TableContainer>
       </Box>
+      <Dialog
+        open={openDialog}
+        onClose={handleCloseDialog}
+      >
+        <DialogTitle>Confirmar {actionType === "CANCELAR" ? "Cancelación" : "Rechazo"}</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            {actionType === "CANCELAR" ? 
+              "¿Seguro que desea cancelar el pedido? Los ingredientes permanecerán descontados del stock pero los articulos que no son para elaborar volverán a sumarse." :
+              "¿Seguro que desea rechazar el pedido? Esta acción no se puede deshacer."}
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseDialog} color="primary" variant="contained">
+            Volver
+          </Button>
+          <Button onClick={handleConfirmAction} color="secondary" autoFocus variant="contained">
+            Confirmar
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 };

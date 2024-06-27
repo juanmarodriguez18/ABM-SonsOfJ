@@ -13,6 +13,11 @@ import {
   Box,
   TextField,
   Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle
 } from "@mui/material";
 import { KeyboardArrowDown, KeyboardArrowUp } from "@mui/icons-material";
 import { format } from "date-fns";
@@ -22,9 +27,11 @@ import { Estado } from "../../types/enums/Estado";
 
 const CocineroPedidos: React.FC = () => {
   const [pedidos, setPedidos] = useState<Pedido[]>([]);
-  const [pedidoDetalleVisible, setPedidoDetalleVisible] = useState< number | null >(null);
+  const [pedidoDetalleVisible, setPedidoDetalleVisible] = useState<number | null>(null);
   const [filtroFecha, setFiltroFecha] = useState<string>("");
   const [filtroCodigo, setFiltroCodigo] = useState<string>("");
+  const [openDialog, setOpenDialog] = useState<boolean>(false);
+  const [pedidoToCancel, setPedidoToCancel] = useState<Pedido | null>(null);
 
   useEffect(() => {
     const fetchPedidos = async () => {
@@ -56,6 +63,16 @@ const CocineroPedidos: React.FC = () => {
     setFiltroCodigo(event.target.value);
   };
 
+  const handleOpenDialog = (pedido: Pedido) => {
+    setPedidoToCancel(pedido);
+    setOpenDialog(true);
+  };
+
+  const handleCloseDialog = () => {
+    setOpenDialog(false);
+    setPedidoToCancel(null);
+  };
+
   const handleChangeEstado = async (pedido: Pedido, nuevoEstado: Estado) => {
     try {
       const pedidoActualizado = { ...pedido, estado: nuevoEstado };
@@ -66,6 +83,13 @@ const CocineroPedidos: React.FC = () => {
     } catch (error) {
       console.error("Error al actualizar el estado del pedido:", error);
       // Manejar el error, por ejemplo, mostrando un mensaje al usuario
+    }
+  };
+
+  const handleConfirmCancel = async () => {
+    if (pedidoToCancel) {
+      await handleChangeEstado(pedidoToCancel, Estado.CANCELADO);
+      handleCloseDialog();
     }
   };
 
@@ -163,7 +187,7 @@ const CocineroPedidos: React.FC = () => {
                       <Button
                         variant="contained"
                         color="secondary"
-                        onClick={() => handleChangeEstado(pedido, Estado.CANCELADO)}
+                        onClick={() => handleOpenDialog(pedido)}
                       >
                         Cancelar
                       </Button>
@@ -233,6 +257,26 @@ const CocineroPedidos: React.FC = () => {
           </Table>
         </TableContainer>
       </Box>
+
+      <Dialog
+        open={openDialog}
+        onClose={handleCloseDialog}
+      >
+        <DialogTitle>Confirmar Cancelación</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            ¿Seguro que desea cancelar el pedido? Esta acción es irreversible.
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseDialog} color="primary" variant="contained">
+            Volver
+          </Button>
+          <Button onClick={handleConfirmCancel} color="secondary" autoFocus variant="contained">
+            Confirmar
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 };
