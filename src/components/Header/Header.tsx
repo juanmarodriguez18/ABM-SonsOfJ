@@ -18,6 +18,8 @@ const Header = () => {
   const [jsonEmpleado] = useState<any>(localStorage.getItem('empleado'));
   const empleadoLogueado:Empleado = JSON.parse(jsonEmpleado) as Empleado;
 
+  if (empleadoLogueado){}
+
   return (
     <AppBar position="static" color="default">
         <Toolbar>
