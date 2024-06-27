@@ -22,11 +22,13 @@ import {
 import { KeyboardArrowDown, KeyboardArrowUp } from "@mui/icons-material";
 import { format } from "date-fns";
 import { Pedido } from "../../types/Pedido";
-import { actualizarPedido, facturarPedido, getAllPedidos } from "../../services/PedidoService"; // Asegúrate de tener esta función en tu servicio
+import { actualizarPedido, facturarPedido, getPedidosBySucursal } from "../../services/PedidoService"; // Asegúrate de tener esta función en tu servicio
 import { Estado } from "../../types/enums/Estado";
 import { TipoEnvio } from "../../types/enums/TipoEnvio";
+import { useAuth } from "../../components/ControlAcceso/AuthContext";
 
 const CajeroPedidos: React.FC = () => {
+  const { empleado } = useAuth(); // Obtén la información del cajero logeado
   const [pedidos, setPedidos] = useState<Pedido[]>([]);
   const [pedidoDetalleVisible, setPedidoDetalleVisible] = useState< number | null >(null);
   const [filtroFecha, setFiltroFecha] = useState<string>("");
@@ -38,16 +40,20 @@ const CajeroPedidos: React.FC = () => {
   useEffect(() => {
     const fetchPedidos = async () => {
       try {
-        const pedidosFromServer = await getAllPedidos();
-        setPedidos(pedidosFromServer);
+        if (empleado?.sucursal?.id) {
+          const pedidosFromServer = await getPedidosBySucursal(empleado.sucursal.id);
+          setPedidos(pedidosFromServer);
+        }
       } catch (error) {
         console.error("Error al obtener los pedidos:", error);
-        // Manejar el error, por ejemplo, mostrando un mensaje al usuario
       }
     };
 
     fetchPedidos();
   }, []);
+
+  // Imprimir pedidos en la consola
+  console.log('Pedidos:', pedidos);
 
   const togglePedidoDetalle = (pedidoId: number) => {
     if (pedidoDetalleVisible === pedidoId) {
@@ -101,27 +107,25 @@ const CajeroPedidos: React.FC = () => {
     }
   };
 
+
   const filteredPedidosPendientes = pedidos.filter((pedido) => {
     const fechaPedido = format(new Date(pedido.fechaPedido), "dd/MM/yyyy");
     return (
-      fechaPedido.includes(filtroFecha) &&
-      pedido.id.toString().includes(filtroCodigo) &&
+      (filtroFecha === "" || fechaPedido.includes(filtroFecha)) &&
+      (filtroCodigo === "" || pedido.id.toString().includes(filtroCodigo)) &&
       pedido.estado === "PENDIENTE"
     );
   });
+  
 
   const filteredPedidosListos = pedidos.filter((pedido) => {
     const fechaPedido = format(new Date(pedido.fechaPedido), "dd/MM/yyyy");
     return (
-      fechaPedido.includes(filtroFecha) &&
-      pedido.id.toString().includes(filtroCodigo) &&
-      pedido.estado === "LISTO_PARA_ENTREGA" ||
-      pedido.estado === "ENTREGADO"
+      (filtroFecha === "" || fechaPedido.includes(filtroFecha)) &&
+      (filtroCodigo === "" || pedido.id.toString().includes(filtroCodigo)) &&
+      (pedido.estado === "LISTO_PARA_ENTREGA" || pedido.estado === "ENTREGADO")
     );
   });
-
-  console.log("TipoEnvio.DELIVERY:", TipoEnvio.DELIVERY);
-  console.log("TipoEnvio.TAKE_AWAY:", TipoEnvio.TAKE_AWAY);
 
   return (
     <Box
@@ -472,3 +476,4 @@ const CajeroPedidos: React.FC = () => {
 };
 
 export default CajeroPedidos;
+
