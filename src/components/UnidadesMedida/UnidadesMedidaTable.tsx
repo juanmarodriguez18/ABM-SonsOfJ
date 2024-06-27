@@ -130,7 +130,7 @@ const UnidadesMedidaTable: React.FC<UnidadesMedidaTableProps> = ({
             ))}
           </TableRow>
         </TableHead>
-        <TableBody sx={{ display: 'block', overflowY: 'auto', maxHeight: '74vh' }}>
+        <TableBody sx={{ display: 'block', overflowY: 'auto', maxHeight: '67vh' }}>
           {data.map((unidadMedida) => rowContent(unidadMedida))}
         </TableBody>
       </Table>

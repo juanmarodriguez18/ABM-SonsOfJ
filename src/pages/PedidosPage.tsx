@@ -96,7 +96,7 @@ const PedidosPage: React.FC = () => {
             marginTop: 2,
             bgcolor: "#eee",
             boxShadow: 2,
-            maxHeight: "80vh",
+            maxHeight: "74vh",
             overflow: "auto",
           }}
         >

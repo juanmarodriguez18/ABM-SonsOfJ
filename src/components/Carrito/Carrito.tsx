@@ -149,7 +149,7 @@ export function Carrito() {
   const montoCarrito = typeof totalPedido === 'number' ? totalPedido : 0;
 
   return (
-    <Box sx={{ padding: 3 }}>
+    <Box sx={{ padding: 3, overflowY: "auto", maxHeight: "85vh", width: "100%"  }}>
       <Typography variant="h4" gutterBottom>
         Carrito de Compras
       </Typography>
