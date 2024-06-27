@@ -8,7 +8,7 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
       disableGutters
       maxWidth={false}
       sx={{
-        height: "100vh",
+        height: "99.9vh",
         width: "100vw",
         padding: 1.5,
         boxSizing: "border-box",

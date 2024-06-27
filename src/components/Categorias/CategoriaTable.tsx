@@ -117,7 +117,7 @@ const CategoriaTable: React.FC<CategoriaTableProps> = ({ data, onEdit, onDelete 
                         ))}
                     </TableRow>
                 </TableHead>
-                <TableBody sx={{ display: 'block', overflowY: 'auto', maxHeight: '74vh' }}>
+                <TableBody sx={{ display: 'block', overflowY: 'auto', maxHeight: '67vh' }}>
                     {data.map((categoria) => rowContent(categoria))}
                 </TableBody>
             </Table>

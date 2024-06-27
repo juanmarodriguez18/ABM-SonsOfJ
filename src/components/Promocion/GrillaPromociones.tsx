@@ -59,22 +59,22 @@ const GrillaPromociones: React.FC = () => {
         <SearchBar onSearch={setQuery} />
       </Box>
 
-      <Box sx={{ overflowY: 'auto', maxHeight: '80vh', width: '100%' }}>
+      <Box sx={{ overflowY: 'auto', maxHeight: '70vh', width: '100%' }}>
         <Box width={1500} display="flex" alignItems="center" mb={2}>
           <Grid container spacing={4}>
             {loading ? (
               <Typography variant="body1">Cargando...</Typography>
             ) : (
               filteredPromociones.map((promocion) => (
-                <Grid item key={promocion.id} xs={12} sm={6} md={4} sx={{ maxWidth: '300px' }}>
+                <Grid item key={promocion.id} xs={12} sm={6} md={3} sx={{ maxWidth: '300px' }}>
                   <Card sx={{ width: '100%' }}>
                     <CardMedia
                       component="img"
-                      height="300"
+                      height="250"
                       image={promocion.imagenesPromocion[0]?.url || ''}
                       alt={promocion.denominacion}
                     />
-                    <CardContent>
+                    <CardContent sx={{ zoom: '70%' }}>
                       <Typography gutterBottom variant="h5" component="div">
                         {promocion.denominacion}
                       </Typography>
@@ -85,7 +85,7 @@ const GrillaPromociones: React.FC = () => {
                         ${promocion.precioPromocional}
                       </Typography>
                     </CardContent>
-                    <CardActions sx={{ justifyContent: 'left', marginLeft: 2, marginBottom: 4 }}>
+                    <CardActions sx={{ zoom: '70%', justifyContent: 'left', marginLeft: 2, marginBottom: 4 }}>
                       <Link to={`/promociones/${promocion.id}`}>
                         <InfoIcon
                           sx={{
