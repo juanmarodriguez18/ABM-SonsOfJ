@@ -11,7 +11,7 @@ import SearchBar from '../SearchBar/SearchBar';
 
 const GrillaPromociones: React.FC = () => {
   const [promociones, setPromociones] = useState<Promocion[]>([]);
-  const { addCarrito, updateCarrito, cart } = useCarrito();
+  const { cart } = useCarrito();
   const [loading, setLoading] = useState(false);
   const [query, setQuery] = useState<string>('');
 
@@ -33,6 +33,7 @@ const GrillaPromociones: React.FC = () => {
 
   const handleIncrementarCantidad = (promocion: Promocion) => {
     const currentCantidad = cart.find(item => item.id === promocion.id)?.cantidad || 0;
+    if (currentCantidad){}
     //updateCarrito(promocion, currentCantidad + 1);
   };
   
