@@ -9,10 +9,12 @@ const ReportePage: React.FC = () => {
   const [pedidosPorCliente, setPedidosPorCliente] = useState([]);
   const [ingresosDiarios, setIngresosDiarios] = useState([]);
   const [ingresosMensuales, setIngresosMensuales] = useState([]);
+  const [ganancia, setGanancia] = useState(0);
   const [openRanking, setOpenRanking] = useState(false);
   const [openPedidosCliente, setOpenPedidosCliente] = useState(false);
   const [openIngresosDiarios, setOpenIngresosDiarios] = useState(false);
   const [openIngresosMensuales, setOpenIngresosMensuales] = useState(false);
+  const [openGanancia, setOpenGanancia] = useState(false);
 
   const handleGenerarRanking = async () => {
     try {
@@ -74,6 +76,21 @@ const ReportePage: React.FC = () => {
     }
   };
 
+  const handleGenerarGanancia = async () => {
+    try {
+      const response = await axios.get('http://localhost:8080/api/reportes/ganancia', {
+        params: {
+          fechaInicio,
+          fechaFin
+        }
+      });
+      setGanancia(response.data);
+      setOpenGanancia(true);
+    } catch (error) {
+      console.error('Error al generar el reporte de ganancia', error);
+    }
+  };
+
   const handleCloseRanking = () => {
     setOpenRanking(false);
   };
@@ -88,6 +105,10 @@ const ReportePage: React.FC = () => {
 
   const handleCloseIngresosMensuales = () => {
     setOpenIngresosMensuales(false);
+  };
+
+  const handleCloseGanancia = () => {
+    setOpenGanancia(false);
   };
 
   const formatDate = (epochTime: number) => {
@@ -228,7 +249,7 @@ const ReportePage: React.FC = () => {
               value={fechaFin}
               onChange={(e) => setFechaFin(e.target.value)}
             />
-            <Button variant="contained" color="primary">
+            <Button variant="contained" color="primary" onClick={handleGenerarGanancia}>
               Generar Reporte
             </Button>
             <Button variant="outlined" color="primary" sx={{ ml: 2 }}>
@@ -347,6 +368,29 @@ const ReportePage: React.FC = () => {
             </Table>
           </TableContainer>
           <Button onClick={handleCloseIngresosMensuales} sx={{ mt: 2 }}>Cerrar</Button>
+        </Box>
+      </Modal>
+
+      <Modal open={openGanancia} onClose={handleCloseGanancia}>
+        <Box sx={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', width: 400, bgcolor: 'background.paper', border: '2px solid #000', boxShadow: 24, p: 4 }}>
+          <Typography variant="h6" component="h2">
+            Monto de Ganancia
+          </Typography>
+          <TableContainer>
+            <Table>
+              <TableHead>
+                <TableRow>
+                  <TableCell>Ganancia</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                <TableRow>
+                  <TableCell align="right">{ganancia}</TableCell>
+                </TableRow>
+              </TableBody>
+            </Table>
+          </TableContainer>
+          <Button onClick={handleCloseGanancia} sx={{ mt: 2 }}>Cerrar</Button>
         </Box>
       </Modal>
     </Box>
