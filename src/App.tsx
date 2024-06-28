@@ -24,6 +24,7 @@ import Home from "./pages/Home";
 import PerfilEmpleado from "./pages/Empleado/PerfilEmpleado";
 import GrillaEmpleados from "./pages/Empleado/GrillaEmpleados";
 import ReportePage from "./pages/Reportes/ReportePage"; // Asegúrate de importar ReportePage
+import DetallesPromo from "./components/Promocion/DetallesPromo";
 
 function App() {
   return (
@@ -54,6 +55,10 @@ function App() {
 
         <Route element={<RolEmpleado rol={[Rol.ADMIN, Rol.COCINERO]} />}>
           <Route path="/articulos/:id" element={<ArticuloDetalle />} />
+        </Route>
+
+        <Route element={<RolEmpleado rol={[Rol.ADMIN, Rol.COCINERO]} />}>
+          <Route path="/promociones/:id" element={<DetallesPromo />} />
         </Route>
 
         <Route element={<RolEmpleado rol={[Rol.ADMIN]} />}>
