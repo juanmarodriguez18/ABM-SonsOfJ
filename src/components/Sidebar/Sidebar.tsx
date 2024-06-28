@@ -395,6 +395,22 @@ const Sidebar: React.FC = () => {
             </SidebarItem>
           </>
           )}
+          {empleado && empleado.tipoEmpleado === Rol.ADMIN && (
+            <SidebarItem icon={<AssignmentIcon />} text="Reportes">
+              <ListItem>
+                <Button
+                  disableRipple
+                  disableTouchRipple
+                  className="btn-list-sidebar"
+                  startIcon={<AssignmentIcon />}
+                  sx={buttonStyles}
+                  onClick={() => navigate("/reportes")}
+                >
+                  Reporte General
+                </Button>
+              </ListItem>
+            </SidebarItem>
+          )}
         </List>
         <List sx={{ height: 150 }} />
       </Box>
@@ -403,4 +419,3 @@ const Sidebar: React.FC = () => {
 };
 
 export default Sidebar;
-
