@@ -31,6 +31,26 @@ const ReportePage: React.FC = () => {
     }
   };
 
+  const handleDescargarExcelRanking = async () => {
+    try {
+      const response = await axios.get('http://localhost:8080/api/reportes/excel/ranking-comidas', {
+        params: {
+          fechaInicio,
+          fechaFin
+        },
+        responseType: 'blob'
+      });
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', 'ranking_comidas.xlsx');
+      document.body.appendChild(link);
+      link.click();
+    } catch (error) {
+      console.error('Error al descargar el Excel', error);
+    }
+  };
+
   const handleGenerarPedidosPorCliente = async () => {
     try {
       const response = await axios.get('http://localhost:8080/api/reportes/cantidad-pedidos-cliente', {
@@ -43,6 +63,26 @@ const ReportePage: React.FC = () => {
       setOpenPedidosCliente(true);
     } catch (error) {
       console.error('Error al generar el reporte de pedidos por cliente', error);
+    }
+  };
+
+  const handleDescargarExcelPedidosPorCliente = async () => {
+    try {
+      const response = await axios.get('http://localhost:8080/api/reportes/excel/pedidos-cliente', {
+        params: {
+          fechaInicio,
+          fechaFin
+        },
+        responseType: 'blob'
+      });
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', 'pedidos_cliente.xlsx');
+      document.body.appendChild(link);
+      link.click();
+    } catch (error) {
+      console.error('Error al descargar el Excel', error);
     }
   };
 
@@ -61,6 +101,26 @@ const ReportePage: React.FC = () => {
     }
   };
 
+  const handleDescargarExcelIngresosDiarios = async () => {
+    try {
+      const response = await axios.get('http://localhost:8080/api/reportes/excel/ingresos-diarios', {
+        params: {
+          fechaInicio,
+          fechaFin
+        },
+        responseType: 'blob'
+      });
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', 'ingresos_diarios.xlsx');
+      document.body.appendChild(link);
+      link.click();
+    } catch (error) {
+      console.error('Error al descargar el Excel', error);
+    }
+  };
+
   const handleGenerarIngresosMensuales = async () => {
     try {
       const response = await axios.get('http://localhost:8080/api/reportes/ingresos-mensuales', {
@@ -76,6 +136,26 @@ const ReportePage: React.FC = () => {
     }
   };
 
+  const handleDescargarExcelIngresosMensuales = async () => {
+    try {
+      const response = await axios.get('http://localhost:8080/api/reportes/excel/ingresos-mensuales', {
+        params: {
+          fechaInicio,
+          fechaFin
+        },
+        responseType: 'blob'
+      });
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', 'ingresos_mensuales.xlsx');
+      document.body.appendChild(link);
+      link.click();
+    } catch (error) {
+      console.error('Error al descargar el Excel', error);
+    }
+  };
+
   const handleGenerarGanancia = async () => {
     try {
       const response = await axios.get('http://localhost:8080/api/reportes/ganancia', {
@@ -88,6 +168,26 @@ const ReportePage: React.FC = () => {
       setOpenGanancia(true);
     } catch (error) {
       console.error('Error al generar el reporte de ganancia', error);
+    }
+  };
+
+  const handleDescargarExcelGanancia = async () => {
+    try {
+      const response = await axios.get('http://localhost:8080/api/reportes/excel/ganancia', {
+        params: {
+          fechaInicio,
+          fechaFin
+        },
+        responseType: 'blob'
+      });
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', 'ganancia.xlsx');
+      document.body.appendChild(link);
+      link.click();
+    } catch (error) {
+      console.error('Error al descargar el Excel', error);
     }
   };
 
@@ -119,10 +219,10 @@ const ReportePage: React.FC = () => {
   return (
     <Box sx={{ p: 3 }}>
       <Typography variant="h4" gutterBottom>
-        Reporte General
+        Reportes
       </Typography>
 
-      <Grid container spacing={3}>
+      <Grid container spacing={2}>
         {/* Ranking de comidas más pedidas */}
         <Grid item xs={12} md={6}>
           <Paper sx={{ p: 2 }}>
@@ -147,12 +247,14 @@ const ReportePage: React.FC = () => {
               value={fechaFin}
               onChange={(e) => setFechaFin(e.target.value)}
             />
-            <Button variant="contained" color="primary" onClick={handleGenerarRanking}>
-              Generar Reporte
-            </Button>
-            <Button variant="outlined" color="primary" sx={{ ml: 2 }}>
-              Exportar a Excel
-            </Button>
+            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
+              <Button variant="contained" color="primary" onClick={handleGenerarRanking}>
+                Generar Reporte
+              </Button>
+              <Button variant="outlined" color="primary" onClick={handleDescargarExcelRanking}>
+                Exportar a Excel
+              </Button>
+            </Box>
           </Paper>
         </Grid>
 
@@ -180,15 +282,20 @@ const ReportePage: React.FC = () => {
               value={fechaFin}
               onChange={(e) => setFechaFin(e.target.value)}
             />
-            <Button variant="contained" color="primary" onClick={handleGenerarIngresosDiarios}>
-              Generar Reporte Diario
-            </Button>
-            <Button variant="contained" color="primary" onClick={handleGenerarIngresosMensuales} sx={{ ml: 2 }}>
-              Generar Reporte Mensual
-            </Button>
-            <Button variant="outlined" color="primary" sx={{ ml: 2 }}>
-              Exportar a Excel
-            </Button>
+            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
+              <Button variant="contained" color="primary" onClick={handleGenerarIngresosDiarios}>
+                Reporte Diario
+              </Button>
+              <Button variant="contained" color="primary" onClick={handleGenerarIngresosMensuales}>
+                Reporte Mensual
+              </Button>
+              <Button variant="outlined" color="primary" onClick={handleDescargarExcelIngresosDiarios}>
+                Excel Diario
+              </Button>
+              <Button variant="outlined" color="primary" onClick={handleDescargarExcelIngresosMensuales}>
+                Excel Mensual
+              </Button>
+            </Box>
           </Paper>
         </Grid>
 
@@ -216,12 +323,14 @@ const ReportePage: React.FC = () => {
               value={fechaFin}
               onChange={(e) => setFechaFin(e.target.value)}
             />
-            <Button variant="contained" color="primary" onClick={handleGenerarPedidosPorCliente}>
-              Generar Reporte
-            </Button>
-            <Button variant="outlined" color="primary" sx={{ ml: 2 }}>
-              Exportar a Excel
-            </Button>
+            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
+              <Button variant="contained" color="primary" onClick={handleGenerarPedidosPorCliente}>
+                Generar Reporte
+              </Button>
+              <Button variant="outlined" color="primary" onClick={handleDescargarExcelPedidosPorCliente}>
+                Exportar a Excel
+              </Button>
+            </Box>
           </Paper>
         </Grid>
 
@@ -249,12 +358,14 @@ const ReportePage: React.FC = () => {
               value={fechaFin}
               onChange={(e) => setFechaFin(e.target.value)}
             />
-            <Button variant="contained" color="primary" onClick={handleGenerarGanancia}>
-              Generar Reporte
-            </Button>
-            <Button variant="outlined" color="primary" sx={{ ml: 2 }}>
-              Exportar a Excel
-            </Button>
+            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
+              <Button variant="contained" color="primary" onClick={handleGenerarGanancia}>
+                Generar Reporte
+              </Button>
+              <Button variant="outlined" color="primary" onClick={handleDescargarExcelGanancia}>
+                Exportar a Excel
+              </Button>
+            </Box>
           </Paper>
         </Grid>
       </Grid>
