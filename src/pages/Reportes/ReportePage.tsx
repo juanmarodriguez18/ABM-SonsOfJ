@@ -6,7 +6,9 @@ const ReportePage: React.FC = () => {
   const [fechaInicio, setFechaInicio] = useState('');
   const [fechaFin, setFechaFin] = useState('');
   const [rankingComidas, setRankingComidas] = useState([]);
-  const [open, setOpen] = useState(false);
+  const [pedidosPorCliente, setPedidosPorCliente] = useState([]);
+  const [openRanking, setOpenRanking] = useState(false);
+  const [openPedidosCliente, setOpenPedidosCliente] = useState(false);
 
   const handleGenerarRanking = async () => {
     try {
@@ -17,14 +19,33 @@ const ReportePage: React.FC = () => {
         }
       });
       setRankingComidas(response.data);
-      setOpen(true);
+      setOpenRanking(true);
     } catch (error) {
       console.error('Error al generar el ranking', error);
     }
   };
 
-  const handleClose = () => {
-    setOpen(false);
+  const handleGenerarPedidosPorCliente = async () => {
+    try {
+      const response = await axios.get('http://localhost:8080/api/reportes/cantidad-pedidos-cliente', {
+        params: {
+          fechaInicio,
+          fechaFin
+        }
+      });
+      setPedidosPorCliente(response.data);
+      setOpenPedidosCliente(true);
+    } catch (error) {
+      console.error('Error al generar el reporte de pedidos por cliente', error);
+    }
+  };
+
+  const handleCloseRanking = () => {
+    setOpenRanking(false);
+  };
+
+  const handleClosePedidosCliente = () => {
+    setOpenPedidosCliente(false);
   };
 
   return (
@@ -124,7 +145,7 @@ const ReportePage: React.FC = () => {
               value={fechaFin}
               onChange={(e) => setFechaFin(e.target.value)}
             />
-            <Button variant="contained" color="primary">
+            <Button variant="contained" color="primary" onClick={handleGenerarPedidosPorCliente}>
               Generar Reporte
             </Button>
             <Button variant="outlined" color="primary" sx={{ ml: 2 }}>
@@ -167,7 +188,7 @@ const ReportePage: React.FC = () => {
         </Grid>
       </Grid>
 
-      <Modal open={open} onClose={handleClose}>
+      <Modal open={openRanking} onClose={handleCloseRanking}>
         <Box sx={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', width: 400, bgcolor: 'background.paper', border: '2px solid #000', boxShadow: 24, p: 4 }}>
           <Typography variant="h6" component="h2">
             Ranking de Comidas Más Pedidas
@@ -190,7 +211,36 @@ const ReportePage: React.FC = () => {
               </TableBody>
             </Table>
           </TableContainer>
-          <Button onClick={handleClose} sx={{ mt: 2 }}>Cerrar</Button>
+          <Button onClick={handleCloseRanking} sx={{ mt: 2 }}>Cerrar</Button>
+        </Box>
+      </Modal>
+
+      <Modal open={openPedidosCliente} onClose={handleClosePedidosCliente}>
+        <Box sx={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', width: 400, bgcolor: 'background.paper', border: '2px solid #000', boxShadow: 24, p: 4 }}>
+          <Typography variant="h6" component="h2">
+            Cantidad de Pedidos por Cliente
+          </Typography>
+          <TableContainer>
+            <Table>
+              <TableHead>
+                <TableRow>
+                  <TableCell>Nombre</TableCell>
+                  <TableCell align="right">Apellido</TableCell>
+                  <TableCell align="right">Cantidad de Pedidos</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {pedidosPorCliente.map((row: any, index) => (
+                  <TableRow key={index}>
+                    <TableCell>{row[0]}</TableCell>
+                    <TableCell align="right">{row[1]}</TableCell>
+                    <TableCell align="right">{row[2]}</TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
+          <Button onClick={handleClosePedidosCliente} sx={{ mt: 2 }}>Cerrar</Button>
         </Box>
       </Modal>
     </Box>
