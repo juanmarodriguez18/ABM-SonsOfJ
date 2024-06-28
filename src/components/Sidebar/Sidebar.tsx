@@ -406,7 +406,8 @@ const Sidebar: React.FC = () => {
                   sx={buttonStyles}
                   onClick={() => navigate("/reportes")}
                 >
-                  Reporte General
+                  Reporte
+                  Estadistica
                 </Button>
               </ListItem>
             </SidebarItem>
