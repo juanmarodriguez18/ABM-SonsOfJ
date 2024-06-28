@@ -7,8 +7,12 @@ const ReportePage: React.FC = () => {
   const [fechaFin, setFechaFin] = useState('');
   const [rankingComidas, setRankingComidas] = useState([]);
   const [pedidosPorCliente, setPedidosPorCliente] = useState([]);
+  const [ingresosDiarios, setIngresosDiarios] = useState([]);
+  const [ingresosMensuales, setIngresosMensuales] = useState([]);
   const [openRanking, setOpenRanking] = useState(false);
   const [openPedidosCliente, setOpenPedidosCliente] = useState(false);
+  const [openIngresosDiarios, setOpenIngresosDiarios] = useState(false);
+  const [openIngresosMensuales, setOpenIngresosMensuales] = useState(false);
 
   const handleGenerarRanking = async () => {
     try {
@@ -40,12 +44,55 @@ const ReportePage: React.FC = () => {
     }
   };
 
+  const handleGenerarIngresosDiarios = async () => {
+    try {
+      const response = await axios.get('http://localhost:8080/api/reportes/ingresos-diarios', {
+        params: {
+          fechaInicio,
+          fechaFin
+        }
+      });
+      setIngresosDiarios(response.data);
+      setOpenIngresosDiarios(true);
+    } catch (error) {
+      console.error('Error al generar el reporte de ingresos diarios', error);
+    }
+  };
+
+  const handleGenerarIngresosMensuales = async () => {
+    try {
+      const response = await axios.get('http://localhost:8080/api/reportes/ingresos-mensuales', {
+        params: {
+          fechaInicio,
+          fechaFin
+        }
+      });
+      setIngresosMensuales(response.data);
+      setOpenIngresosMensuales(true);
+    } catch (error) {
+      console.error('Error al generar el reporte de ingresos mensuales', error);
+    }
+  };
+
   const handleCloseRanking = () => {
     setOpenRanking(false);
   };
 
   const handleClosePedidosCliente = () => {
     setOpenPedidosCliente(false);
+  };
+
+  const handleCloseIngresosDiarios = () => {
+    setOpenIngresosDiarios(false);
+  };
+
+  const handleCloseIngresosMensuales = () => {
+    setOpenIngresosMensuales(false);
+  };
+
+  const formatDate = (epochTime: number) => {
+    const date = new Date(epochTime);
+    return date.toLocaleDateString();
   };
 
   return (
@@ -112,8 +159,11 @@ const ReportePage: React.FC = () => {
               value={fechaFin}
               onChange={(e) => setFechaFin(e.target.value)}
             />
-            <Button variant="contained" color="primary">
-              Generar Reporte
+            <Button variant="contained" color="primary" onClick={handleGenerarIngresosDiarios}>
+              Generar Reporte Diario
+            </Button>
+            <Button variant="contained" color="primary" onClick={handleGenerarIngresosMensuales} sx={{ ml: 2 }}>
+              Generar Reporte Mensual
             </Button>
             <Button variant="outlined" color="primary" sx={{ ml: 2 }}>
               Exportar a Excel
@@ -241,6 +291,62 @@ const ReportePage: React.FC = () => {
             </Table>
           </TableContainer>
           <Button onClick={handleClosePedidosCliente} sx={{ mt: 2 }}>Cerrar</Button>
+        </Box>
+      </Modal>
+
+      <Modal open={openIngresosDiarios} onClose={handleCloseIngresosDiarios}>
+        <Box sx={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', width: 400, bgcolor: 'background.paper', border: '2px solid #000', boxShadow: 24, p: 4 }}>
+          <Typography variant="h6" component="h2">
+            Ingresos Diarios
+          </Typography>
+          <TableContainer>
+            <Table>
+              <TableHead>
+                <TableRow>
+                  <TableCell>Día</TableCell>
+                  <TableCell align="right">Ingresos</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {ingresosDiarios.map((row: any, index) => (
+                  <TableRow key={index}>
+                    <TableCell>{formatDate(row[0])}</TableCell>
+                    <TableCell align="right">{row[1]}</TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
+          <Button onClick={handleCloseIngresosDiarios} sx={{ mt: 2 }}>Cerrar</Button>
+        </Box>
+      </Modal>
+
+      <Modal open={openIngresosMensuales} onClose={handleCloseIngresosMensuales}>
+        <Box sx={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', width: 400, bgcolor: 'background.paper', border: '2px solid #000', boxShadow: 24, p: 4 }}>
+          <Typography variant="h6" component="h2">
+            Ingresos Mensuales
+          </Typography>
+          <TableContainer>
+            <Table>
+              <TableHead>
+                <TableRow>
+                  <TableCell>Año</TableCell>
+                  <TableCell align="right">Mes</TableCell>
+                  <TableCell align="right">Ingresos</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {ingresosMensuales.map((row: any, index) => (
+                  <TableRow key={index}>
+                    <TableCell>{row[0]}</TableCell>
+                    <TableCell align="right">{row[1]}</TableCell>
+                    <TableCell align="right">{row[2]}</TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
+          <Button onClick={handleCloseIngresosMensuales} sx={{ mt: 2 }}>Cerrar</Button>
         </Box>
       </Modal>
     </Box>
