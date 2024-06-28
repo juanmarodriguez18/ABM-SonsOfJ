@@ -20,7 +20,7 @@ const Login: React.FC = () => {
             navigate('/');
             window.location.reload();
         } catch (error) {
-            setError('Usuario y/o Clave incorrectos, vuelva a intentar');
+            setError('Email y/o Clave incorrectos, vuelva a intentar');
         }
     };
 
