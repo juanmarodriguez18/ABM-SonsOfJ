@@ -94,22 +94,26 @@ export const GrillaManufacturados: React.FC = () => {
                       </Typography>
                     </CardContent>
                     <CardActions sx={{ zoom: '70%', justifyContent: 'left', marginLeft: 2, marginBottom: 4 }}>
-                      <Link to={`/articulos/${articulo.id}`}>
-                        <InfoIcon
-                          sx={{
-                            bgcolor: "#FB9553",
-                            color: "#FFEDC2",
-                            borderRadius: "50%",
-                            width: 40,
-                            marginRight: 2,
-                            height: 40,
-                            p: 0.1,
-                            "&:hover": {
-                              bgcolor: "#FB5353",
-                            },
-                          }}
-                        />
-                      </Link>
+                      {'esParaElaborar' in articulo ? (
+                        <div className="espacio" style={{ marginLeft: 60 }}/>
+                      ) : (
+                        <Link to={`/articulos/${articulo.id}`}>
+                          <InfoIcon
+                            sx={{
+                              bgcolor: "#FB9553",
+                              color: "#FFEDC2",
+                              borderRadius: "50%",
+                              width: 40,
+                              marginRight: 2,
+                              height: 40,
+                              p: 0.1,
+                              "&:hover": {
+                                bgcolor: "#FB5353",
+                              },
+                            }}
+                          />
+                        </Link>
+                      )}
                       {cart.find(item => item.articulo.id === articulo.id)?.cantidad ? (
                         <div className="cantidad-carrito" style={{ marginLeft: 190, display: 'flex', alignItems: 'center' }}>
                           <IconButton

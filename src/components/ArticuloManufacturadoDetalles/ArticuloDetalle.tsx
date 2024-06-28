@@ -83,14 +83,14 @@ const ArticuloDetalle: React.FC = () => {
               <Typography sx={{ height: 100 }} variant="h6">
                 Descripción: {articulo.descripcion}
               </Typography>
-              <Typography sx={{ height: 50 }} variant="h6">
-                Precio: ${articulo.precioVenta}
+              <Typography sx={{ height: 100 }} variant="h6">
+                Preparación: {articulo.preparacion}
               </Typography>
-              <Typography sx={{ height: 50 }} variant="h6">
+              <Typography sx={{ height: 65 }} variant="h6">
                 <AccessTime /> Demora: {articulo.tiempoEstimadoMinutos} minutos
               </Typography>
               <Typography variant="h6">
-                Preparación: {articulo.preparacion}
+                Precio: ${articulo.precioVenta}
               </Typography>
             </CardContent>
           </Card>
