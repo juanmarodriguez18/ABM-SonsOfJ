@@ -18,7 +18,7 @@ import {
   Select,
   FormControl,
   InputLabel,
-  SelectChangeEvent, // Importar el tipo SelectChangeEvent
+  SelectChangeEvent,
 } from "@mui/material";
 import { KeyboardArrowDown, KeyboardArrowUp } from "@mui/icons-material";
 import { format } from "date-fns";
@@ -253,7 +253,7 @@ const PedidosPage: React.FC = () => {
                 </TableRow>
               </React.Fragment>
             ))}
-          </TableBody>
+                    </TableBody>
         </Table>
       </TableContainer>
 
@@ -264,67 +264,72 @@ const PedidosPage: React.FC = () => {
         aria-describedby="modal-modal-description"
       >
         <Box sx={{ ...modalStyle, width: 800 }}> {/* Ancho del modal ajustado */}
-        <Typography id="modal-modal-title" variant="h6" component="h2">
+          <Box
+          display="flex"
+          justifyContent="space-between"
+          alignItems="center"
+          mb={2}
+        >
+          <Typography id="modal-modal-title" variant="h6" component="h2">
             Listado de pedidos por fecha
           </Typography>
-          <Box display="flex" alignItems="center" mb={2}>
-            <FormControl variant="outlined" size="small" style={{ marginRight: 10, minWidth: 150 }}>
-              <InputLabel id="filtro-estado-label">Estado</InputLabel>
-              <Select
-                labelId="filtro-estado-label"
-                id="filtro-estado"
-                value={filtroEstado}
-                onChange={handleEstadoChange}
-                label="Estado"
-              >
-                <MenuItem value="">
-                  <em>Todos</em>
-                </MenuItem>
-                <MenuItem value="PENDIENTE">Pendiente</MenuItem>
-                <MenuItem value="CANCELADO">Cancelado</MenuItem>
-                <MenuItem value="LISTO_PARA_ENTREGA">Listo para entrega</MenuItem>
-                <MenuItem value="ENTREGADO">Entregado</MenuItem>
-                <MenuItem value="PREPARACION">Preparación</MenuItem> {/* Añadido el estado "PREPARACION" */}
-              </Select>
-            </FormControl>
-          </Box>
-          <TableContainer component={Paper}>
-            <Table>
-              <TableHead>
-                <TableRow>
-                  <TableCell align="center">Código</TableCell>
-                  <TableCell align="center">Total</TableCell>
-                  <TableCell align="center">Estado</TableCell>
-                  <TableCell align="center">Tipo Envío</TableCell>
-                  <TableCell align="center">Fecha</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {filteredPedidosByEstado.map((pedido) => (
-                  <TableRow key={pedido.id}>
-                    <TableCell align="center">{pedido.id}</TableCell>
-                    <TableCell align="center">${pedido.total}</TableCell>
-                    <TableCell align="center">{pedido.estado}</TableCell>
-                    <TableCell align="center">{pedido.tipoEnvio}</TableCell>
-                    <TableCell align="center">{format(new Date(pedido.fechaPedido), "dd/MM/yyyy")}</TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </TableContainer>
-          <Box mt={2} textAlign="center">
-            <Button
-              variant="contained"
-              style={{ backgroundColor: 'green', color: 'white' }}
-              onClick={handleExportarExcel}
+          <FormControl variant="outlined" size="small" style={{ minWidth: 150 }}>
+            <InputLabel id="filtro-estado-label">Estado</InputLabel>
+            <Select
+              labelId="filtro-estado-label"
+              id="filtro-estado"
+              value={filtroEstado}
+              onChange={handleEstadoChange}
+              label="Estado"
             >
-              Pedidos Excel
-            </Button>
-          </Box>
+              <MenuItem value="">
+                <em>Todos</em>
+              </MenuItem>
+              <MenuItem value="PENDIENTE">Pendiente</MenuItem>
+              <MenuItem value="CANCELADO">Cancelado</MenuItem>
+              <MenuItem value="LISTO_PARA_ENTREGA">Listo para entrega</MenuItem>
+              <MenuItem value="ENTREGADO">Entregado</MenuItem>
+              <MenuItem value="PREPARACION">Preparación</MenuItem>
+            </Select>
+          </FormControl>
         </Box>
-      </Modal>
-    </Box>
-  );
+        <TableContainer component={Paper}>
+          <Table>
+            <TableHead>
+              <TableRow>
+                <TableCell align="center">Código</TableCell>
+                <TableCell align="center">Total</TableCell>
+                <TableCell align="center">Estado</TableCell>
+                <TableCell align="center">Tipo Envío</TableCell>
+                <TableCell align="center">Fecha</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {filteredPedidosByEstado.map((pedido) => (
+                <TableRow key={pedido.id}>
+                  <TableCell align="center">{pedido.id}</TableCell>
+                  <TableCell align="center">${pedido.total}</TableCell>
+                  <TableCell align="center">{pedido.estado}</TableCell>
+                  <TableCell align="center">{pedido.tipoEnvio}</TableCell>
+                  <TableCell align="center">{format(new Date(pedido.fechaPedido), "dd/MM/yyyy")}</TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
+        <Box mt={2} textAlign="center">
+          <Button
+            variant="contained"
+            style={{ backgroundColor: 'green', color: 'white' }}
+            onClick={handleExportarExcel}
+          >
+            Pedidos Excel
+          </Button>
+        </Box>
+      </Box>
+    </Modal>
+  </Box>
+);
 };
 
 const modalStyle = {
