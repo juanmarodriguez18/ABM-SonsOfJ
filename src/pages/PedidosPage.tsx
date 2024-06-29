@@ -12,15 +12,19 @@ import {
   IconButton,
   Box,
   TextField,
+  Button,
 } from "@mui/material";
 import { KeyboardArrowDown, KeyboardArrowUp } from "@mui/icons-material";
 import { format } from "date-fns";
 import { Pedido } from "../types/Pedido";
-import { getAllPedidos } from "../services/PedidoService";
+import { descargarFactura, getAllPedidos } from "../services/PedidoService";
+import { Estado } from "../types/enums/Estado";
 
 const PedidosPage: React.FC = () => {
   const [pedidos, setPedidos] = useState<Pedido[]>([]);
-  const [pedidoDetalleVisible, setPedidoDetalleVisible] = useState< number | null >(null);
+  const [pedidoDetalleVisible, setPedidoDetalleVisible] = useState<
+    number | null
+  >(null);
   const [filtroFecha, setFiltroFecha] = useState<string>("");
   const [filtroCodigo, setFiltroCodigo] = useState<string>("");
 
@@ -109,6 +113,7 @@ const PedidosPage: React.FC = () => {
                 <TableCell align="center">Tipo Envío</TableCell>
                 <TableCell align="center">Fecha</TableCell>
                 <TableCell align="center">Detalles</TableCell>
+                <TableCell align="center"></TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -119,7 +124,9 @@ const PedidosPage: React.FC = () => {
                     <TableCell align="center">${pedido.total}</TableCell>
                     <TableCell align="center">{pedido.estado}</TableCell>
                     <TableCell align="center">{pedido.tipoEnvio}</TableCell>
-                    <TableCell align="center">{format(new Date(pedido.fechaPedido), "dd/MM/yyyy")}</TableCell>
+                    <TableCell align="center">
+                      {format(new Date(pedido.fechaPedido), "dd/MM/yyyy")}
+                    </TableCell>
                     <TableCell align="center">
                       <IconButton
                         aria-label="expand row"
@@ -133,9 +140,24 @@ const PedidosPage: React.FC = () => {
                         )}
                       </IconButton>
                     </TableCell>
+                    <TableCell align="center">
+                      {pedido.estado === Estado.FACTURADO && (
+                        <Button
+                          variant="contained"
+                          color="primary"
+                          onClick={() => descargarFactura(pedido)}
+                          style={{ marginRight: 8 }}
+                        >
+                          Reimprimir factura
+                        </Button>
+                      )}
+                    </TableCell>
                   </TableRow>
                   <TableRow>
-                    <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
+                    <TableCell
+                      style={{ paddingBottom: 0, paddingTop: 0 }}
+                      colSpan={6}
+                    >
                       <Collapse
                         in={pedidoDetalleVisible === pedido.id}
                         timeout="auto"
@@ -149,16 +171,27 @@ const PedidosPage: React.FC = () => {
                             <TableBody>
                               <TableRow>
                                 <TableCell>Nombre Cliente:</TableCell>
-                                <TableCell>{pedido.cliente.nombre} {pedido.cliente.apellido}</TableCell>
+                                <TableCell>
+                                  {pedido.cliente.nombre}{" "}
+                                  {pedido.cliente.apellido}
+                                </TableCell>
                               </TableRow>
                               <TableRow>
                                 <TableCell>Dirección:</TableCell>
-                                <TableCell>{pedido.domicilio.calle} {pedido.domicilio.numero}, {pedido.domicilio.localidad.nombre}, {pedido.domicilio.localidad.provincia.nombre}</TableCell>
+                                <TableCell>
+                                  {pedido.domicilio.calle}{" "}
+                                  {pedido.domicilio.numero},{" "}
+                                  {pedido.domicilio.localidad.nombre},{" "}
+                                  {pedido.domicilio.localidad.provincia.nombre}
+                                </TableCell>
                               </TableRow>
                               <TableRow>
                                 <TableCell>Artículos:</TableCell>
                                 <TableCell>
-                                  <Table size="small" aria-label="detalle-pedido">
+                                  <Table
+                                    size="small"
+                                    aria-label="detalle-pedido"
+                                  >
                                     <TableHead>
                                       <TableRow>
                                         <TableCell>Denominación</TableCell>
@@ -170,10 +203,20 @@ const PedidosPage: React.FC = () => {
                                     <TableBody>
                                       {pedido.pedidoDetalles.map((detalle) => (
                                         <TableRow key={detalle.articulo.id}>
-                                          <TableCell>{detalle.articulo.denominacion}</TableCell>
-                                          <TableCell>{detalle.cantidad}</TableCell>
-                                          <TableCell>${detalle.articulo.precioVenta}</TableCell>
-                                          <TableCell>${detalle.articulo.precioVenta * detalle.cantidad}</TableCell>
+                                          <TableCell>
+                                            {detalle.articulo.denominacion}
+                                          </TableCell>
+                                          <TableCell>
+                                            {detalle.cantidad}
+                                          </TableCell>
+                                          <TableCell>
+                                            ${detalle.articulo.precioVenta}
+                                          </TableCell>
+                                          <TableCell>
+                                            $
+                                            {detalle.articulo.precioVenta *
+                                              detalle.cantidad}
+                                          </TableCell>
                                         </TableRow>
                                       ))}
                                       <TableRow>
