@@ -19,6 +19,7 @@ import { KeyboardArrowDown, KeyboardArrowUp } from "@mui/icons-material";
 import { format } from "date-fns";
 import { Pedido } from "../types/Pedido";
 import { getAllPedidos, getPedidosByFecha } from "../services/PedidoService";
+import axios from "axios";
 
 const PedidosPage: React.FC = () => {
   const [pedidos, setPedidos] = useState<Pedido[]>([]);
@@ -73,6 +74,27 @@ const PedidosPage: React.FC = () => {
 
   const handleCloseModal = () => {
     setModalOpen(false);
+  };
+
+  const handleExportarExcel = async () => {
+    try {
+      const response = await axios.get(`${import.meta.env.VITE_API_URL}/pedidos/export/excel`, {
+        params: {
+          fechaInicio: filtroFechaInicio,
+          fechaFin: filtroFechaFin
+        },
+        responseType: 'blob'
+      });
+
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', 'pedidos.xlsx');
+      document.body.appendChild(link);
+      link.click();
+    } catch (error) {
+      console.error("Error al exportar a Excel:", error);
+    }
   };
 
   return (
@@ -239,7 +261,7 @@ const PedidosPage: React.FC = () => {
                   <TableCell align="center">Estado</TableCell>
                   <TableCell align="center">Tipo Envío</TableCell>
                   <TableCell align="center">Fecha</TableCell>
-                </TableRow>
+                  </TableRow>
               </TableHead>
               <TableBody>
                 {filteredPedidos.map((pedido) => (
@@ -255,9 +277,10 @@ const PedidosPage: React.FC = () => {
             </Table>
           </TableContainer>
           <Box mt={2} textAlign="center">
-          <Button
+            <Button
               variant="contained"
               style={{ backgroundColor: 'green', color: 'white' }}
+              onClick={handleExportarExcel}
             >
               Pedidos Excel
             </Button>
@@ -280,3 +303,4 @@ const modalStyle = {
 };
 
 export default PedidosPage;
+
