@@ -121,13 +121,14 @@ const SucursalPage: React.FC = () => {
                       component="img"
                       height="350"
                       image={
-                        sucursal.imagenesSucursal.length > 0
+                        sucursal.imagenesSucursal && sucursal.imagenesSucursal.length > 0
                           ? sucursal.imagenesSucursal[0].url
                           : "https://via.placeholder.com/150"
                       }
                       alt={sucursal.nombre}
                       style={{ opacity: sucursal.eliminado ? 0.2 : 1 }}
                     />
+
                     <CardContent sx={{ zoom: '80%' }}>
                       <Typography
                         variant="h6"
@@ -139,19 +140,24 @@ const SucursalPage: React.FC = () => {
                         variant="subtitle1"
                         style={{ fontSize: "18px", lineHeight: "2" }}
                       >
-                        {`${sucursal.domicilio.calle} ${sucursal.domicilio.numero}, Piso ${sucursal.domicilio.piso}, Dpto ${sucursal.domicilio.nroDpto}`}
+                        {sucursal.domicilio ? (
+                          `${sucursal.domicilio.calle} ${sucursal.domicilio.numero}, Piso ${sucursal.domicilio.piso}, Dpto ${sucursal.domicilio.nroDpto}`
+                        ) : (
+                          "Dirección no disponible"
+                        )}
+                      </Typography>
+
+                      <Typography
+                        variant="subtitle2"
+                        style={{ fontSize: "14px" }}
+                      >
+                        Código Postal: {sucursal.domicilio ? sucursal.domicilio.cp : 'No disponible'}
                       </Typography>
                       <Typography
                         variant="subtitle2"
                         style={{ fontSize: "14px" }}
                       >
-                        Código Postal: {sucursal.domicilio.cp}
-                      </Typography>
-                      <Typography
-                        variant="subtitle2"
-                        style={{ fontSize: "14px" }}
-                      >
-                        Localidad: {sucursal.domicilio.localidad.nombre}
+                        Localidad: {sucursal.domicilio && sucursal.domicilio.localidad ? sucursal.domicilio.localidad.nombre : 'No disponible'}
                       </Typography>
                     </CardContent>
                     <CardActions>
