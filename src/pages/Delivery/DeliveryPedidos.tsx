@@ -17,10 +17,12 @@ import {
 import { KeyboardArrowDown, KeyboardArrowUp } from "@mui/icons-material";
 import { format } from "date-fns";
 import { Pedido } from "../../types/Pedido";
-import { actualizarPedido, getAllPedidos } from "../../services/PedidoService"; // Asegúrate de tener esta función en tu servicio
+import { actualizarPedido, getPedidosBySucursal } from "../../services/PedidoService"; // Asegúrate de tener esta función en tu servicio
 import { Estado } from "../../types/enums/Estado";
+import { useAuth } from "../../components/ControlAcceso/AuthContext";
 
 const DeliveryPedidos: React.FC = () => {
+  const { empleado } = useAuth();
   const [pedidos, setPedidos] = useState<Pedido[]>([]);
   const [pedidoDetalleVisible, setPedidoDetalleVisible] = useState< number | null >(null);
   const [filtroFecha, setFiltroFecha] = useState<string>("");
@@ -29,11 +31,12 @@ const DeliveryPedidos: React.FC = () => {
   useEffect(() => {
     const fetchPedidos = async () => {
       try {
-        const pedidosFromServer = await getAllPedidos();
-        setPedidos(pedidosFromServer);
+        if (empleado?.sucursal?.id) {
+          const pedidosFromServer = await getPedidosBySucursal(empleado.sucursal.id);
+          setPedidos(pedidosFromServer);
+        }
       } catch (error) {
         console.error("Error al obtener los pedidos:", error);
-        // Manejar el error, por ejemplo, mostrando un mensaje al usuario
       }
     };
 
@@ -113,7 +116,7 @@ const DeliveryPedidos: React.FC = () => {
             marginTop: 2,
             bgcolor: "#eee",
             boxShadow: 2,
-            maxHeight: '80vh',
+            maxHeight: '74vh',
             overflow: 'auto',
           }}
         >

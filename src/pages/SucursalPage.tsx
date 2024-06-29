@@ -100,14 +100,14 @@ const SucursalPage: React.FC = () => {
       <Typography variant="h4" gutterBottom>
         Gestión de Sucursales
       </Typography>
-      <Box sx={{ overflowY: "auto", maxHeight: "80vh", width: "100%" }}>
-        <Box width={1200} display="flex" alignItems="center" mb={2}>
+      <Box sx={{ overflowY: "auto", maxHeight: "70vh", width: "100%" }}>
+        <Box width={1500} display="flex" alignItems="center" mb={2}>
           <Grid container spacing={4}>
             {loading ? (
               <Typography variant="body1">Cargando...</Typography>
             ) : (
               sucursales.map((sucursal) => (
-                <Grid item key={sucursal.id} xs={12} sm={6} md={4} sx={{ maxWidth: "300px" }}>
+                <Grid item key={sucursal.id} xs={12} sm={6} md={3} sx={{ maxWidth: "300px" }}>
                   <Card
                     sx={{ width: '100%' }}
                     key={sucursal.id}
@@ -119,16 +119,17 @@ const SucursalPage: React.FC = () => {
                   >
                     <CardMedia
                       component="img"
-                      height="400"
+                      height="350"
                       image={
-                        sucursal.imagenesSucursal.length > 0
+                        sucursal.imagenesSucursal && sucursal.imagenesSucursal.length > 0
                           ? sucursal.imagenesSucursal[0].url
                           : "https://via.placeholder.com/150"
                       }
                       alt={sucursal.nombre}
                       style={{ opacity: sucursal.eliminado ? 0.2 : 1 }}
                     />
-                    <CardContent>
+
+                    <CardContent sx={{ zoom: '80%' }}>
                       <Typography
                         variant="h6"
                         style={{ fontSize: "28px", lineHeight: "1.2" }}
@@ -139,19 +140,24 @@ const SucursalPage: React.FC = () => {
                         variant="subtitle1"
                         style={{ fontSize: "18px", lineHeight: "2" }}
                       >
-                        {`${sucursal.domicilio.calle} ${sucursal.domicilio.numero}, Piso ${sucursal.domicilio.piso}, Dpto ${sucursal.domicilio.nroDpto}`}
+                        {sucursal.domicilio ? (
+                          `${sucursal.domicilio.calle} ${sucursal.domicilio.numero}, Piso ${sucursal.domicilio.piso}, Dpto ${sucursal.domicilio.nroDpto}`
+                        ) : (
+                          "Dirección no disponible"
+                        )}
+                      </Typography>
+
+                      <Typography
+                        variant="subtitle2"
+                        style={{ fontSize: "14px" }}
+                      >
+                        Código Postal: {sucursal.domicilio ? sucursal.domicilio.cp : 'No disponible'}
                       </Typography>
                       <Typography
                         variant="subtitle2"
                         style={{ fontSize: "14px" }}
                       >
-                        Código Postal: {sucursal.domicilio.cp}
-                      </Typography>
-                      <Typography
-                        variant="subtitle2"
-                        style={{ fontSize: "14px" }}
-                      >
-                        Localidad: {sucursal.domicilio.localidad.nombre}
+                        Localidad: {sucursal.domicilio && sucursal.domicilio.localidad ? sucursal.domicilio.localidad.nombre : 'No disponible'}
                       </Typography>
                     </CardContent>
                     <CardActions>

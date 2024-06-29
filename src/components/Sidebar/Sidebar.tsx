@@ -33,21 +33,69 @@ import { Rol } from "../../types/enums/Rol";
 const Sidebar: React.FC = () => {
   const navigate = useNavigate();
   const { cart } = useCarrito();
-  const { pedidos } = usePedidos();
+  const { pedidosBySucursal } = usePedidos();
   const { empleado } = useAuth();
   const [maxHeight, setMaxHeight] = useState("97vh");
+  const [cantidadPendientes, setCantidadPendientes] = useState(0);
+  const [cantidadEnPreparacion, setCantidadEnPreparacion] = useState(0);
+  const [cantidadEnDelivery, setCantidadEnDelivery] = useState(0);
+  const [cantidadParaEntregar, setCantidadParaEntregar] = useState(0);
+  const [cantidadEntregado, setCantidadEntregado] = useState(0);
+  const [cantidadCajero, setCantidadCajero] = useState(0);
 
-  // Función para contar la cantidad de pedidos en cada estado
-  const contarPedidosPorEstado = (estado: Estado): number => {
-    return pedidos.filter((pedido) => pedido.estado === estado).length;
+  // Función para contar la cantidad de pedidos en cada estado por sucursal
+  const contarPedidosPorEstadoYSucursal = async (estado: Estado) => {
+    if (!empleado?.sucursal) return;
+
+    try {
+      const pedidos = await pedidosBySucursal(empleado.sucursal.id);
+      const cantidad = pedidos.filter((pedido) => pedido.estado === estado).length;
+
+      switch (estado) {
+        case Estado.PENDIENTE:
+          setCantidadPendientes(cantidad);
+          break;
+        case Estado.PREPARACION:
+          setCantidadEnPreparacion(cantidad);
+          break;
+        case Estado.EN_DELIVERY:
+          setCantidadEnDelivery(cantidad);
+          break;
+        case Estado.LISTO_PARA_ENTREGA:
+          setCantidadParaEntregar(cantidad);
+          break;
+        case Estado.ENTREGADO:
+          setCantidadEntregado(cantidad);
+          break;
+        default:
+          break;
+      }
+    } catch (error) {
+      console.error(`Error al obtener pedidos por sucursal para estado ${estado}:`, error);
+    }
   };
 
-  // Calcula la cantidad de pedidos en cada estado
-  const cantidadPendientes = contarPedidosPorEstado(Estado.PENDIENTE);
-  const cantidadEnPreparacion = contarPedidosPorEstado(Estado.PREPARACION);
-  const cantidadEnDelivery = contarPedidosPorEstado(Estado.EN_DELIVERY);
-  const cantidadParaEntregar = contarPedidosPorEstado(Estado.LISTO_PARA_ENTREGA);
-  const cantidadCajero = cantidadPendientes + cantidadParaEntregar;
+  // Cargar cantidades al montar el componente o al cambiar la sucursal del empleado
+  useEffect(() => {
+    const estados = [
+      Estado.PENDIENTE,
+      Estado.PREPARACION,
+      Estado.EN_DELIVERY,
+      Estado.LISTO_PARA_ENTREGA,
+      Estado.ENTREGADO,
+    ];
+
+    const intervalId = setInterval(() => {
+      estados.forEach(contarPedidosPorEstadoYSucursal);
+    }, 1000);
+
+    return () => clearInterval(intervalId);
+  }, [empleado?.sucursal]); // Volver a cargar si cambia la sucursal del empleado
+
+  // Calcular cantidad total para Cajero Pedidos
+  useEffect(() => {
+    setCantidadCajero(cantidadPendientes + cantidadParaEntregar + cantidadEntregado);
+  }, [cantidadPendientes, cantidadParaEntregar, cantidadEntregado]);
 
   const cantidadTotal = cart.reduce((total, item) => total + item.cantidad, 0);
 
@@ -347,6 +395,23 @@ const Sidebar: React.FC = () => {
             </SidebarItem>
           </>
           )}
+          {empleado && empleado.tipoEmpleado === Rol.ADMIN && (
+            <SidebarItem icon={<AssignmentIcon />} text="Reportes">
+              <ListItem>
+                <Button
+                  disableRipple
+                  disableTouchRipple
+                  className="btn-list-sidebar"
+                  startIcon={<AssignmentIcon />}
+                  sx={buttonStyles}
+                  onClick={() => navigate("/reportes")}
+                >
+                  Reporte
+                  Estadistica
+                </Button>
+              </ListItem>
+            </SidebarItem>
+          )}
         </List>
         <List sx={{ height: 150 }} />
       </Box>
@@ -355,4 +420,3 @@ const Sidebar: React.FC = () => {
 };
 
 export default Sidebar;
-

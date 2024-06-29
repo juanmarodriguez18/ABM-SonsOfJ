@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import { TextField, Button, Typography, Container, Box, Alert } from '@mui/material';
+import { TextField, Button, Typography, Container, Box, Alert, IconButton, InputAdornment } from '@mui/material';
+import { Visibility, VisibilityOff } from '@mui/icons-material';
 
-const API_URL = import.meta.env.VITE_API_URL + '/auth/register'
+const API_URL = import.meta.env.VITE_API_URL + '/auth/register';
 
 const RegisterEmpleado: React.FC = () => {
     const navigate = useNavigate();
@@ -12,11 +13,18 @@ const RegisterEmpleado: React.FC = () => {
     const [telefono, setTelefono] = useState('');
     const [email, setEmail] = useState('');
     const [clave, setClave] = useState('');
+    const [confirmarClave, setConfirmarClave] = useState('');
     const [fechaNacimiento, setFechaNacimiento] = useState('');
     const [mensaje, setMensaje] = useState('');
+    const [mostrarClave, setMostrarClave] = useState(false);
+    const [mostrarConfirmarClave, setMostrarConfirmarClave] = useState(false);
 
     const handleRegister = async (e: React.FormEvent) => {
         e.preventDefault();
+        if (clave !== confirmarClave) {
+            setMensaje('Las contraseñas no coinciden');
+            return;
+        }
         try {
             const empleado = {
                 nombre,
@@ -28,12 +36,30 @@ const RegisterEmpleado: React.FC = () => {
                 tipoEmpleado: 'EMPLEADO_COMUN' // Se establece directamente el tipo de empleado
             };
             const response = await axios.post(API_URL, empleado);
-            alert('Empleado registrado exitosamente');
-            navigate('/loginEmpleado'); // Redirige a la página de login
+    
+            // Verificar el estado de la respuesta
+            if (response.status === 201) { // 201 Created
+                alert('Empleado registrado exitosamente');
+                navigate('/loginEmpleado'); // Redirige a la página de login
+            } else {
+                setMensaje('Error inesperado al registrar el empleado');
+            }
+    
+            // Acceder a los datos de la respuesta
+            console.log('Datos de la respuesta:', response.data);
+    
         } catch (error) {
-            setMensaje('Error al registrar el empleado');
+            // Manejar errores específicos de Axios
+            if (axios.isAxiosError(error)) {
+                console.error('Error de Axios:', error.response?.data);
+                setMensaje('Error de Axios al registrar el empleado');
+            } else {
+                console.error('Error desconocido:', error);
+                setMensaje('Error al registrar el empleado');
+            }
         }
     };
+    
 
     return (
         <Container component="main" maxWidth="xs">
@@ -105,11 +131,49 @@ const RegisterEmpleado: React.FC = () => {
                         fullWidth
                         name="clave"
                         label="Clave"
-                        type="password"
+                        type={mostrarClave ? 'text' : 'password'}
                         id="clave"
                         autoComplete="current-password"
                         value={clave}
                         onChange={(e) => setClave(e.target.value)}
+                        InputProps={{
+                            endAdornment: (
+                                <InputAdornment position="end">
+                                    <IconButton
+                                        aria-label="toggle password visibility"
+                                        onClick={() => setMostrarClave(!mostrarClave)}
+                                        edge="end"
+                                    >
+                                        {mostrarClave ? <VisibilityOff /> : <Visibility />}
+                                    </IconButton>
+                                </InputAdornment>
+                            )
+                        }}
+                    />
+                    <TextField
+                        variant="outlined"
+                        margin="normal"
+                        required
+                        fullWidth
+                        name="confirmarClave"
+                        label="Confirmar Clave"
+                        type={mostrarConfirmarClave ? 'text' : 'password'}
+                        id="confirmarClave"
+                        value={confirmarClave}
+                        onChange={(e) => setConfirmarClave(e.target.value)}
+                        InputProps={{
+                            endAdornment: (
+                                <InputAdornment position="end">
+                                    <IconButton
+                                        aria-label="toggle confirm password visibility"
+                                        onClick={() => setMostrarConfirmarClave(!mostrarConfirmarClave)}
+                                        edge="end"
+                                    >
+                                        {mostrarConfirmarClave ? <VisibilityOff /> : <Visibility />}
+                                    </IconButton>
+                                </InputAdornment>
+                            )
+                        }}
                     />
                     <TextField
                         variant="outlined"

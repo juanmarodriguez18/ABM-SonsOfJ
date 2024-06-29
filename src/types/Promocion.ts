@@ -9,8 +9,8 @@ export class Promocion extends Base {
     denominacion: string;
     fechaDesde: Date;
     fechaHasta: Date;
-    horaDesde: Date;
-    horaHasta: Date;
+    horaDesde: string;
+    horaHasta: string;
     descripcionDescuento: string;
     precioPromocional: number;
     tipoPromocion: TipoPromocion;
@@ -24,8 +24,8 @@ export class Promocion extends Base {
         denominacion: string = '',
         fechaDesde: Date = new Date(),
         fechaHasta: Date = new Date(),
-        horaDesde: Date = new Date(),
-        horaHasta: Date = new Date(),
+        horaDesde: string = '',
+        horaHasta: string = '',
         descripcionDescuento: string = '',
         precioPromocional: number = 0,
         tipoPromocion: TipoPromocion,

@@ -67,22 +67,22 @@ export const GrillaManufacturados: React.FC = () => {
         <SearchBar onSearch={setQuery} />
       </Box>
 
-      <Box sx={{ overflowY: 'auto', maxHeight: '80vh', width: '100%' }}>
+      <Box sx={{ overflowY: 'auto', maxHeight: '70vh', width: '100%' }}>
         <Box width={1500} display="flex" alignItems="center" mb={2}>
           <Grid container spacing={4}>
             {loading ? (
               <Typography variant="body1">Cargando...</Typography>
             ) : (
               filteredArticulos.map((articulo) => (
-                <Grid item key={articulo.id} xs={12} sm={6} md={4} sx={{ maxWidth: '300px' }}>
+                <Grid item key={articulo.id} xs={12} sm={6} md={3} sx={{ maxWidth: '300px' }}>
                   <Card sx={{ width: '100%' }}>
                     <CardMedia
                       component="img"
-                      height="300"
+                      height="250"
                       image={Array.from(articulo.imagenesArticulo.values())[0]?.url || ''}
                       alt={articulo.denominacion}
                     />
-                    <CardContent>
+                    <CardContent sx={{ zoom: '70%' }}>
                       <Typography gutterBottom variant="h5" component="div">
                         {articulo.denominacion}
                       </Typography>
@@ -93,23 +93,27 @@ export const GrillaManufacturados: React.FC = () => {
                         ${articulo.precioVenta}
                       </Typography>
                     </CardContent>
-                    <CardActions sx={{ justifyContent: 'left', marginLeft: 2, marginBottom: 4 }}>
-                      <Link to={`/articulos/${articulo.id}`}>
-                        <InfoIcon
-                          sx={{
-                            bgcolor: "#FB9553",
-                            color: "#FFEDC2",
-                            borderRadius: "50%",
-                            width: 40,
-                            marginRight: 2,
-                            height: 40,
-                            p: 0.1,
-                            "&:hover": {
-                              bgcolor: "#FB5353",
-                            },
-                          }}
-                        />
-                      </Link>
+                    <CardActions sx={{ zoom: '70%', justifyContent: 'left', marginLeft: 2, marginBottom: 4 }}>
+                      {'esParaElaborar' in articulo ? (
+                        <div className="espacio" style={{ marginLeft: 60 }}/>
+                      ) : (
+                        <Link to={`/articulos/${articulo.id}`}>
+                          <InfoIcon
+                            sx={{
+                              bgcolor: "#FB9553",
+                              color: "#FFEDC2",
+                              borderRadius: "50%",
+                              width: 40,
+                              marginRight: 2,
+                              height: 40,
+                              p: 0.1,
+                              "&:hover": {
+                                bgcolor: "#FB5353",
+                              },
+                            }}
+                          />
+                        </Link>
+                      )}
                       {cart.find(item => item.articulo.id === articulo.id)?.cantidad ? (
                         <div className="cantidad-carrito" style={{ marginLeft: 190, display: 'flex', alignItems: 'center' }}>
                           <IconButton

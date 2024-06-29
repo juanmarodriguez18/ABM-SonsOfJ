@@ -14,7 +14,7 @@ import CocineroPedidos from "./pages/Cocinero/CocineroPedidos";
 import DeliveryPedidos from "./pages/Delivery/DeliveryPedidos";
 import CategoriaPage from "./pages/CategoriaPage";
 import SucursalPage from "./pages/SucursalPage";
-import  {RutaPrivada}  from "./components/ControlAcceso/RutaPrivada";
+import { RutaPrivada } from "./components/ControlAcceso/RutaPrivada";
 import RolEmpleado from "./components/ControlAcceso/RolEmpleado";
 import { Rol } from './types/enums/Rol';
 import LoginEmpleado from "./components/ControlAcceso/LoginEmpleado";
@@ -23,6 +23,8 @@ import Header from "./components/Header/Header";
 import Home from "./pages/Home";
 import PerfilEmpleado from "./pages/Empleado/PerfilEmpleado";
 import GrillaEmpleados from "./pages/Empleado/GrillaEmpleados";
+import ReportePage from "./pages/Reportes/ReportePage"; // Asegúrate de importar ReportePage
+import DetallesPromo from "./components/Promocion/DetallesPromo";
 
 function App() {
   return (
@@ -55,6 +57,10 @@ function App() {
           <Route path="/articulos/:id" element={<ArticuloDetalle />} />
         </Route>
 
+        <Route element={<RolEmpleado rol={[Rol.ADMIN, Rol.COCINERO]} />}>
+          <Route path="/promociones/:id" element={<DetallesPromo />} />
+        </Route>
+
         <Route element={<RolEmpleado rol={[Rol.ADMIN]} />}>
           <Route path="/insumos" element={<InsumoPage />} />
         </Route>
@@ -62,6 +68,7 @@ function App() {
         <Route element={<RolEmpleado rol={[Rol.ADMIN]} />}>
           <Route path="/unidades-medida" element={<UnidadesMedidaPage />} />
         </Route>
+        
         <Route element={<RolEmpleado rol={[Rol.ADMIN]} />}>
           <Route path="/categorias" element={<CategoriaPage />} />
         </Route>
@@ -94,13 +101,15 @@ function App() {
           <Route path="/pedidos" element={<RutaPrivada><PedidosPage /></RutaPrivada>} />
         </Route>
 
+        <Route element={<RolEmpleado rol={[Rol.ADMIN]} />}>
+          <Route path="/reportes" element={<ReportePage />} />
+        </Route>
+
         <Route path="/loginEmpleado" element={<LoginEmpleado />} />
         <Route path="/registerEmpleado" element={<RegisterEmpleado />} />
-
       </Routes>
     </Layout>
   );
 }
 
 export default App;
-

@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from './AuthContext';
-import { TextField, Button, Typography, Container, Box, Alert } from '@mui/material';
+import { TextField, Button, Typography, Container, Box, Alert, InputAdornment, IconButton } from '@mui/material';
+import { Visibility, VisibilityOff } from '@mui/icons-material';
 
 const Login: React.FC = () => {
     const { login } = useAuth();
@@ -9,6 +10,7 @@ const Login: React.FC = () => {
     const [clave, setClave] = useState('');
     const [error, setError] = useState('');
     const navigate = useNavigate();
+    const [mostrarClave, setMostrarClave] = useState(false);
 
     const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -18,7 +20,7 @@ const Login: React.FC = () => {
             navigate('/');
             window.location.reload();
         } catch (error) {
-            setError('Usuario y/o Clave incorrectos, vuelva a intentar');
+            setError('Email y/o Clave incorrectos, vuelva a intentar');
         }
     };
 
@@ -56,11 +58,24 @@ const Login: React.FC = () => {
                         fullWidth
                         name="clave"
                         label="Clave"
-                        type="password"
+                        type={mostrarClave ? 'text' : 'password'}
                         id="clave"
                         autoComplete="current-password"
                         value={clave}
                         onChange={(e) => setClave(e.target.value)}
+                        InputProps={{
+                            endAdornment: (
+                                <InputAdornment position="end">
+                                    <IconButton
+                                        aria-label="toggle password visibility"
+                                        onClick={() => setMostrarClave(!mostrarClave)}
+                                        edge="end"
+                                    >
+                                        {mostrarClave ? <VisibilityOff /> : <Visibility />}
+                                    </IconButton>
+                                </InputAdornment>
+                            )
+                        }}
                     />
                     <Button
                         type="submit"
