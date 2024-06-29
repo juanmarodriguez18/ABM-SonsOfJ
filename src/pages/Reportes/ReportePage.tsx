@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { Box, Typography, Button, TextField, Grid, Paper, Modal, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
 import axios from 'axios';
+import { Chart } from 'react-google-charts';
+import '../../styles/ReportePage.css';  // Asegúrate de que la ruta sea correcta
 
 const ReportePage: React.FC = () => {
   const [fechaInicio, setFechaInicio] = useState('');
@@ -15,6 +17,10 @@ const ReportePage: React.FC = () => {
   const [openIngresosDiarios, setOpenIngresosDiarios] = useState(false);
   const [openIngresosMensuales, setOpenIngresosMensuales] = useState(false);
   const [openGanancia, setOpenGanancia] = useState(false);
+  const [openGraficoRanking, setOpenGraficoRanking] = useState(false);
+  const [openGraficoPedidosCliente, setOpenGraficoPedidosCliente] = useState(false);
+  const [openGraficoIngresos, setOpenGraficoIngresos] = useState(false);
+  const [openGraficoGanancia, setOpenGraficoGanancia] = useState(false);
 
   const handleGenerarRanking = async () => {
     try {
@@ -191,6 +197,73 @@ const ReportePage: React.FC = () => {
     }
   };
 
+  const handleOpenGraficoRanking = async () => {
+    try {
+      const response = await axios.get('http://localhost:8080/api/reportes/ranking-comidas', {
+        params: {
+          fechaInicio,
+          fechaFin
+        }
+      });
+      setRankingComidas(response.data);
+      setOpenGraficoRanking(true);
+    } catch (error) {
+      console.error('Error al generar el gráfico de ranking de comidas', error);
+    }
+  };
+
+  const handleOpenGraficoPedidosCliente = async () => {
+    try {
+      const response = await axios.get('http://localhost:8080/api/reportes/cantidad-pedidos-cliente', {
+        params: {
+          fechaInicio,
+          fechaFin
+        }
+      });
+      setPedidosPorCliente(response.data);
+      setOpenGraficoPedidosCliente(true);
+    } catch (error) {
+      console.error('Error al generar el gráfico de pedidos por cliente', error);
+    }
+  };
+
+  const handleOpenGraficoIngresos = async () => {
+    try {
+      const responseDiarios = await axios.get('http://localhost:8080/api/reportes/ingresos-diarios', {
+        params: {
+          fechaInicio,
+          fechaFin
+        }
+      });
+      const responseMensuales = await axios.get('http://localhost:8080/api/reportes/ingresos-mensuales', {
+        params: {
+          fechaInicio,
+          fechaFin
+        }
+      });
+      setIngresosDiarios(responseDiarios.data);
+      setIngresosMensuales(responseMensuales.data);
+      setOpenGraficoIngresos(true);
+    } catch (error) {
+      console.error('Error al generar los gráficos de ingresos', error);
+    }
+  };
+
+  const handleOpenGraficoGanancia = async () => {
+    try {
+      const response = await axios.get('http://localhost:8080/api/reportes/ganancia', {
+        params: {
+          fechaInicio,
+          fechaFin
+        }
+      });
+      setGanancia(response.data);
+      setOpenGraficoGanancia(true);
+    } catch (error) {
+      console.error('Error al generar el gráfico de ganancia', error);
+    }
+  };
+
   const handleCloseRanking = () => {
     setOpenRanking(false);
   };
@@ -211,6 +284,22 @@ const ReportePage: React.FC = () => {
     setOpenGanancia(false);
   };
 
+  const handleCloseGraficoRanking = () => {
+    setOpenGraficoRanking(false);
+  };
+
+  const handleCloseGraficoPedidosCliente = () => {
+    setOpenGraficoPedidosCliente(false);
+  };
+
+  const handleCloseGraficoIngresos = () => {
+    setOpenGraficoIngresos(false);
+  };
+
+  const handleCloseGraficoGanancia = () => {
+    setOpenGraficoGanancia(false);
+  };
+
   const formatDate = (epochTime: number) => {
     const date = new Date(epochTime);
     return date.toLocaleDateString();
@@ -218,10 +307,6 @@ const ReportePage: React.FC = () => {
 
   return (
     <Box sx={{ p: 3 }}>
-      <Typography variant="h4" gutterBottom>
-        Reportes
-      </Typography>
-
       <Grid container spacing={2}>
         {/* Ranking de comidas más pedidas */}
         <Grid item xs={12} md={6}>
@@ -248,11 +333,14 @@ const ReportePage: React.FC = () => {
               onChange={(e) => setFechaFin(e.target.value)}
             />
             <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
-              <Button variant="contained" color="primary" onClick={handleGenerarRanking}>
+              <Button sx={{ backgroundColor: '#1976d2', color: 'white', '&:hover': { backgroundColor: '#115293' } }} onClick={handleGenerarRanking}>
                 Generar Reporte
               </Button>
-              <Button variant="outlined" color="primary" onClick={handleDescargarExcelRanking}>
+              <Button className="report-button excel" onClick={handleDescargarExcelRanking}>
                 Exportar a Excel
+              </Button>
+              <Button className="report-button graph" onClick={handleOpenGraficoRanking}>
+                Gráfico
               </Button>
             </Box>
           </Paper>
@@ -283,17 +371,20 @@ const ReportePage: React.FC = () => {
               onChange={(e) => setFechaFin(e.target.value)}
             />
             <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
-              <Button variant="contained" color="primary" onClick={handleGenerarIngresosDiarios}>
+              <Button sx={{ backgroundColor: '#1976d2', color: 'white', '&:hover': { backgroundColor: '#115293' } }} onClick={handleGenerarIngresosDiarios}>
                 Reporte Diario
               </Button>
-              <Button variant="contained" color="primary" onClick={handleGenerarIngresosMensuales}>
+              <Button sx={{ backgroundColor: '#1976d2', color: 'white', '&:hover': { backgroundColor: '#115293' } }} onClick={handleGenerarIngresosMensuales}>
                 Reporte Mensual
               </Button>
-              <Button variant="outlined" color="primary" onClick={handleDescargarExcelIngresosDiarios}>
+              <Button className="report-button excel" onClick={handleDescargarExcelIngresosDiarios}>
                 Excel Diario
               </Button>
-              <Button variant="outlined" color="primary" onClick={handleDescargarExcelIngresosMensuales}>
+              <Button className="report-button excel" onClick={handleDescargarExcelIngresosMensuales}>
                 Excel Mensual
+              </Button>
+              <Button className="report-button graph" onClick={handleOpenGraficoIngresos}>
+                Gráfico
               </Button>
             </Box>
           </Paper>
@@ -324,11 +415,14 @@ const ReportePage: React.FC = () => {
               onChange={(e) => setFechaFin(e.target.value)}
             />
             <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
-              <Button variant="contained" color="primary" onClick={handleGenerarPedidosPorCliente}>
+              <Button sx={{ backgroundColor: '#1976d2', color: 'white', '&:hover': { backgroundColor: '#115293' } }} onClick={handleGenerarPedidosPorCliente}>
                 Generar Reporte
               </Button>
-              <Button variant="outlined" color="primary" onClick={handleDescargarExcelPedidosPorCliente}>
+              <Button className="report-button excel" onClick={handleDescargarExcelPedidosPorCliente}>
                 Exportar a Excel
+              </Button>
+              <Button className="report-button graph" onClick={handleOpenGraficoPedidosCliente}>
+                Gráfico
               </Button>
             </Box>
           </Paper>
@@ -359,11 +453,14 @@ const ReportePage: React.FC = () => {
               onChange={(e) => setFechaFin(e.target.value)}
             />
             <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
-              <Button variant="contained" color="primary" onClick={handleGenerarGanancia}>
+              <Button sx={{ backgroundColor: '#1976d2', color: 'white', '&:hover': { backgroundColor: '#115293' } }} onClick={handleGenerarGanancia}>
                 Generar Reporte
               </Button>
-              <Button variant="outlined" color="primary" onClick={handleDescargarExcelGanancia}>
+              <Button className="report-button excel" onClick={handleDescargarExcelGanancia}>
                 Exportar a Excel
+              </Button>
+              <Button className="report-button graph" onClick={handleOpenGraficoGanancia}>
+                Gráfico
               </Button>
             </Box>
           </Paper>
@@ -371,7 +468,7 @@ const ReportePage: React.FC = () => {
       </Grid>
 
       <Modal open={openRanking} onClose={handleCloseRanking}>
-        <Box sx={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', width: 400, bgcolor: 'background.paper', border: '2px solid #000', boxShadow: 24, p: 4 }}>
+        <Box className="modal-box">
           <Typography variant="h6" component="h2">
             Ranking de Comidas Más Pedidas
           </Typography>
@@ -398,7 +495,7 @@ const ReportePage: React.FC = () => {
       </Modal>
 
       <Modal open={openPedidosCliente} onClose={handleClosePedidosCliente}>
-        <Box sx={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', width: 400, bgcolor: 'background.paper', border: '2px solid #000', boxShadow: 24, p: 4 }}>
+        <Box className="modal-box">
           <Typography variant="h6" component="h2">
             Cantidad de Pedidos por Cliente
           </Typography>
@@ -427,7 +524,7 @@ const ReportePage: React.FC = () => {
       </Modal>
 
       <Modal open={openIngresosDiarios} onClose={handleCloseIngresosDiarios}>
-        <Box sx={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', width: 400, bgcolor: 'background.paper', border: '2px solid #000', boxShadow: 24, p: 4 }}>
+        <Box className="modal-box">
           <Typography variant="h6" component="h2">
             Ingresos Diarios
           </Typography>
@@ -454,7 +551,7 @@ const ReportePage: React.FC = () => {
       </Modal>
 
       <Modal open={openIngresosMensuales} onClose={handleCloseIngresosMensuales}>
-        <Box sx={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', width: 400, bgcolor: 'background.paper', border: '2px solid #000', boxShadow: 24, p: 4 }}>
+        <Box className="modal-box">
           <Typography variant="h6" component="h2">
             Ingresos Mensuales
           </Typography>
@@ -483,7 +580,7 @@ const ReportePage: React.FC = () => {
       </Modal>
 
       <Modal open={openGanancia} onClose={handleCloseGanancia}>
-        <Box sx={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', width: 400, bgcolor: 'background.paper', border: '2px solid #000', boxShadow: 24, p: 4 }}>
+        <Box className="modal-box">
           <Typography variant="h6" component="h2">
             Monto de Ganancia
           </Typography>
@@ -502,6 +599,84 @@ const ReportePage: React.FC = () => {
             </Table>
           </TableContainer>
           <Button onClick={handleCloseGanancia} sx={{ mt: 2 }}>Cerrar</Button>
+        </Box>
+      </Modal>
+
+      <Modal open={openGraficoRanking} onClose={handleCloseGraficoRanking}>
+        <Box className="modal-box">
+          <Typography variant="h6" component="h2">
+            Gráfico de Ranking de Comidas
+          </Typography>
+          <Chart
+            chartType="PieChart"
+            data={[['Comida', 'Pedidos'], ...rankingComidas.map((row) => [row[0], row[1]])]}
+            options={{ title: 'Ranking de Comidas Más Pedidas' }}
+            width="100%"
+            height="400px"
+          />
+          <Button onClick={handleCloseGraficoRanking} sx={{ mt: 2 }}>Cerrar</Button>
+        </Box>
+      </Modal>
+
+      <Modal open={openGraficoPedidosCliente} onClose={handleCloseGraficoPedidosCliente}>
+        <Box className="modal-box">
+          <Typography variant="h6" component="h2">
+            Gráfico de Pedidos por Cliente
+          </Typography>
+          <Chart
+            chartType="PieChart"
+            data={[['Cliente', 'Pedidos'], ...pedidosPorCliente.map((row) => [`${row[0]} ${row[1]}`, row[2]])]}
+            options={{ title: 'Pedidos por Cliente' }}
+            width="100%"
+            height="400px"
+          />
+          <Button onClick={handleCloseGraficoPedidosCliente} sx={{ mt: 2 }}>Cerrar</Button>
+        </Box>
+      </Modal>
+
+      <Modal open={openGraficoIngresos} onClose={handleCloseGraficoIngresos}>
+        <Box className="modal-box" sx={{ display: 'flex', gap: 2 }}>
+          <Box>
+            <Typography variant="h6" component="h2">
+              Gráfico de Ingresos Diarios
+            </Typography>
+            <Chart
+              chartType="ColumnChart"
+              data={[['Día', 'Ingresos'], ...ingresosDiarios.map((row) => [formatDate(row[0]), row[1]])]}
+              options={{ title: 'Ingresos Diarios' }}
+              width="100%"
+              height="400px"
+            />
+          </Box>
+          <Box>
+            <Typography variant="h6" component="h2">
+              Gráfico de Ingresos Mensuales
+            </Typography>
+            <Chart
+              chartType="ColumnChart"
+              data={[['Mes', 'Ingresos'], ...ingresosMensuales.map((row) => [`${row[0]}-${row[1]}`, row[2]])]}
+              options={{ title: 'Ingresos Mensuales' }}
+              width="100%"
+              height="400px"
+            />
+          </Box>
+          <Button onClick={handleCloseGraficoIngresos} sx={{ mt: 2 }}>Cerrar</Button>
+        </Box>
+      </Modal>
+
+      <Modal open={openGraficoGanancia} onClose={handleCloseGraficoGanancia}>
+        <Box className="modal-box">
+          <Typography variant="h6" component="h2">
+            Gráfico de Ganancia
+          </Typography>
+          <Chart
+            chartType="BarChart"
+            data={[['Fecha', 'Ganancia'], ['Ganancia', ganancia]]}
+            options={{ title: 'Monto de Ganancia' }}
+            width="100%"
+            height="400px"
+          />
+          <Button onClick={handleCloseGraficoGanancia} sx={{ mt: 2 }}>Cerrar</Button>
         </Box>
       </Modal>
     </Box>

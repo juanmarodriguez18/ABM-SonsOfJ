@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios, { AxiosResponse } from "axios";
 import { Pedido } from "../types/Pedido";
 import { Factura } from "../types/Factura";
 
@@ -74,7 +74,7 @@ export const actualizarPedido = async (id: number, datosActualizados: any) => {
       console.error("Error al actualizar un pedido:", error);
       throw error;
     }
-  };
+};
 
 export const facturarPedido = async (pedido: Pedido, email: string) => {
     try {
@@ -105,5 +105,27 @@ export const getPedidosBySucursal = async (sucursalId: number): Promise<Pedido[]
       console.error(`Error fetching pedidos para sucursal con ID ${sucursalId}:`, error);
       throw error;
     }
-  };
-  
+};
+
+// Función para obtener pedidos por rango de fechas
+export async function getPedidosByFecha(fechaInicio: string, fechaFin: string): Promise<Pedido[]> {
+    try {
+        const response: AxiosResponse<any, any> = await axios.get(`${urlPedidos}/filtrar`, {
+            params: {
+                fechaInicio,
+                fechaFin
+            },
+            headers: {
+                'Content-Type': 'application/json',
+                'Access-Control-Allow-Origin': '*'
+            }
+        });
+        if (response.status !== 200) {
+            throw new Error('Error al obtener los pedidos por fecha');
+        }
+        return response.data;
+    } catch (error) {
+        console.error('Error en getPedidosByFecha:', error);
+        throw new Error('Error al obtener los pedidos por fecha. Por favor, inténtalo de nuevo más tarde.');
+    }
+}
