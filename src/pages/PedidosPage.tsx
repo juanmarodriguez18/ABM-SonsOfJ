@@ -253,7 +253,7 @@ const PedidosPage: React.FC = () => {
                 </TableRow>
               </React.Fragment>
             ))}
-                    </TableBody>
+          </TableBody>
         </Table>
       </TableContainer>
 
@@ -264,7 +264,7 @@ const PedidosPage: React.FC = () => {
         aria-describedby="modal-modal-description"
       >
         <Box sx={{ ...modalStyle, width: 800 }}> {/* Ancho del modal ajustado */}
-          <Typography id="modal-modal-title" variant="h6" component="h2">
+        <Typography id="modal-modal-title" variant="h6" component="h2">
             Listado de pedidos por fecha
           </Typography>
           <Box display="flex" alignItems="center" mb={2}>
@@ -284,6 +284,7 @@ const PedidosPage: React.FC = () => {
                 <MenuItem value="CANCELADO">Cancelado</MenuItem>
                 <MenuItem value="LISTO_PARA_ENTREGA">Listo para entrega</MenuItem>
                 <MenuItem value="ENTREGADO">Entregado</MenuItem>
+                <MenuItem value="PREPARACION">Preparación</MenuItem> {/* Añadido el estado "PREPARACION" */}
               </Select>
             </FormControl>
           </Box>
@@ -338,4 +339,3 @@ const modalStyle = {
 };
 
 export default PedidosPage;
-
