@@ -91,6 +91,7 @@ const CajeroPedidos: React.FC = () => {
         prevPedidos.map((p) => (p.id === pedido.id ? pedidoActualizado : p))
       );
       if(nuevoEstado === Estado.FACTURADO) {
+        await actualizarPedido(pedido.id, pedidoActualizado);
         await facturarPedido(pedido, pedido.cliente.email);
       } 
     } catch (error) {

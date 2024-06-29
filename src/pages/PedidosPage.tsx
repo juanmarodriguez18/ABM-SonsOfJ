@@ -23,8 +23,9 @@ import {
 import { KeyboardArrowDown, KeyboardArrowUp } from "@mui/icons-material";
 import { format } from "date-fns";
 import { Pedido } from "../types/Pedido";
-import { getAllPedidos, getPedidosByFecha } from "../services/PedidoService";
+import { getAllPedidos, getPedidosByFecha, descargarFactura } from "../services/PedidoService";
 import axios from "axios";
+import { Estado } from "../types/enums/Estado";
 
 const PedidosPage: React.FC = () => {
   const [pedidos, setPedidos] = useState<Pedido[]>([]);
@@ -34,6 +35,8 @@ const PedidosPage: React.FC = () => {
   const [filtroEstado, setFiltroEstado] = useState<string>("");
   const [modalOpen, setModalOpen] = useState(false);
   const [filteredPedidos, setFilteredPedidos] = useState<Pedido[]>([]);
+  const [filtroFecha, setFiltroFecha] = useState<string>("");
+  const [filtroCodigo, setFiltroCodigo] = useState<string>("");
 
   useEffect(() => {
     const fetchPedidos = async () => {
@@ -154,16 +157,16 @@ const PedidosPage: React.FC = () => {
         component={Paper}
         sx={{
           borderRadius: 8,
-          width: "100%",
+          width: '100%',
           marginTop: 2,
-          bgcolor: "#eee",
+          bgcolor: '#eee',
           boxShadow: 2,
-          maxHeight: "74vh",
-          overflow: "auto",
+          maxHeight: '74vh',
+          overflow: 'auto',
         }}
       >
         <Table sx={{ minWidth: 700 }}>
-          <TableHead sx={{ bgcolor: "#aaa" }}>
+          <TableHead sx={{ bgcolor: '#aaa' }}>
             <TableRow>
               <TableCell align="center">Código</TableCell>
               <TableCell align="center">Total</TableCell>
@@ -171,17 +174,18 @@ const PedidosPage: React.FC = () => {
               <TableCell align="center">Tipo Envío</TableCell>
               <TableCell align="center">Fecha</TableCell>
               <TableCell align="center">Detalles</TableCell>
+              <TableCell align="center"></TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            {pedidos.map((pedido) => (
+            {filteredPedidosByEstado.map((pedido) => (
               <React.Fragment key={pedido.id}>
                 <TableRow>
                   <TableCell align="center">{pedido.id}</TableCell>
                   <TableCell align="center">${pedido.total}</TableCell>
                   <TableCell align="center">{pedido.estado}</TableCell>
                   <TableCell align="center">{pedido.tipoEnvio}</TableCell>
-                  <TableCell align="center">{format(new Date(pedido.fechaPedido), "dd/MM/yyyy")}</TableCell>
+                  <TableCell align="center">{format(new Date(pedido.fechaPedido), 'dd/MM/yyyy')}</TableCell>
                   <TableCell align="center">
                     <IconButton
                       aria-label="expand row"
@@ -197,12 +201,8 @@ const PedidosPage: React.FC = () => {
                   </TableCell>
                 </TableRow>
                 <TableRow>
-                  <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
-                    <Collapse
-                      in={pedidoDetalleVisible === pedido.id}
-                      timeout="auto"
-                      unmountOnExit
-                    >
+                  <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={7}>
+                    <Collapse in={pedidoDetalleVisible === pedido.id} timeout="auto" unmountOnExit>
                       <Box margin={1}>
                         <Typography variant="h6" gutterBottom component="div">
                           Detalles del Pedido
@@ -264,8 +264,7 @@ const PedidosPage: React.FC = () => {
         open={modalOpen}
         onClose={handleCloseModal}
         aria-labelledby="modal-modal-title"
-        aria-describedby="modal-modal
--description"
+        aria-describedby="modal-modal-description"
       >
         <Box sx={{ ...modalStyle, width: 800 }}> {/* Ancho del modal ajustado */}
           <Box
@@ -315,7 +314,7 @@ const PedidosPage: React.FC = () => {
                     <TableCell align="center">${pedido.total}</TableCell>
                     <TableCell align="center">{pedido.estado}</TableCell>
                     <TableCell align="center">{pedido.tipoEnvio}</TableCell>
-                    <TableCell align="center">{format(new Date(pedido.fechaPedido), "dd/MM/yyyy")}</TableCell>
+                    <TableCell align="center">{format(new Date(pedido.fechaPedido), 'dd/MM/yyyy')}</TableCell>
                   </TableRow>
                 ))}
               </TableBody>
