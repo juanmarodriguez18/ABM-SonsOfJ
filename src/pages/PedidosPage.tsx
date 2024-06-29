@@ -13,7 +13,12 @@ import {
   Box,
   TextField,
   Button,
-  Modal
+  Modal,
+  MenuItem,
+  Select,
+  FormControl,
+  InputLabel,
+  SelectChangeEvent, // Importar el tipo SelectChangeEvent
 } from "@mui/material";
 import { KeyboardArrowDown, KeyboardArrowUp } from "@mui/icons-material";
 import { format } from "date-fns";
@@ -26,6 +31,7 @@ const PedidosPage: React.FC = () => {
   const [pedidoDetalleVisible, setPedidoDetalleVisible] = useState<number | null>(null);
   const [filtroFechaInicio, setFiltroFechaInicio] = useState<string>("");
   const [filtroFechaFin, setFiltroFechaFin] = useState<string>("");
+  const [filtroEstado, setFiltroEstado] = useState<string>("");
   const [modalOpen, setModalOpen] = useState(false);
   const [filteredPedidos, setFilteredPedidos] = useState<Pedido[]>([]);
 
@@ -58,6 +64,10 @@ const PedidosPage: React.FC = () => {
     setFiltroFechaFin(event.target.value);
   };
 
+  const handleEstadoChange = (event: SelectChangeEvent<string>) => {
+    setFiltroEstado(event.target.value as string);
+  };
+
   const handleBuscarClick = async () => {
     if (filtroFechaInicio && filtroFechaFin) {
       try {
@@ -81,7 +91,8 @@ const PedidosPage: React.FC = () => {
       const response = await axios.get(`${import.meta.env.VITE_API_URL}/pedidos/export/excel`, {
         params: {
           fechaInicio: filtroFechaInicio,
-          fechaFin: filtroFechaFin
+          fechaFin: filtroFechaFin,
+          estado: filtroEstado // Incluyendo el estado en los parámetros de la solicitud
         },
         responseType: 'blob'
       });
@@ -96,6 +107,10 @@ const PedidosPage: React.FC = () => {
       console.error("Error al exportar a Excel:", error);
     }
   };
+
+  const filteredPedidosByEstado = filtroEstado
+    ? filteredPedidos.filter(pedido => pedido.estado === filtroEstado)
+    : filteredPedidos;
 
   return (
     <Box p={3}>
@@ -238,7 +253,7 @@ const PedidosPage: React.FC = () => {
                 </TableRow>
               </React.Fragment>
             ))}
-          </TableBody>
+                    </TableBody>
         </Table>
       </TableContainer>
 
@@ -252,6 +267,26 @@ const PedidosPage: React.FC = () => {
           <Typography id="modal-modal-title" variant="h6" component="h2">
             Listado de pedidos por fecha
           </Typography>
+          <Box display="flex" alignItems="center" mb={2}>
+            <FormControl variant="outlined" size="small" style={{ marginRight: 10, minWidth: 150 }}>
+              <InputLabel id="filtro-estado-label">Estado</InputLabel>
+              <Select
+                labelId="filtro-estado-label"
+                id="filtro-estado"
+                value={filtroEstado}
+                onChange={handleEstadoChange}
+                label="Estado"
+              >
+                <MenuItem value="">
+                  <em>Todos</em>
+                </MenuItem>
+                <MenuItem value="PENDIENTE">Pendiente</MenuItem>
+                <MenuItem value="CANCELADO">Cancelado</MenuItem>
+                <MenuItem value="LISTO_PARA_ENTREGA">Listo para entrega</MenuItem>
+                <MenuItem value="ENTREGADO">Entregado</MenuItem>
+              </Select>
+            </FormControl>
+          </Box>
           <TableContainer component={Paper}>
             <Table>
               <TableHead>
@@ -261,10 +296,10 @@ const PedidosPage: React.FC = () => {
                   <TableCell align="center">Estado</TableCell>
                   <TableCell align="center">Tipo Envío</TableCell>
                   <TableCell align="center">Fecha</TableCell>
-                  </TableRow>
+                </TableRow>
               </TableHead>
               <TableBody>
-                {filteredPedidos.map((pedido) => (
+                {filteredPedidosByEstado.map((pedido) => (
                   <TableRow key={pedido.id}>
                     <TableCell align="center">{pedido.id}</TableCell>
                     <TableCell align="center">${pedido.total}</TableCell>
