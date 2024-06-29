@@ -2,12 +2,12 @@ import React, { useState } from 'react';
 import { Box, Typography, Button, TextField, Grid, Paper, Modal, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
 import axios from 'axios';
 import { Chart } from 'react-google-charts';
-import '../../styles/ReportePage.css';  // Asegúrate de que la ruta sea correcta
+import '../../styles/ReportePage.css';
 
 const ReportePage: React.FC = () => {
   const [fechaInicio, setFechaInicio] = useState('');
   const [fechaFin, setFechaFin] = useState('');
-  const [rankingComidas, setRankingComidas] = useState([]);
+  const [rankingComidas, setRankingComidas] = useState<[string, number][]>([]);
   const [pedidosPorCliente, setPedidosPorCliente] = useState([]);
   const [ingresosDiarios, setIngresosDiarios] = useState([]);
   const [ingresosMensuales, setIngresosMensuales] = useState([]);
@@ -22,6 +22,10 @@ const ReportePage: React.FC = () => {
   const [openGraficoIngresos, setOpenGraficoIngresos] = useState(false);
   const [openGraficoGanancia, setOpenGraficoGanancia] = useState(false);
 
+  const filterRankingData = (data: [string | null, number][]): [string, number][] => {
+    return data.filter((item): item is [string, number] => item[0] !== null);
+  };
+
   const handleGenerarRanking = async () => {
     try {
       const response = await axios.get('http://localhost:8080/api/reportes/ranking-comidas', {
@@ -30,16 +34,33 @@ const ReportePage: React.FC = () => {
           fechaFin
         }
       });
-      setRankingComidas(response.data);
+      console.log("Datos recibidos para el ranking de comidas:", response.data);
+      setRankingComidas(filterRankingData(response.data));
       setOpenRanking(true);
     } catch (error) {
       console.error('Error al generar el ranking', error);
     }
   };
 
-  const handleDescargarExcelRanking = async () => {
+  const handleOpenGraficoRanking = async () => {
     try {
-      const response = await axios.get('http://localhost:8080/api/reportes/excel/ranking-comidas', {
+      const response = await axios.get('http://localhost:8080/api/reportes/ranking-comidas', {
+        params: {
+          fechaInicio,
+          fechaFin
+        }
+      });
+      console.log("Datos preparados para el gráfico de ranking de comidas:", response.data);
+      setRankingComidas(filterRankingData(response.data));
+      setOpenGraficoRanking(true);
+    } catch (error) {
+      console.error('Error al generar el gráfico de ranking de comidas', error);
+    }
+  };
+
+  const handleDescargarExcel = async (endpoint: string, filenamePrefix: string) => {
+    try {
+      const response = await axios.get(`http://localhost:8080/api/reportes/excel/${endpoint}`, {
         params: {
           fechaInicio,
           fechaFin
@@ -49,11 +70,12 @@ const ReportePage: React.FC = () => {
       const url = window.URL.createObjectURL(new Blob([response.data]));
       const link = document.createElement('a');
       link.href = url;
-      link.setAttribute('download', 'ranking_comidas.xlsx');
+      const filename = `${filenamePrefix}_${fechaInicio}_a_${fechaFin}.xlsx`;
+      link.setAttribute('download', filename);
       document.body.appendChild(link);
       link.click();
     } catch (error) {
-      console.error('Error al descargar el Excel', error);
+      console.error(`Error al descargar el Excel de ${filenamePrefix}`, error);
     }
   };
 
@@ -72,26 +94,6 @@ const ReportePage: React.FC = () => {
     }
   };
 
-  const handleDescargarExcelPedidosPorCliente = async () => {
-    try {
-      const response = await axios.get('http://localhost:8080/api/reportes/excel/pedidos-cliente', {
-        params: {
-          fechaInicio,
-          fechaFin
-        },
-        responseType: 'blob'
-      });
-      const url = window.URL.createObjectURL(new Blob([response.data]));
-      const link = document.createElement('a');
-      link.href = url;
-      link.setAttribute('download', 'pedidos_cliente.xlsx');
-      document.body.appendChild(link);
-      link.click();
-    } catch (error) {
-      console.error('Error al descargar el Excel', error);
-    }
-  };
-
   const handleGenerarIngresosDiarios = async () => {
     try {
       const response = await axios.get('http://localhost:8080/api/reportes/ingresos-diarios', {
@@ -104,26 +106,6 @@ const ReportePage: React.FC = () => {
       setOpenIngresosDiarios(true);
     } catch (error) {
       console.error('Error al generar el reporte de ingresos diarios', error);
-    }
-  };
-
-  const handleDescargarExcelIngresosDiarios = async () => {
-    try {
-      const response = await axios.get('http://localhost:8080/api/reportes/excel/ingresos-diarios', {
-        params: {
-          fechaInicio,
-          fechaFin
-        },
-        responseType: 'blob'
-      });
-      const url = window.URL.createObjectURL(new Blob([response.data]));
-      const link = document.createElement('a');
-      link.href = url;
-      link.setAttribute('download', 'ingresos_diarios.xlsx');
-      document.body.appendChild(link);
-      link.click();
-    } catch (error) {
-      console.error('Error al descargar el Excel', error);
     }
   };
 
@@ -142,26 +124,6 @@ const ReportePage: React.FC = () => {
     }
   };
 
-  const handleDescargarExcelIngresosMensuales = async () => {
-    try {
-      const response = await axios.get('http://localhost:8080/api/reportes/excel/ingresos-mensuales', {
-        params: {
-          fechaInicio,
-          fechaFin
-        },
-        responseType: 'blob'
-      });
-      const url = window.URL.createObjectURL(new Blob([response.data]));
-      const link = document.createElement('a');
-      link.href = url;
-      link.setAttribute('download', 'ingresos_mensuales.xlsx');
-      document.body.appendChild(link);
-      link.click();
-    } catch (error) {
-      console.error('Error al descargar el Excel', error);
-    }
-  };
-
   const handleGenerarGanancia = async () => {
     try {
       const response = await axios.get('http://localhost:8080/api/reportes/ganancia', {
@@ -174,41 +136,6 @@ const ReportePage: React.FC = () => {
       setOpenGanancia(true);
     } catch (error) {
       console.error('Error al generar el reporte de ganancia', error);
-    }
-  };
-
-  const handleDescargarExcelGanancia = async () => {
-    try {
-      const response = await axios.get('http://localhost:8080/api/reportes/excel/ganancia', {
-        params: {
-          fechaInicio,
-          fechaFin
-        },
-        responseType: 'blob'
-      });
-      const url = window.URL.createObjectURL(new Blob([response.data]));
-      const link = document.createElement('a');
-      link.href = url;
-      link.setAttribute('download', 'ganancia.xlsx');
-      document.body.appendChild(link);
-      link.click();
-    } catch (error) {
-      console.error('Error al descargar el Excel', error);
-    }
-  };
-
-  const handleOpenGraficoRanking = async () => {
-    try {
-      const response = await axios.get('http://localhost:8080/api/reportes/ranking-comidas', {
-        params: {
-          fechaInicio,
-          fechaFin
-        }
-      });
-      setRankingComidas(response.data);
-      setOpenGraficoRanking(true);
-    } catch (error) {
-      console.error('Error al generar el gráfico de ranking de comidas', error);
     }
   };
 
@@ -305,6 +232,10 @@ const ReportePage: React.FC = () => {
     return date.toLocaleDateString();
   };
 
+  const formatTitle = (baseTitle: string) => {
+    return `${baseTitle} del ${fechaInicio} al ${fechaFin}`;
+  };
+
   return (
     <Box sx={{ p: 3 }}>
       <Grid container spacing={2}>
@@ -312,7 +243,7 @@ const ReportePage: React.FC = () => {
         <Grid item xs={12} md={6}>
           <Paper sx={{ p: 2 }}>
             <Typography variant="h6" gutterBottom>
-              Ranking comidas más pedidas
+              Ranking de comidas y bebidas más pedidas.
             </Typography>
             <TextField
               label="Fecha Inicio"
@@ -336,7 +267,7 @@ const ReportePage: React.FC = () => {
               <Button sx={{ backgroundColor: '#1976d2', color: 'white', '&:hover': { backgroundColor: '#115293' } }} onClick={handleGenerarRanking}>
                 Generar Reporte
               </Button>
-              <Button className="report-button excel" onClick={handleDescargarExcelRanking}>
+              <Button className="report-button excel" onClick={() => handleDescargarExcel('ranking-comidas', 'rankingcomidas')}>
                 Exportar a Excel
               </Button>
               <Button className="report-button graph" onClick={handleOpenGraficoRanking}>
@@ -377,10 +308,10 @@ const ReportePage: React.FC = () => {
               <Button sx={{ backgroundColor: '#1976d2', color: 'white', '&:hover': { backgroundColor: '#115293' } }} onClick={handleGenerarIngresosMensuales}>
                 Reporte Mensual
               </Button>
-              <Button className="report-button excel" onClick={handleDescargarExcelIngresosDiarios}>
+              <Button className="report-button excel" onClick={() => handleDescargarExcel('ingresos-diarios', 'ingresosdiarios')}>
                 Excel Diario
               </Button>
-              <Button className="report-button excel" onClick={handleDescargarExcelIngresosMensuales}>
+              <Button className="report-button excel" onClick={() => handleDescargarExcel('ingresos-mensuales', 'ingresosmensuales')}>
                 Excel Mensual
               </Button>
               <Button className="report-button graph" onClick={handleOpenGraficoIngresos}>
@@ -418,7 +349,7 @@ const ReportePage: React.FC = () => {
               <Button sx={{ backgroundColor: '#1976d2', color: 'white', '&:hover': { backgroundColor: '#115293' } }} onClick={handleGenerarPedidosPorCliente}>
                 Generar Reporte
               </Button>
-              <Button className="report-button excel" onClick={handleDescargarExcelPedidosPorCliente}>
+              <Button className="report-button excel" onClick={() => handleDescargarExcel('pedidos-cliente', 'pedidoscliente')}>
                 Exportar a Excel
               </Button>
               <Button className="report-button graph" onClick={handleOpenGraficoPedidosCliente}>
@@ -456,7 +387,7 @@ const ReportePage: React.FC = () => {
               <Button sx={{ backgroundColor: '#1976d2', color: 'white', '&:hover': { backgroundColor: '#115293' } }} onClick={handleGenerarGanancia}>
                 Generar Reporte
               </Button>
-              <Button className="report-button excel" onClick={handleDescargarExcelGanancia}>
+              <Button className="report-button excel" onClick={() => handleDescargarExcel('ganancia', 'ganancia')}>
                 Exportar a Excel
               </Button>
               <Button className="report-button graph" onClick={handleOpenGraficoGanancia}>
@@ -466,11 +397,11 @@ const ReportePage: React.FC = () => {
           </Paper>
         </Grid>
       </Grid>
-
+      {/* Modales para los informes y gráficos */}
       <Modal open={openRanking} onClose={handleCloseRanking}>
         <Box className="modal-box">
           <Typography variant="h6" component="h2">
-            Ranking de Comidas Más Pedidas
+            {formatTitle("Ranking de Comidas Más Pedidas")}
           </Typography>
           <TableContainer>
             <Table>
@@ -481,7 +412,7 @@ const ReportePage: React.FC = () => {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {rankingComidas.map((row: any, index) => (
+                {rankingComidas.map((row, index) => (
                   <TableRow key={index}>
                     <TableCell>{row[0]}</TableCell>
                     <TableCell align="right">{row[1]}</TableCell>
@@ -497,7 +428,7 @@ const ReportePage: React.FC = () => {
       <Modal open={openPedidosCliente} onClose={handleClosePedidosCliente}>
         <Box className="modal-box">
           <Typography variant="h6" component="h2">
-            Cantidad de Pedidos por Cliente
+            {formatTitle("Cantidad de Pedidos por Cliente")}
           </Typography>
           <TableContainer>
             <Table>
@@ -509,7 +440,7 @@ const ReportePage: React.FC = () => {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {pedidosPorCliente.map((row: any, index) => (
+                {pedidosPorCliente.map((row, index) => (
                   <TableRow key={index}>
                     <TableCell>{row[0]}</TableCell>
                     <TableCell align="right">{row[1]}</TableCell>
@@ -526,7 +457,7 @@ const ReportePage: React.FC = () => {
       <Modal open={openIngresosDiarios} onClose={handleCloseIngresosDiarios}>
         <Box className="modal-box">
           <Typography variant="h6" component="h2">
-            Ingresos Diarios
+            {formatTitle("Ingresos Diarios")}
           </Typography>
           <TableContainer>
             <Table>
@@ -537,7 +468,7 @@ const ReportePage: React.FC = () => {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {ingresosDiarios.map((row: any, index) => (
+                {ingresosDiarios.map((row, index) => (
                   <TableRow key={index}>
                     <TableCell>{formatDate(row[0])}</TableCell>
                     <TableCell align="right">{row[1]}</TableCell>
@@ -553,7 +484,7 @@ const ReportePage: React.FC = () => {
       <Modal open={openIngresosMensuales} onClose={handleCloseIngresosMensuales}>
         <Box className="modal-box">
           <Typography variant="h6" component="h2">
-            Ingresos Mensuales
+            {formatTitle("Ingresos Mensuales")}
           </Typography>
           <TableContainer>
             <Table>
@@ -565,7 +496,7 @@ const ReportePage: React.FC = () => {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {ingresosMensuales.map((row: any, index) => (
+                {ingresosMensuales.map((row, index) => (
                   <TableRow key={index}>
                     <TableCell>{row[0]}</TableCell>
                     <TableCell align="right">{row[1]}</TableCell>
@@ -582,7 +513,7 @@ const ReportePage: React.FC = () => {
       <Modal open={openGanancia} onClose={handleCloseGanancia}>
         <Box className="modal-box">
           <Typography variant="h6" component="h2">
-            Monto de Ganancia
+            {formatTitle("Monto de Ganancia")}
           </Typography>
           <TableContainer>
             <Table>
@@ -605,7 +536,7 @@ const ReportePage: React.FC = () => {
       <Modal open={openGraficoRanking} onClose={handleCloseGraficoRanking}>
         <Box className="modal-box">
           <Typography variant="h6" component="h2">
-            Gráfico de Ranking de Comidas
+            {formatTitle("Gráfico de Ranking de Comidas")}
           </Typography>
           <Chart
             chartType="PieChart"
@@ -621,7 +552,7 @@ const ReportePage: React.FC = () => {
       <Modal open={openGraficoPedidosCliente} onClose={handleCloseGraficoPedidosCliente}>
         <Box className="modal-box">
           <Typography variant="h6" component="h2">
-            Gráfico de Pedidos por Cliente
+            {formatTitle("Gráfico de Pedidos por Cliente")}
           </Typography>
           <Chart
             chartType="PieChart"
@@ -635,39 +566,38 @@ const ReportePage: React.FC = () => {
       </Modal>
 
       <Modal open={openGraficoIngresos} onClose={handleCloseGraficoIngresos}>
-        <Box className="modal-box" sx={{ display: 'flex', gap: 2 }}>
-          <Box>
-            <Typography variant="h6" component="h2">
-              Gráfico de Ingresos Diarios
-            </Typography>
-            <Chart
-              chartType="ColumnChart"
-              data={[['Día', 'Ingresos'], ...ingresosDiarios.map((row) => [formatDate(row[0]), row[1]])]}
-              options={{ title: 'Ingresos Diarios' }}
-              width="100%"
-              height="400px"
-            />
+        <Box className="modal-box" sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+          <Typography variant="h6" component="h2">
+            {formatTitle("Gráfico de Ingresos Diarios y Mensuales")}
+          </Typography>
+          <Box sx={{ display: 'flex', gap: 2, justifyContent: 'center' }}>
+            <Box sx={{ flex: 1 }}>
+              <Chart
+                chartType="ColumnChart"
+                data={[['Día', 'Ingresos'], ...ingresosDiarios.map((row) => [formatDate(row[0]), row[1]])]}
+                options={{ title: 'Ingresos Diarios' }}
+                width="100%"
+                height="400px"
+              />
+            </Box>
+            <Box sx={{ flex: 1 }}>
+              <Chart
+                chartType="ColumnChart"
+                data={[['Mes', 'Ingresos'], ...ingresosMensuales.map((row) => [`${row[0]}-${row[1]}`, row[2]])]}
+                options={{ title: 'Ingresos Mensuales' }}
+                width="100%"
+                height="400px"
+              />
+            </Box>
           </Box>
-          <Box>
-            <Typography variant="h6" component="h2">
-              Gráfico de Ingresos Mensuales
-            </Typography>
-            <Chart
-              chartType="ColumnChart"
-              data={[['Mes', 'Ingresos'], ...ingresosMensuales.map((row) => [`${row[0]}-${row[1]}`, row[2]])]}
-              options={{ title: 'Ingresos Mensuales' }}
-              width="100%"
-              height="400px"
-            />
-          </Box>
-          <Button onClick={handleCloseGraficoIngresos} sx={{ mt: 2 }}>Cerrar</Button>
+          <Button onClick={handleCloseGraficoIngresos} sx={{ mt: 2, alignSelf: 'center' }}>Cerrar</Button>
         </Box>
       </Modal>
 
       <Modal open={openGraficoGanancia} onClose={handleCloseGraficoGanancia}>
         <Box className="modal-box">
           <Typography variant="h6" component="h2">
-            Gráfico de Ganancia
+            {formatTitle("Gráfico de Ganancia")}
           </Typography>
           <Chart
             chartType="BarChart"
