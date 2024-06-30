@@ -19,6 +19,8 @@ import {
   FormControl,
   InputLabel,
   SelectChangeEvent,
+  Snackbar,
+  Alert,
 } from "@mui/material";
 import { KeyboardArrowDown, KeyboardArrowUp } from "@mui/icons-material";
 import { format } from "date-fns";
@@ -33,8 +35,11 @@ const PedidosPage: React.FC = () => {
   const [filtroFechaInicio, setFiltroFechaInicio] = useState<string>("");
   const [filtroFechaFin, setFiltroFechaFin] = useState<string>("");
   const [filtroEstado, setFiltroEstado] = useState<string>("");
+  const [filtroCodigo, setFiltroCodigo] = useState<string>("");
+  const [filtroTipoEnvio, setFiltroTipoEnvio] = useState<string>("");
   const [modalOpen, setModalOpen] = useState(false);
   const [filteredPedidos, setFilteredPedidos] = useState<Pedido[]>([]);
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
 
   useEffect(() => {
     const fetchPedidos = async () => {
@@ -69,6 +74,14 @@ const PedidosPage: React.FC = () => {
     setFiltroEstado(event.target.value as string);
   };
 
+  const handleCodigoChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setFiltroCodigo(event.target.value);
+  };
+
+  const handleTipoEnvioChange = (event: SelectChangeEvent<string>) => {
+    setFiltroTipoEnvio(event.target.value as string);
+  };
+
   const handleBuscarClick = async () => {
     if (filtroFechaInicio && filtroFechaFin) {
       try {
@@ -88,18 +101,25 @@ const PedidosPage: React.FC = () => {
   };
 
   const handleExportarExcel = async () => {
+    if (filteredPedidosByTipoEnvio.length === 0) {
+      setSnackbarOpen(true);
+      return;
+    }
+
     try {
       const response = await axios.get(`${import.meta.env.VITE_API_URL}/pedidos/export/excel`, {
         params: {
           fechaInicio: filtroFechaInicio,
           fechaFin: filtroFechaFin,
-          estado: filtroEstado // Incluyendo el estado en los parámetros de la solicitud
+          estado: filtroEstado || undefined,
+          tipoEnvio: filtroTipoEnvio || undefined
         },
         responseType: 'blob'
       });
 
       const estado = filtroEstado ? filtroEstado.toLowerCase() : "todos";
-      const filename = `pedidos_${estado}_${filtroFechaInicio}_a_${filtroFechaFin}.xlsx`;
+      const tipoEnvio = filtroTipoEnvio ? filtroTipoEnvio.toLowerCase() : "todos";
+      const filename = `pedidos_${estado}_${tipoEnvio}_${filtroFechaInicio}_a_${filtroFechaFin}.xlsx`;
 
       const url = window.URL.createObjectURL(new Blob([response.data]));
       const link = document.createElement('a');
@@ -116,6 +136,14 @@ const PedidosPage: React.FC = () => {
     ? filteredPedidos.filter(pedido => pedido.estado === filtroEstado)
     : filteredPedidos;
 
+  const filteredPedidosByCodigo = filtroCodigo
+    ? pedidos.filter(pedido => pedido.id.toString().includes(filtroCodigo))
+    : pedidos;
+
+  const filteredPedidosByTipoEnvio = filtroTipoEnvio
+    ? filteredPedidosByEstado.filter(pedido => pedido.tipoEnvio === filtroTipoEnvio)
+    : filteredPedidosByEstado;
+
   return (
     <Box p={3}>
       <Box mb={4} display="flex" justifyContent="space-between" alignItems="center">
@@ -123,6 +151,16 @@ const PedidosPage: React.FC = () => {
           Pedidos
         </Typography>
         <Box display="flex" alignItems="center">
+          <TextField
+            id="filtro-codigo"
+            label="Código"
+            type="text"
+            variant="outlined"
+            size="small"
+            value={filtroCodigo}
+            onChange={handleCodigoChange}
+            style={{ marginRight: 10 }}
+          />
           <TextField
             id="filtro-fecha-inicio"
             label="Fecha Inicio"
@@ -176,7 +214,7 @@ const PedidosPage: React.FC = () => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {pedidos.map((pedido) => (
+            {filteredPedidosByCodigo.map((pedido) => (
               <React.Fragment key={pedido.id}>
                 <TableRow>
                   <TableCell align="center">{pedido.id}</TableCell>
@@ -211,7 +249,7 @@ const PedidosPage: React.FC = () => {
                   </TableCell>
                 </TableRow>
                 <TableRow>
-                  <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
+                  <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={7}>
                     <Collapse
                       in={pedidoDetalleVisible === pedido.id}
                       timeout="auto"
@@ -278,10 +316,9 @@ const PedidosPage: React.FC = () => {
         open={modalOpen}
         onClose={handleCloseModal}
         aria-labelledby="modal-modal-title"
-        aria-describedby="modal-modal
--description"
+        aria-describedby="modal-modal-description"
       >
-        <Box sx={{ ...modalStyle, width: 800 }}> {/* Ancho del modal ajustado */}
+        <Box sx={{ ...modalStyle, width: 800 }}>
           <Box
             display="flex"
             justifyContent="space-between"
@@ -291,25 +328,44 @@ const PedidosPage: React.FC = () => {
             <Typography id="modal-modal-title" variant="h6" component="h2">
               Listado de pedidos por fecha
             </Typography>
-            <FormControl variant="outlined" size="small" style={{ minWidth: 150 }}>
-              <InputLabel id="filtro-estado-label">Estado</InputLabel>
-              <Select
-                labelId="filtro-estado-label"
-                id="filtro-estado"
-                value={filtroEstado}
-                onChange={handleEstadoChange}
-                label="Estado"
-              >
-                <MenuItem value="">
-                  <em>Todos</em>
-                </MenuItem>
-                <MenuItem value="PENDIENTE">Pendiente</MenuItem>
-                <MenuItem value="CANCELADO">Cancelado</MenuItem>
-                <MenuItem value="LISTO_PARA_ENTREGA">Listo para entrega</MenuItem>
-                <MenuItem value="ENTREGADO">Entregado</MenuItem>
-                <MenuItem value="PREPARACION">Preparación</MenuItem>
-              </Select>
-            </FormControl>
+            <Box display="flex" alignItems="center" gap={1}>
+              <FormControl variant="outlined" size="small" style={{ minWidth: 150 }}>
+                <InputLabel id="filtro-estado-label">Estado</InputLabel>
+                <Select
+                  labelId="filtro-estado-label"
+                  id="filtro-estado"
+                  value={filtroEstado}
+                  onChange={handleEstadoChange}
+                  label="Estado"
+                >
+                  <MenuItem value="">
+                    <em>Todos</em>
+                  </MenuItem>
+                  <MenuItem value="PENDIENTE">Pendiente</MenuItem>
+                  <MenuItem value="CANCELADO">Cancelado</MenuItem>
+                  <MenuItem value="LISTO_PARA_ENTREGA">Listo para entrega</MenuItem>
+                  <MenuItem value="ENTREGADO">Entregado</MenuItem>
+                  <MenuItem value="PREPARACION">Preparación</MenuItem>
+                  <MenuItem value="RECHAZADO">Rechazado</MenuItem>
+                </Select>
+              </FormControl>
+              <FormControl variant="outlined" size="small" style={{ minWidth: 150 }}>
+                <InputLabel id="filtro-tipo-envio-label">Tipo Envío</InputLabel>
+                <Select
+                  labelId="filtro-tipo-envio-label"
+                  id="filtro-tipo-envio"
+                  value={filtroTipoEnvio}
+                  onChange={handleTipoEnvioChange}
+                  label="Tipo Envío"
+                >
+                  <MenuItem value="">
+                    <em>Todos</em>
+                  </MenuItem>
+                  <MenuItem value="TAKE_AWAY">Take Away</MenuItem>
+                  <MenuItem value="DELIVERY">Delivery</MenuItem>
+                </Select>
+              </FormControl>
+            </Box>
           </Box>
           <TableContainer component={Paper}>
             <Table>
@@ -323,7 +379,7 @@ const PedidosPage: React.FC = () => {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {filteredPedidosByEstado.map((pedido) => (
+                {filteredPedidosByTipoEnvio.map((pedido) => (
                   <TableRow key={pedido.id}>
                     <TableCell align="center">{pedido.id}</TableCell>
                     <TableCell align="center">${pedido.total}</TableCell>
@@ -335,17 +391,36 @@ const PedidosPage: React.FC = () => {
               </TableBody>
             </Table>
           </TableContainer>
-          <Box mt={2} textAlign="center">
+          <Box mt={2} display="flex" justifyContent="center" gap={2}>
+            {filteredPedidosByTipoEnvio.length > 0 && (
+              <Button
+                variant="contained"
+                style={{ backgroundColor: 'green', color: 'white' }}
+                onClick={handleExportarExcel}
+              >
+                Pedidos Excel
+              </Button>
+            )}
             <Button
               variant="contained"
-              style={{ backgroundColor: 'green', color: 'white' }}
-              onClick={handleExportarExcel}
+              style={{ backgroundColor: 'red', color: 'white' }}
+              onClick={handleCloseModal}
             >
-              Pedidos Excel
+              Cerrar
             </Button>
           </Box>
         </Box>
       </Modal>
+
+      <Snackbar
+        open={snackbarOpen}
+        autoHideDuration={6000}
+        onClose={() => setSnackbarOpen(false)}
+      >
+        <Alert onClose={() => setSnackbarOpen(false)} severity="warning">
+          No se han encontrado pedidos con los filtros seleccionados.
+        </Alert>
+      </Snackbar>
     </Box>
   );
 };
