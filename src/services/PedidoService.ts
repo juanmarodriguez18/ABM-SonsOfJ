@@ -129,3 +129,21 @@ export async function getPedidosByFecha(fechaInicio: string, fechaFin: string): 
         throw new Error('Error al obtener los pedidos por fecha. Por favor, inténtalo de nuevo más tarde.');
     }
 }
+
+export const descargarFactura = async (pedido: Pedido) => {
+    const response = await fetch(`http://localhost:8080/facturacion/factura/${pedido.id}`);
+    if(response.ok) {
+        const blob = await response.blob();
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = "factura.pdf";
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        window.URL.revokeObjectURL(url);
+        return blob;
+    } else {
+        console.error("Error al descargar el archivo: ", response.statusText);
+    }
+};

@@ -22,7 +22,11 @@ import {
 import { KeyboardArrowDown, KeyboardArrowUp } from "@mui/icons-material";
 import { format } from "date-fns";
 import { Pedido } from "../../types/Pedido";
-import { actualizarPedido, facturarPedido, getPedidosBySucursal } from "../../services/PedidoService"; // Asegúrate de tener esta función en tu servicio
+import {
+  actualizarPedido,
+  facturarPedido,
+  getPedidosBySucursal,
+} from "../../services/PedidoService"; // Asegúrate de tener esta función en tu servicio
 import { Estado } from "../../types/enums/Estado";
 import { TipoEnvio } from "../../types/enums/TipoEnvio";
 import { useAuth } from "../../components/ControlAcceso/AuthContext";
@@ -30,18 +34,24 @@ import { useAuth } from "../../components/ControlAcceso/AuthContext";
 const CajeroPedidos: React.FC = () => {
   const { empleado } = useAuth(); // Obtén la información del cajero logeado
   const [pedidos, setPedidos] = useState<Pedido[]>([]);
-  const [pedidoDetalleVisible, setPedidoDetalleVisible] = useState< number | null >(null);
+  const [pedidoDetalleVisible, setPedidoDetalleVisible] = useState<
+    number | null
+  >(null);
   const [filtroFecha, setFiltroFecha] = useState<string>("");
   const [filtroCodigo, setFiltroCodigo] = useState<string>("");
   const [openDialog, setOpenDialog] = useState<boolean>(false);
   const [pedidoToChange, setPedidoToChange] = useState<Pedido | null>(null);
-  const [actionType, setActionType] = useState<"CANCELAR" | "RECHAZAR" | null>(null);
+  const [actionType, setActionType] = useState<"CANCELAR" | "RECHAZAR" | null>(
+    null
+  );
 
   useEffect(() => {
     const fetchPedidos = async () => {
       try {
         if (empleado?.sucursal?.id) {
-          const pedidosFromServer = await getPedidosBySucursal(empleado.sucursal.id);
+          const pedidosFromServer = await getPedidosBySucursal(
+            empleado.sucursal.id
+          );
           setPedidos(pedidosFromServer);
         }
       } catch (error) {
@@ -53,7 +63,7 @@ const CajeroPedidos: React.FC = () => {
   }, []);
 
   // Imprimir pedidos en la consola
-  console.log('Pedidos:', pedidos);
+  console.log("Pedidos:", pedidos);
 
   const togglePedidoDetalle = (pedidoId: number) => {
     if (pedidoDetalleVisible === pedidoId) {
@@ -71,7 +81,10 @@ const CajeroPedidos: React.FC = () => {
     setFiltroCodigo(event.target.value);
   };
 
-  const handleOpenDialog = (pedido: Pedido, action: "CANCELAR" | "RECHAZAR") => {
+  const handleOpenDialog = (
+    pedido: Pedido,
+    action: "CANCELAR" | "RECHAZAR"
+  ) => {
     setPedidoToChange(pedido);
     setActionType(action);
     setOpenDialog(true);
@@ -86,13 +99,13 @@ const CajeroPedidos: React.FC = () => {
   const handleChangeEstado = async (pedido: Pedido, nuevoEstado: Estado) => {
     try {
       const pedidoActualizado = { ...pedido, estado: nuevoEstado };
-      await actualizarPedido(pedido.id, pedidoActualizado); 
+      await actualizarPedido(pedido.id, pedidoActualizado);
       setPedidos((prevPedidos) =>
         prevPedidos.map((p) => (p.id === pedido.id ? pedidoActualizado : p))
       );
-      if(nuevoEstado === Estado.FACTURADO) {
+      if (nuevoEstado === Estado.FACTURADO) {
         await facturarPedido(pedido, pedido.cliente.email);
-      } 
+      }
     } catch (error) {
       console.error("Error al actualizar el estado del pedido:", error);
       // Manejar el error, por ejemplo, mostrando un mensaje al usuario
@@ -101,12 +114,12 @@ const CajeroPedidos: React.FC = () => {
 
   const handleConfirmAction = async () => {
     if (pedidoToChange && actionType) {
-      const nuevoEstado = actionType === "CANCELAR" ? Estado.CANCELADO : Estado.RECHAZADO;
+      const nuevoEstado =
+        actionType === "CANCELAR" ? Estado.CANCELADO : Estado.RECHAZADO;
       await handleChangeEstado(pedidoToChange, nuevoEstado);
       handleCloseDialog();
     }
   };
-
 
   const filteredPedidosPendientes = pedidos.filter((pedido) => {
     const fechaPedido = format(new Date(pedido.fechaPedido), "dd/MM/yyyy");
@@ -116,7 +129,6 @@ const CajeroPedidos: React.FC = () => {
       pedido.estado === "PENDIENTE"
     );
   });
-  
 
   const filteredPedidosListos = pedidos.filter((pedido) => {
     const fechaPedido = format(new Date(pedido.fechaPedido), "dd/MM/yyyy");
@@ -131,8 +143,8 @@ const CajeroPedidos: React.FC = () => {
     <Box
       p={3}
       sx={{
-        maxHeight: '100vh',
-        overflow: 'auto',
+        maxHeight: "100vh",
+        overflow: "auto",
       }}
     >
       <Box mb={4}>
@@ -190,7 +202,9 @@ const CajeroPedidos: React.FC = () => {
                     <TableCell align="center">${pedido.total}</TableCell>
                     <TableCell align="center">{pedido.estado}</TableCell>
                     <TableCell align="center">{pedido.tipoEnvio}</TableCell>
-                    <TableCell align="center">{format(new Date(pedido.fechaPedido), "dd/MM/yyyy")}</TableCell>
+                    <TableCell align="center">
+                      {format(new Date(pedido.fechaPedido), "dd/MM/yyyy")}
+                    </TableCell>
                     <TableCell align="center">
                       <IconButton
                         aria-label="expand row"
@@ -208,22 +222,29 @@ const CajeroPedidos: React.FC = () => {
                       <Button
                         variant="contained"
                         color="primary"
-                        onClick={() => handleChangeEstado(pedido, Estado.PREPARACION)}
+                        onClick={() =>
+                          handleChangeEstado(pedido, Estado.PREPARACION)
+                        }
                         style={{ marginRight: 8 }}
                       >
                         Aceptar
                       </Button>
-                      <Button
-                        variant="contained"
-                        color="secondary"
-                        onClick={() => handleOpenDialog(pedido, "RECHAZAR")}
-                      >
-                        Rechazar
-                      </Button>
+                      {pedido.estado !== Estado.ENTREGADO && (
+                        <Button
+                          variant="contained"
+                          color="secondary"
+                          onClick={() => handleOpenDialog(pedido, "RECHAZAR")}
+                        >
+                          Rechazar
+                        </Button>
+                      )}
                     </TableCell>
                   </TableRow>
                   <TableRow>
-                    <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={7}>
+                    <TableCell
+                      style={{ paddingBottom: 0, paddingTop: 0 }}
+                      colSpan={7}
+                    >
                       <Collapse
                         in={pedidoDetalleVisible === pedido.id}
                         timeout="auto"
@@ -237,16 +258,27 @@ const CajeroPedidos: React.FC = () => {
                             <TableBody>
                               <TableRow>
                                 <TableCell>Nombre Cliente:</TableCell>
-                                <TableCell>{pedido.cliente.nombre} {pedido.cliente.apellido}</TableCell>
+                                <TableCell>
+                                  {pedido.cliente.nombre}{" "}
+                                  {pedido.cliente.apellido}
+                                </TableCell>
                               </TableRow>
                               <TableRow>
                                 <TableCell>Dirección:</TableCell>
-                                <TableCell>{pedido.domicilio.calle} {pedido.domicilio.numero}, {pedido.domicilio.localidad.nombre}, {pedido.domicilio.localidad.provincia.nombre}</TableCell>
+                                <TableCell>
+                                  {pedido.domicilio.calle}{" "}
+                                  {pedido.domicilio.numero},{" "}
+                                  {pedido.domicilio.localidad.nombre},{" "}
+                                  {pedido.domicilio.localidad.provincia.nombre}
+                                </TableCell>
                               </TableRow>
                               <TableRow>
                                 <TableCell>Artículos:</TableCell>
                                 <TableCell>
-                                  <Table size="small" aria-label="detalle-pedido">
+                                  <Table
+                                    size="small"
+                                    aria-label="detalle-pedido"
+                                  >
                                     <TableHead>
                                       <TableRow>
                                         <TableCell>Denominación</TableCell>
@@ -258,10 +290,20 @@ const CajeroPedidos: React.FC = () => {
                                     <TableBody>
                                       {pedido.pedidoDetalles.map((detalle) => (
                                         <TableRow key={detalle.articulo.id}>
-                                          <TableCell>{detalle.articulo.denominacion}</TableCell>
-                                          <TableCell>{detalle.cantidad}</TableCell>
-                                          <TableCell>${detalle.articulo.precioVenta}</TableCell>
-                                          <TableCell>${detalle.articulo.precioVenta * detalle.cantidad}</TableCell>
+                                          <TableCell>
+                                            {detalle.articulo.denominacion}
+                                          </TableCell>
+                                          <TableCell>
+                                            {detalle.cantidad}
+                                          </TableCell>
+                                          <TableCell>
+                                            ${detalle.articulo.precioVenta}
+                                          </TableCell>
+                                          <TableCell>
+                                            $
+                                            {detalle.articulo.precioVenta *
+                                              detalle.cantidad}
+                                          </TableCell>
                                         </TableRow>
                                       ))}
                                       <TableRow>
@@ -342,7 +384,9 @@ const CajeroPedidos: React.FC = () => {
                     <TableCell align="center">${pedido.total}</TableCell>
                     <TableCell align="center">{pedido.estado}</TableCell>
                     <TableCell align="center">{pedido.tipoEnvio}</TableCell>
-                    <TableCell align="center">{format(new Date(pedido.fechaPedido), "dd/MM/yyyy")}</TableCell>
+                    <TableCell align="center">
+                      {format(new Date(pedido.fechaPedido), "dd/MM/yyyy")}
+                    </TableCell>
                     <TableCell align="center">
                       <IconButton
                         aria-label="expand row"
@@ -361,33 +405,56 @@ const CajeroPedidos: React.FC = () => {
                         <Button
                           variant="contained"
                           color="warning"
-                          onClick={() => handleChangeEstado(pedido, pedido.estado === Estado.ENTREGADO ? Estado.FACTURADO : Estado.EN_DELIVERY)}
+                          onClick={() =>
+                            handleChangeEstado(
+                              pedido,
+                              pedido.estado === Estado.ENTREGADO
+                                ? Estado.FACTURADO
+                                : Estado.EN_DELIVERY
+                            )
+                          }
                           style={{ marginRight: 8 }}
                         >
-                          {pedido.estado === Estado.ENTREGADO ? "Facturar" : "Delivery"}
+                          {pedido.estado === Estado.ENTREGADO
+                            ? "Facturar"
+                            : "Delivery"}
                         </Button>
                       )}
                       {pedido.tipoEnvio === TipoEnvio.TAKE_AWAY && (
                         <Button
                           variant="contained"
                           color="success"
-                          onClick={() => handleChangeEstado(pedido, pedido.estado === Estado.ENTREGADO ? Estado.FACTURADO : Estado.ENTREGADO)}
+                          onClick={() =>
+                            handleChangeEstado(
+                              pedido,
+                              pedido.estado === Estado.ENTREGADO
+                                ? Estado.FACTURADO
+                                : Estado.ENTREGADO
+                            )
+                          }
                           style={{ marginRight: 8 }}
                         >
-                          {pedido.estado === Estado.ENTREGADO ? "Facturar" : "Take Away"}
+                          {pedido.estado === Estado.ENTREGADO
+                            ? "Facturar"
+                            : "Take Away"}
                         </Button>
                       )}
-                      <Button
-                        variant="contained"
-                        color="secondary"
-                        onClick={() => handleOpenDialog(pedido, "CANCELAR")}
-                      >
-                        Cancelar
-                      </Button>
+                      {pedido.estado !== Estado.ENTREGADO && (
+                        <Button
+                          variant="contained"
+                          color="secondary"
+                          onClick={() => handleOpenDialog(pedido, "CANCELAR")}
+                        >
+                          Cancelar
+                        </Button>
+                      )}
                     </TableCell>
                   </TableRow>
                   <TableRow>
-                    <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={7}>
+                    <TableCell
+                      style={{ paddingBottom: 0, paddingTop: 0 }}
+                      colSpan={7}
+                    >
                       <Collapse
                         in={pedidoDetalleVisible === pedido.id}
                         timeout="auto"
@@ -401,16 +468,27 @@ const CajeroPedidos: React.FC = () => {
                             <TableBody>
                               <TableRow>
                                 <TableCell>Nombre Cliente:</TableCell>
-                                <TableCell>{pedido.cliente.nombre} {pedido.cliente.apellido}</TableCell>
+                                <TableCell>
+                                  {pedido.cliente.nombre}{" "}
+                                  {pedido.cliente.apellido}
+                                </TableCell>
                               </TableRow>
                               <TableRow>
                                 <TableCell>Dirección:</TableCell>
-                                <TableCell>{pedido.domicilio.calle} {pedido.domicilio.numero}, {pedido.domicilio.localidad.nombre}, {pedido.domicilio.localidad.provincia.nombre}</TableCell>
+                                <TableCell>
+                                  {pedido.domicilio.calle}{" "}
+                                  {pedido.domicilio.numero},{" "}
+                                  {pedido.domicilio.localidad.nombre},{" "}
+                                  {pedido.domicilio.localidad.provincia.nombre}
+                                </TableCell>
                               </TableRow>
                               <TableRow>
                                 <TableCell>Artículos:</TableCell>
                                 <TableCell>
-                                  <Table size="small" aria-label="detalle-pedido">
+                                  <Table
+                                    size="small"
+                                    aria-label="detalle-pedido"
+                                  >
                                     <TableHead>
                                       <TableRow>
                                         <TableCell>Denominación</TableCell>
@@ -422,10 +500,20 @@ const CajeroPedidos: React.FC = () => {
                                     <TableBody>
                                       {pedido.pedidoDetalles.map((detalle) => (
                                         <TableRow key={detalle.articulo.id}>
-                                          <TableCell>{detalle.articulo.denominacion}</TableCell>
-                                          <TableCell>{detalle.cantidad}</TableCell>
-                                          <TableCell>${detalle.articulo.precioVenta}</TableCell>
-                                          <TableCell>${detalle.articulo.precioVenta * detalle.cantidad}</TableCell>
+                                          <TableCell>
+                                            {detalle.articulo.denominacion}
+                                          </TableCell>
+                                          <TableCell>
+                                            {detalle.cantidad}
+                                          </TableCell>
+                                          <TableCell>
+                                            ${detalle.articulo.precioVenta}
+                                          </TableCell>
+                                          <TableCell>
+                                            $
+                                            {detalle.articulo.precioVenta *
+                                              detalle.cantidad}
+                                          </TableCell>
                                         </TableRow>
                                       ))}
                                       <TableRow>
@@ -450,23 +538,31 @@ const CajeroPedidos: React.FC = () => {
           </Table>
         </TableContainer>
       </Box>
-      <Dialog
-        open={openDialog}
-        onClose={handleCloseDialog}
-      >
-        <DialogTitle>Confirmar {actionType === "CANCELAR" ? "Cancelación" : "Rechazo"}</DialogTitle>
+      <Dialog open={openDialog} onClose={handleCloseDialog}>
+        <DialogTitle>
+          Confirmar {actionType === "CANCELAR" ? "Cancelación" : "Rechazo"}
+        </DialogTitle>
         <DialogContent>
           <DialogContentText>
-            {actionType === "CANCELAR" ? 
-              "¿Seguro que desea cancelar el pedido? Los ingredientes permanecerán descontados del stock pero los articulos que no son para elaborar volverán a sumarse." :
-              "¿Seguro que desea rechazar el pedido? Esta acción no se puede deshacer."}
+            {actionType === "CANCELAR"
+              ? "¿Seguro que desea cancelar el pedido? Los ingredientes permanecerán descontados del stock pero los articulos que no son para elaborar volverán a sumarse."
+              : "¿Seguro que desea rechazar el pedido? Esta acción no se puede deshacer."}
           </DialogContentText>
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleCloseDialog} color="primary" variant="contained">
+          <Button
+            onClick={handleCloseDialog}
+            color="primary"
+            variant="contained"
+          >
             Volver
           </Button>
-          <Button onClick={handleConfirmAction} color="secondary" autoFocus variant="contained">
+          <Button
+            onClick={handleConfirmAction}
+            color="secondary"
+            autoFocus
+            variant="contained"
+          >
             Confirmar
           </Button>
         </DialogActions>
@@ -476,4 +572,3 @@ const CajeroPedidos: React.FC = () => {
 };
 
 export default CajeroPedidos;
-

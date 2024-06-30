@@ -23,8 +23,9 @@ import {
 import { KeyboardArrowDown, KeyboardArrowUp } from "@mui/icons-material";
 import { format } from "date-fns";
 import { Pedido } from "../types/Pedido";
-import { getAllPedidos, getPedidosByFecha } from "../services/PedidoService";
+import { descargarFactura, getAllPedidos, getPedidosByFecha } from "../services/PedidoService";
 import axios from "axios";
+import { Estado } from "../types/enums/Estado";
 
 const PedidosPage: React.FC = () => {
   const [pedidos, setPedidos] = useState<Pedido[]>([]);
@@ -171,6 +172,7 @@ const PedidosPage: React.FC = () => {
               <TableCell align="center">Tipo Envío</TableCell>
               <TableCell align="center">Fecha</TableCell>
               <TableCell align="center">Detalles</TableCell>
+              <TableCell align="center"></TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -194,6 +196,18 @@ const PedidosPage: React.FC = () => {
                         <KeyboardArrowDown />
                       )}
                     </IconButton>
+                  </TableCell>
+                  <TableCell align="center">
+                    {pedido.estado === Estado.FACTURADO && (
+                      <Button
+                      variant="contained"
+                      color="primary"
+                      onClick={() => descargarFactura(pedido)}
+                      style={{ marginRight: 8 }}
+                      >
+                        Descargar factura
+                      </Button>
+                    )}
                   </TableCell>
                 </TableRow>
                 <TableRow>
