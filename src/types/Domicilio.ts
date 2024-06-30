@@ -20,7 +20,7 @@ export class Domicilio extends Base {
         cp: number = 0,
         piso: number = 0,
         nroDpto: number = 0,
-        localidad: Localidad,
+        localidad: Localidad = new Localidad(),
         clientes: Cliente[] = []
     ) {
         super(id, eliminado);

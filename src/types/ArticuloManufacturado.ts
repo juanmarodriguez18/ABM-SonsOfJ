@@ -2,6 +2,7 @@ import { Articulo } from './Articulo';
 import { ArticuloManufacturadoDetalle } from './ArticuloManufacturadoDetalle';
 import { Categoria } from './Categoria';
 import { ImagenArticulo } from './ImagenArticulo';
+import { Sucursal } from './Sucursal';
 import { UnidadMedida } from './UnidadMedida';
 
 // Definición de la clase ArticuloManufacturado extendiendo de Articulo
@@ -10,6 +11,7 @@ export class ArticuloManufacturado extends Articulo {
     tiempoEstimadoMinutos: number;
     preparacion: string;
     articuloManufacturadoDetalles: Set<ArticuloManufacturadoDetalle>;
+    sucursal?: Sucursal;
 
     constructor(
         id: number = 0,
@@ -22,12 +24,14 @@ export class ArticuloManufacturado extends Articulo {
         descripcion: string = '',
         tiempoEstimadoMinutos: number = 0,
         preparacion: string = '',
-        articuloManufacturadoDetalles: Set<ArticuloManufacturadoDetalle> = new Set()
+        articuloManufacturadoDetalles: Set<ArticuloManufacturadoDetalle> = new Set(),
+        sucursal: Sucursal = new Sucursal()
     ) {
         super(id, eliminado, denominacion, precioVenta, imagenesArticulo, unidadMedida, categoria);
         this.descripcion = descripcion;
         this.tiempoEstimadoMinutos = tiempoEstimadoMinutos;
         this.preparacion = preparacion;
         this.articuloManufacturadoDetalles = articuloManufacturadoDetalles;
+        this.sucursal = sucursal;
     }
 }

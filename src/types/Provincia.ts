@@ -9,7 +9,7 @@ export class Provincia extends Base {
         id: number = 0,
         eliminado: boolean = false,
         nombre: string = '',
-        pais: Pais
+        pais: Pais = new Pais(),
     ) {
         super(id, eliminado);
         this.nombre = nombre;

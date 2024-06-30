@@ -23,6 +23,26 @@ export const getSucursalById = async (id: number) => {
   }
 };
 
+export const getManufacturadosBySucursalId = async (id: number) => {
+  try {
+    const response = await axios.get(`${API_URL}/${id}/articulosManufacturados`);
+    return response.data;
+  } catch (error) {
+    console.error(`Error fetching manufacturados de sucursal: ${id}:`, error);
+    throw error;
+  }
+};
+
+export const getInsumosBySucursalId = async (id: number) => {
+  try {
+    const response = await axios.get(`${API_URL}/${id}/articulosInsumos`);
+    return response.data;
+  } catch (error) {
+    console.error(`Error fetching insumos de sucursal: ${id}:`, error);
+    throw error;
+  }
+};
+
 export const crearSucursal2 = async (nuevaSucursal: Sucursal) => {
   try {
     const response = await axios.post(API_URL, nuevaSucursal);

@@ -16,6 +16,8 @@ import { CameraAlt } from '@mui/icons-material';
 import uploadImage from '../../services/CloudinaryService';
 import { Delete as DeleteIcon } from '@mui/icons-material';
 import AgregarUnidadMedidaModal from '../UnidadesMedida/AgregarUnidadMedidaModal';
+import { useAuth } from '../ControlAcceso/AuthContext';
+import { Sucursal } from '../../types/Sucursal';
 
 interface ManufacturadoFormularioProps {
     show: boolean;
@@ -70,6 +72,18 @@ const ManufacturadoFormulario: React.FC<ManufacturadoFormularioProps> = ({
     const filteredArticulosInsumo = articulosInsumo.filter((insumo) => insumo.esParaElaborar && insumo.eliminado === false);
     const filteredUnidadesMedida = unidadesMedida.filter((um) => um.eliminado === false);
     const filteredCategorias = categorias.filter((cat) => cat.eliminado === false);
+    const {empleado} = useAuth();
+    const [sucursal, setSucursal] = useState<Sucursal>();
+
+    useEffect(() => {
+        if (empleado?.sucursal) {
+            setSucursal(empleado.sucursal);
+            setManufacturado(prev => ({
+                ...prev,
+                sucursal: empleado.sucursal
+            }));
+        }
+    }, [empleado]);
 
     useEffect(() => {
         if (isEdit && articuloManufacturadoInicial) {
@@ -148,16 +162,21 @@ const ManufacturadoFormulario: React.FC<ManufacturadoFormularioProps> = ({
             setTxtValidacion("Ingrese al menos un detalle para el producto");
             return;
         }
-
+        if (!sucursal || !sucursal.id) {
+            setTxtValidacion("La sucursal seleccionada no es válida");
+            return;
+        }
+    
         try {
             const imagenesArticuloArray = Array.from(manufacturado.imagenesArticulo);
             const detallesArticuloArray = Array.from(manufacturado.articuloManufacturadoDetalles);
             const articuloParaGuardar = {
                 ...manufacturado,
+                sucursal: sucursal, // Asegurar que la sucursal esté incluida
                 imagenesArticulo: imagenesArticuloArray,
                 articuloManufacturadoDetalles: detallesArticuloArray
             };
-
+    
             if (isEdit && manufacturado.id) {
                 console.log('JSON enviado al backend:', JSON.stringify(articuloParaGuardar));
                 await actualizarArticuloManufacturado(manufacturado.id, articuloParaGuardar); // Actualizar artículo
@@ -173,7 +192,7 @@ const ManufacturadoFormulario: React.FC<ManufacturadoFormularioProps> = ({
                 alert('El ArticuloManufacturado se guardó correctamente');
                 onSave(articuloCreado);
             }
-
+    
             handleClose();
         } catch (error) {
             console.error('Error al guardar el artículo manufacturado:', error);

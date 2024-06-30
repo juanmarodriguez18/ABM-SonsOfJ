@@ -13,6 +13,8 @@ import { actualizarCategoria, getCategorias } from '../../services/CategoriaServ
 import { Button, Checkbox, Dialog, DialogActions, DialogContent, DialogTitle, FormControl, FormControlLabel, FormLabel, Grid, InputLabel, MenuItem, Select, TextField, } from '@mui/material';
 import { CameraAlt } from '@mui/icons-material';
 import uploadImage from '../../services/CloudinaryService';
+import { useAuth } from '../ControlAcceso/AuthContext';
+import { Sucursal } from '../../types/Sucursal';
 
 interface InsumoFormularioProps {
     show: boolean;
@@ -32,7 +34,14 @@ const InsumoFormulario: React.FC<InsumoFormularioProps> = ({ show, handleClose, 
     const [showAgregarCategoriaModal, setAgregarCategoriaModal] = useState<boolean>(false);
     const filteredUnidadesMedida = unidadesMedida.filter((um) => um.eliminado === false);
     const filteredCategorias = categorias.filter((cat) => cat.eliminado === false);
+    const {empleado} = useAuth();
+    const [sucursal, setSucursal] = useState<Sucursal>();
 
+    useEffect(() => {
+        if (empleado?.sucursal) {
+            setSucursal(empleado.sucursal);
+        }
+    }, [empleado]);
 
     useEffect(() => {
         if (isEdit && insumoInicial) {
@@ -106,11 +115,16 @@ const InsumoFormulario: React.FC<InsumoFormularioProps> = ({ show, handleClose, 
             setTxtValidacion("Seleccione una categoría");
             return;
         }
+        if (!sucursal || !sucursal.id) {
+            setTxtValidacion("La sucursal seleccionada no es válida");
+            return;
+        }
 
         try {
             const imagenesArticuloArray = Array.from(insumo.imagenesArticulo);
             const insumoParaGuardar = {
                 ...insumo,
+                sucursal: sucursal, // Asigna la sucursal del empleado al insumo
                 imagenesArticulo: imagenesArticuloArray
             };
 
