@@ -3,13 +3,14 @@ import SearchBar from '../SearchBar/SearchBar';
 import { ArticuloInsumo } from '../../types/ArticuloInsumo';
 import Insumo from './ArticuloInsumo';
 import InsumoFormulario from './InsumoFormulario';
-import { getInsumos } from '../../services/ArticuloInsumoService';
 import { getCategorias } from '../../services/CategoriaService';
 import { Categoria } from '../../types/Categoria';
 import { Typography, Box, Paper, Table, TableHead, TableRow, TableCell, TableBody, TableContainer } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import CustomButton from '../Shared/CustomButton';
 import CategoriaFiltro from '../Categorias/CategoriaFiltro';
+import { useAuth } from '../ControlAcceso/AuthContext';
+import { getInsumosBySucursalId } from '../../services/SucursalService';
 
 const InsumoList: React.FC = () => {
   const [insumos, setInsumos] = useState<ArticuloInsumo[]>([]);
@@ -18,20 +19,26 @@ const InsumoList: React.FC = () => {
   const [query, setQuery] = useState<string>('');
   const [categorias, setCategorias] = useState<Categoria[]>([]); // Array de objetos Categoria
   const [categoriaSeleccionada, setCategoriaSeleccionada] = useState<string>('');
+  const {empleado} = useAuth();
 
-  useEffect(() => {
-    const fetchData = async () => {
+useEffect(() => {
+  const fetchData = async () => {
+    if (empleado && empleado.sucursal) {
       try {
-        const data: ArticuloInsumo[] = await getInsumos();
+        const data: ArticuloInsumo[] = await getInsumosBySucursalId(empleado.sucursal.id);
         setInsumos(data);
         setFilteredInsumos(data);
       } catch (error) {
         console.error('Error fetching insumos:', error);
       }
-    };
+    } else {
+      console.warn('Empleado o sucursal no definidos');
+    }
+  };
 
-    fetchData();
-  }, []);
+  fetchData();
+}, [empleado]);
+
 
   useEffect(() => {
     const fetchCategorias = async () => {

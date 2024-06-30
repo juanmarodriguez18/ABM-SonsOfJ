@@ -1,12 +1,10 @@
 import React, { useEffect, useState } from "react";
-import { getArticulosManufacturados } from "../../services/ArticuloManufacturadoService";
 import Articulo from "./Articulo";
 import SearchBar from "../SearchBar/SearchBar";
 import { ArticuloManufacturado } from "../../types/ArticuloManufacturado";
 import { ArticuloInsumo } from "../../types/ArticuloInsumo";
 import { UnidadMedida } from "../../types/UnidadMedida";
 import { TableContainer, Typography, Box, Paper, Table, TableHead, TableRow, TableCell, TableBody } from "@mui/material";
-import { getInsumos } from "../../services/ArticuloInsumoService";
 import { getUnidadesMedida } from "../../services/UnidadMedidaService";
 import { getCategorias } from "../../services/CategoriaService";
 import { Categoria } from "../../types/Categoria";
@@ -14,6 +12,8 @@ import AddIcon from "@mui/icons-material/Add";
 import CustomButton from "../Shared/CustomButton";
 import ManufacturadoFormulario from "./ManufacturadoFormulario";
 import CategoriaFiltro from "../Categorias/CategoriaFiltro";
+import { useAuth } from "../ControlAcceso/AuthContext";
+import { getInsumosBySucursalId, getManufacturadosBySucursalId } from "../../services/SucursalService";
 
 const ArticuloList: React.FC = () => {
   const [articulos, setArticulos] = useState<ArticuloManufacturado[]>([]);
@@ -24,12 +24,21 @@ const ArticuloList: React.FC = () => {
   const [categoriaSeleccionada, setCategoriaSeleccionada] = useState<string>("");
   const [articulosInsumo, setArticulosInsumo] = useState<ArticuloInsumo[]>([]);
   const [unidadesMedida, setUnidadesMedida] = useState<UnidadMedida[]>([]);
+  const {empleado} = useAuth();
 
   useEffect(() => {
     const fetchData = async () => {
-      const data = await getArticulosManufacturados();
-      setArticulos(data);
-      setFilteredArticulos(data);
+      if (empleado && empleado.sucursal){
+        try {
+          const data = await getManufacturadosBySucursalId(empleado.sucursal.id);
+          setArticulos(data);
+          setFilteredArticulos(data);
+        } catch (error){
+          console.error('error fetching manufacturados', error);
+        }
+      } else {
+        console.warn('Empleado o sucursal no definidos')
+      }
     };
 
     fetchData();
@@ -64,9 +73,17 @@ const ArticuloList: React.FC = () => {
 
   useEffect(() => {
     const fetchInsumosYUnidades = async () => {
-      const insumosData = await getInsumos();
+      if (empleado && empleado.sucursal){
+        try{
+          const insumosData = await getInsumosBySucursalId(empleado.sucursal.id);
+          setArticulosInsumo(insumosData);
+        } catch (error){
+          console.error('error fetching insumos', error);
+        }
+      } else {
+        console.warn('Empleado o sucursal no definidos');
+      }  
       const unidadesData = await getUnidadesMedida();
-      setArticulosInsumo(insumosData);
       setUnidadesMedida(unidadesData);
     };
 

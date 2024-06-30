@@ -9,7 +9,7 @@ export class Localidad extends Base {
         id: number = 0,
         eliminado: boolean = false,
         nombre: string = '',
-        provincia: Provincia
+        provincia: Provincia = new Provincia(),
     ) {
         super(id, eliminado);
         this.nombre = nombre;

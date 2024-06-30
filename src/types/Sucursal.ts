@@ -11,13 +11,13 @@ export class Sucursal extends Base {
     nombre: string;
     horarioApertura: string; 
     horarioCierre: string; 
-    empresa: Empresa;
+    empresa?: Empresa;
     domicilio: Domicilio;
-    promociones: Promocion[];
-    categorias: Categoria[];
-    empleados: Empleado[];
-    pedidos: Pedido[];
-    imagenesSucursal: ImagenSucursal[];
+    promociones?: Promocion[];
+    categorias?: Categoria[];
+    empleados?: Empleado[];
+    pedidos?: Pedido[];
+    imagenesSucursal?: ImagenSucursal[];
 
     constructor(
         id: number = 0,
@@ -25,8 +25,8 @@ export class Sucursal extends Base {
         nombre: string = '',
         horarioApertura: string = '',
         horarioCierre: string = '',
-        empresa: Empresa,
-        domicilio: Domicilio,
+        empresa: Empresa = new Empresa(),
+        domicilio: Domicilio = new Domicilio(),
         promociones: Promocion[] = [],
         categorias: Categoria[] = [],
         empleados: Empleado[] = [],

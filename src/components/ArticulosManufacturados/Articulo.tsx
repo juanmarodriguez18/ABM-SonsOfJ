@@ -13,8 +13,9 @@ import { getArticuloManufacturadoDetalleById } from "../../services/ArticuloManu
 import { ArticuloManufacturadoDetalle } from "../../types/ArticuloManufacturadoDetalle";
 import { ArticuloInsumo } from "../../types/ArticuloInsumo";
 import { UnidadMedida } from "../../types/UnidadMedida";
-import { getInsumos } from "../../services/ArticuloInsumoService";
 import { getUnidadesMedida } from "../../services/UnidadMedidaService";
+import { useAuth } from "../ControlAcceso/AuthContext";
+import { getInsumosBySucursalId } from "../../services/SucursalService";
 
 const Articulo: React.FC<{ articulo: ArticuloManufacturado, onSave: (articulo: ArticuloManufacturado) => void}> = ({ articulo, onSave }) => {
   const [manufacturado, setManufacturado] = useState<ArticuloManufacturado>(articulo);
@@ -24,6 +25,7 @@ const Articulo: React.FC<{ articulo: ArticuloManufacturado, onSave: (articulo: A
   const [detallesEditar, setDetallesEditar] = useState<ArticuloManufacturadoDetalle[]>([]);
   const [articulosInsumo, setArticulosInsumo] = useState<ArticuloInsumo[]>([]);
   const [unidadesMedida, setUnidadesMedida] = useState<UnidadMedida[]>([]);
+  const {empleado} = useAuth();
 
   const handleEliminarRecuperar = async () => {
     try {
@@ -53,9 +55,17 @@ const Articulo: React.FC<{ articulo: ArticuloManufacturado, onSave: (articulo: A
 
   useEffect(() => {
     const fetchInsumosYUnidades = async () => {
-      const insumosData = await getInsumos();
+      if (empleado && empleado.sucursal){
+        try{
+          const insumosData = await getInsumosBySucursalId(empleado.sucursal.id);
+          setArticulosInsumo(insumosData);
+        } catch (error){
+          console.error('error fetching insumos', error);
+        }
+      } else {
+        console.warn('Empleado o sucursal no definidos');
+      }  
       const unidadesData = await getUnidadesMedida();
-      setArticulosInsumo(insumosData);
       setUnidadesMedida(unidadesData);
     };
 
