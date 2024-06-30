@@ -1,31 +1,31 @@
 .report-button {
-  background-color: #d21919;
+  background-color: #d21919; /* Rojo para los botones de generar reporte */
   color: white;
-  transition: background-color 0.3s ease;
+  transition: background-color 0.3s ease; /* Efecto de transición para hover */
 }
 
 .report-button.excel {
-  background-color: #4caf50;
+  background-color: #4caf50; /* Verde para los botones de Excel */
   color: white;
-  transition: background-color 0.3s ease;
+  transition: background-color 0.3s ease; /* Efecto de transición para hover */
 }
 
 .report-button.graph {
-  background-color: #9c27b0;
+  background-color: #9c27b0; /* Violeta para los botones de gráficos */
   color: white;
-  transition: background-color 0.3s ease;
+  transition: background-color 0.3s ease; /* Efecto de transición para hover */
 }
 
 .report-button:hover {
-  background-color: #1565c0;
+  background-color: #b71c1c; /* Color de fondo para el hover */
 }
 
 .report-button.excel:hover {
-  background-color: #388e3c;
+  background-color: #388e3c; /* Color de fondo para el hover */
 }
 
 .report-button.graph:hover {
-  background-color: #7b1fa2;
+  background-color: #7b1fa2; /* Color de fondo para el hover */
 }
 
 .modal-box {

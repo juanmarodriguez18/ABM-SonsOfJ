@@ -8,7 +8,7 @@ const ReportePage: React.FC = () => {
   const [fechaInicio, setFechaInicio] = useState('');
   const [fechaFin, setFechaFin] = useState('');
   const [rankingComidas, setRankingComidas] = useState<[string, number][]>([]);
-  const [pedidosPorCliente, setPedidosPorCliente] = useState([]);
+  const [pedidosPorCliente, setPedidosPorCliente] = useState<[string, string, number][]>([]);
   const [ingresosDiarios, setIngresosDiarios] = useState([]);
   const [ingresosMensuales, setIngresosMensuales] = useState([]);
   const [ganancia, setGanancia] = useState(0);
@@ -87,6 +87,7 @@ const ReportePage: React.FC = () => {
           fechaFin
         }
       });
+      console.log("Datos recibidos para pedidos por cliente:", response.data);
       setPedidosPorCliente(response.data);
       setOpenPedidosCliente(true);
     } catch (error) {
@@ -147,6 +148,7 @@ const ReportePage: React.FC = () => {
           fechaFin
         }
       });
+      console.log("Datos preparados para el gráfico de pedidos por cliente:", response.data);
       setPedidosPorCliente(response.data);
       setOpenGraficoPedidosCliente(true);
     } catch (error) {
@@ -233,7 +235,7 @@ const ReportePage: React.FC = () => {
   };
 
   const formatTitle = (baseTitle: string) => {
-    return `${baseTitle} del ${fechaInicio} al ${fechaFin}`;
+    return `${baseTitle}`;
   };
 
   return (
@@ -397,11 +399,15 @@ const ReportePage: React.FC = () => {
           </Paper>
         </Grid>
       </Grid>
+      
       {/* Modales para los informes y gráficos */}
       <Modal open={openRanking} onClose={handleCloseRanking}>
-        <Box className="modal-box">
-          <Typography variant="h6" component="h2">
+        <Box className="modal-box" sx={{ width: '80%', maxWidth: 1000 }}>
+          <Typography variant="h6" component="h2" align="center">
             {formatTitle("Ranking de Comidas Más Pedidas")}
+          </Typography>
+          <Typography variant="subtitle1" align="center">
+            Rango de Fechas: {fechaInicio} al {fechaFin}
           </Typography>
           <TableContainer>
             <Table>
@@ -426,9 +432,12 @@ const ReportePage: React.FC = () => {
       </Modal>
 
       <Modal open={openPedidosCliente} onClose={handleClosePedidosCliente}>
-        <Box className="modal-box">
-          <Typography variant="h6" component="h2">
+        <Box className="modal-box" sx={{ width: '80%', maxWidth: 1000 }}>
+          <Typography variant="h6" component="h2" align="center">
             {formatTitle("Cantidad de Pedidos por Cliente")}
+          </Typography>
+          <Typography variant="subtitle1" align="center">
+            Rango de Fechas: {fechaInicio} al {fechaFin}
           </Typography>
           <TableContainer>
             <Table>
@@ -455,9 +464,12 @@ const ReportePage: React.FC = () => {
       </Modal>
 
       <Modal open={openIngresosDiarios} onClose={handleCloseIngresosDiarios}>
-        <Box className="modal-box">
-          <Typography variant="h6" component="h2">
+        <Box className="modal-box" sx={{ width: '80%', maxWidth: 1000 }}>
+          <Typography variant="h6" component="h2" align="center">
             {formatTitle("Ingresos Diarios")}
+          </Typography>
+          <Typography variant="subtitle1" align="center">
+            Rango de Fechas: {fechaInicio} al {fechaFin}
           </Typography>
           <TableContainer>
             <Table>
@@ -482,9 +494,12 @@ const ReportePage: React.FC = () => {
       </Modal>
 
       <Modal open={openIngresosMensuales} onClose={handleCloseIngresosMensuales}>
-        <Box className="modal-box">
-          <Typography variant="h6" component="h2">
+        <Box className="modal-box" sx={{ width: '80%', maxWidth: 1000 }}>
+          <Typography variant="h6" component="h2" align="center">
             {formatTitle("Ingresos Mensuales")}
+          </Typography>
+          <Typography variant="subtitle1" align="center">
+            Rango de Fechas: {fechaInicio} al {fechaFin}
           </Typography>
           <TableContainer>
             <Table>
@@ -511,9 +526,12 @@ const ReportePage: React.FC = () => {
       </Modal>
 
       <Modal open={openGanancia} onClose={handleCloseGanancia}>
-        <Box className="modal-box">
-          <Typography variant="h6" component="h2">
+        <Box className="modal-box" sx={{ width: '80%', maxWidth: 1000 }}>
+          <Typography variant="h6" component="h2" align="center">
             {formatTitle("Monto de Ganancia")}
+          </Typography>
+          <Typography variant="subtitle1" align="center">
+            Rango de Fechas: {fechaInicio} al {fechaFin}
           </Typography>
           <TableContainer>
             <Table>
@@ -534,41 +552,50 @@ const ReportePage: React.FC = () => {
       </Modal>
 
       <Modal open={openGraficoRanking} onClose={handleCloseGraficoRanking}>
-        <Box className="modal-box">
-          <Typography variant="h6" component="h2">
+        <Box className="modal-box" sx={{ width: '80%', maxWidth: 1000 }}>
+          <Typography variant="h6" component="h2" align="center">
             {formatTitle("Gráfico de Ranking de Comidas")}
+          </Typography>
+          <Typography variant="subtitle1" align="center">
+            Rango de Fechas: {fechaInicio} al {fechaFin}
           </Typography>
           <Chart
             chartType="PieChart"
             data={[['Comida', 'Pedidos'], ...rankingComidas.map((row) => [row[0], row[1]])]}
             options={{ title: 'Ranking de Comidas Más Pedidas' }}
             width="100%"
-            height="400px"
+            height="500px"
           />
-          <Button onClick={handleCloseGraficoRanking} sx={{ mt: 2 }}>Cerrar</Button>
+          <Button onClick={handleCloseGraficoRanking} sx={{ mt: 2, alignSelf: 'center' }}>Cerrar</Button>
         </Box>
       </Modal>
 
       <Modal open={openGraficoPedidosCliente} onClose={handleCloseGraficoPedidosCliente}>
-        <Box className="modal-box">
-          <Typography variant="h6" component="h2">
+        <Box className="modal-box" sx={{ width: '80%', maxWidth: 1000 }}>
+          <Typography variant="h6" component="h2" align="center">
             {formatTitle("Gráfico de Pedidos por Cliente")}
+          </Typography>
+          <Typography variant="subtitle1" align="center">
+            Rango de Fechas: {fechaInicio} al {fechaFin}
           </Typography>
           <Chart
             chartType="PieChart"
             data={[['Cliente', 'Pedidos'], ...pedidosPorCliente.map((row) => [`${row[0]} ${row[1]}`, row[2]])]}
             options={{ title: 'Pedidos por Cliente' }}
             width="100%"
-            height="400px"
+            height="500px"
           />
-          <Button onClick={handleCloseGraficoPedidosCliente} sx={{ mt: 2 }}>Cerrar</Button>
+          <Button onClick={handleCloseGraficoPedidosCliente} sx={{ mt: 2, alignSelf: 'center' }}>Cerrar</Button>
         </Box>
       </Modal>
 
       <Modal open={openGraficoIngresos} onClose={handleCloseGraficoIngresos}>
         <Box className="modal-box" sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-          <Typography variant="h6" component="h2">
+          <Typography variant="h6" component="h2" align="center">
             {formatTitle("Gráfico de Ingresos Diarios y Mensuales")}
+          </Typography>
+          <Typography variant="subtitle1" align="center">
+            Rango de Fechas: {fechaInicio} al {fechaFin}
           </Typography>
           <Box sx={{ display: 'flex', gap: 2, justifyContent: 'center' }}>
             <Box sx={{ flex: 1 }}>
@@ -577,7 +604,7 @@ const ReportePage: React.FC = () => {
                 data={[['Día', 'Ingresos'], ...ingresosDiarios.map((row) => [formatDate(row[0]), row[1]])]}
                 options={{ title: 'Ingresos Diarios' }}
                 width="100%"
-                height="400px"
+                height="500px"
               />
             </Box>
             <Box sx={{ flex: 1 }}>
@@ -586,7 +613,7 @@ const ReportePage: React.FC = () => {
                 data={[['Mes', 'Ingresos'], ...ingresosMensuales.map((row) => [`${row[0]}-${row[1]}`, row[2]])]}
                 options={{ title: 'Ingresos Mensuales' }}
                 width="100%"
-                height="400px"
+                height="500px"
               />
             </Box>
           </Box>
@@ -595,18 +622,21 @@ const ReportePage: React.FC = () => {
       </Modal>
 
       <Modal open={openGraficoGanancia} onClose={handleCloseGraficoGanancia}>
-        <Box className="modal-box">
-          <Typography variant="h6" component="h2">
+        <Box className="modal-box" sx={{ width: '80%', maxWidth: 1000 }}>
+          <Typography variant="h6" component="h2" align="center">
             {formatTitle("Gráfico de Ganancia")}
+          </Typography>
+          <Typography variant="subtitle1" align="center">
+            Rango de Fechas: {fechaInicio} al {fechaFin}
           </Typography>
           <Chart
             chartType="BarChart"
             data={[['Fecha', 'Ganancia'], ['Ganancia', ganancia]]}
             options={{ title: 'Monto de Ganancia' }}
             width="100%"
-            height="400px"
+            height="500px"
           />
-          <Button onClick={handleCloseGraficoGanancia} sx={{ mt: 2 }}>Cerrar</Button>
+          <Button onClick={handleCloseGraficoGanancia} sx={{ mt: 2, alignSelf: 'center' }}>Cerrar</Button>
         </Box>
       </Modal>
     </Box>
