@@ -70,11 +70,17 @@ export const actualizarPedido = async (id: number, datosActualizados: any) => {
     try {
       const response = await axios.put(`${urlPedidos}/${id}`, datosActualizados);
       return response.data;
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error al actualizar un pedido:", error);
-      throw error;
+      if (axios.isAxiosError(error) && error.response && error.response.data) {
+        console.log("Error response data:", error.response.data); // Registro adicional
+        const errorMessage = error.response.data.error; // Acceder a .error en lugar de .message
+        throw new Error(errorMessage);
+      } else {
+        throw new Error("Error desconocido al actualizar el pedido");
+      }
     }
-};
+  };
 
 export const facturarPedido = async (pedido: Pedido, email: string) => {
     try {
