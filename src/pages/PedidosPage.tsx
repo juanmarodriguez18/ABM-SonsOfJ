@@ -194,10 +194,10 @@ const PedidosPage: React.FC = () => {
         sx={{
           borderRadius: 8,
           width: "100%",
-          marginTop: 2,
+          marginTop: -3,
           bgcolor: "#eee",
           boxShadow: 2,
-          maxHeight: "74vh",
+          maxHeight: "65vh",
           overflow: "auto",
         }}
       >
