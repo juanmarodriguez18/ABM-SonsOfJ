@@ -86,11 +86,16 @@ const CocineroPedidos: React.FC = () => {
       setPedidos((prevPedidos) =>
         prevPedidos.map((p) => (p.id === pedido.id ? pedidoActualizado : p))
       );
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error al actualizar el estado del pedido:", error);
-      // Manejar el error, por ejemplo, mostrando un mensaje al usuario
+      if (error instanceof Error) {
+        alert(`Error: ${error.message}`);
+      } else {
+        alert("Error desconocido al actualizar el estado del pedido");
+      }
     }
   };
+  
 
   const handleConfirmCancel = async () => {
     if (pedidoToCancel) {

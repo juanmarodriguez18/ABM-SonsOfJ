@@ -30,6 +30,7 @@
     "react-google-charts": "^4.0.1",
     "react-router-dom": "^6.15.0",
     "react-select": "^5.8.0",
+    "react-toastify": "^10.0.5",
     "react-virtuoso": "^4.7.11",
     "sweetalert2": "^11.7.27",
     "sweetalert2-react-content": "^5.0.7",
