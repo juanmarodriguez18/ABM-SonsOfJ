@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { Button, TextField, DialogTitle, DialogContent, DialogActions, Dialog } from '@mui/material';
+import { Button, TextField, DialogTitle, DialogContent, DialogActions, Dialog, FormControl, FormHelperText } from '@mui/material';
 import { Empresa } from '../../types/Empresa';
 import { ImagenEmpresa } from '../../types/ImagenEmpresa';
 import { crearEmpresa, actualizarEmpresa } from '../../services/EmpresaService';
+import uploadImage from '../../services/CloudinaryService';
 
 interface AgregarEmpresaModalProps {
     show: boolean;
@@ -94,14 +95,29 @@ const AgregarEmpresaModal: React.FC<AgregarEmpresaModalProps> = ({
         }
     };
 
-    const handleAgregarImagen = () => {
-        setImagenesEmpresa([...imagenesEmpresa, new ImagenEmpresa()]);
+    const handleAgregarImagen = async () => {
+        try {
+            const fileInput = document.createElement('input');
+            fileInput.setAttribute('type', 'file');
+            fileInput.setAttribute('accept', 'image/*');
+            fileInput.click();
+
+            fileInput.onchange = async () => {
+                const file = fileInput.files?.[0];
+                if (file) {
+                    const imageUrl = await uploadImage(file);
+                    setImagenesEmpresa([...imagenesEmpresa, new ImagenEmpresa(0, false, imageUrl)]);
+                }
+            };
+        } catch (error) {
+            console.error('Error al agregar imagen:', error);
+        }
     };
 
-    const handleImagenChange = (index: number, url: string) => {
-        const nuevasImagenes = [...imagenesEmpresa];
-        nuevasImagenes[index] = { ...nuevasImagenes[index], url };
-        setImagenesEmpresa(nuevasImagenes);
+    const handleRemoveImagen = (index: number) => {
+        const newImages = [...imagenesEmpresa];
+        newImages.splice(index, 1);
+        setImagenesEmpresa(newImages);
     };
 
     return (
@@ -141,22 +157,32 @@ const AgregarEmpresaModal: React.FC<AgregarEmpresaModalProps> = ({
                     error={!!errors.cuil}
                     helperText={errors.cuil}
                 />
-                <Button variant="contained" color="primary" onClick={handleAgregarImagen}>
-                    Agregar Imagen
-                </Button>
-                {imagenesEmpresa.map((imagen, index) => (
-                    <TextField
-                        key={index}
-                        margin="dense"
-                        label={`Imagen Empresa ${index + 1}`}
-                        type="text"
-                        fullWidth
-                        value={imagen.url}
-                        onChange={(e) => handleImagenChange(index, e.target.value)}
-                        error={errors.imagenesEmpresa && errors.imagenesEmpresa[index] !== ''}
-                        helperText={errors.imagenesEmpresa && errors.imagenesEmpresa[index]}
-                    />
-                ))}
+                <FormControl fullWidth margin="dense">
+                    <Button variant="contained" color="primary" onClick={handleAgregarImagen}>
+                        Agregar Imagen
+                    </Button>
+                    <div style={{ marginTop: 10 }}>
+                        {imagenesEmpresa.map((imagen, index) => (
+                            <div key={index} style={{ display: 'inline-block', marginRight: 10 }}>
+                                <img
+                                    src={imagen.url}
+                                    alt={`Imagen Empresa ${index + 1}`}
+                                    style={{ width: 100, height: 'auto', marginRight: 10 }}
+                                />
+                                <Button variant="outlined" color="secondary" onClick={() => handleRemoveImagen(index)}>
+                                    Eliminar
+                                </Button>
+                            </div>
+                        ))}
+                    </div>
+                    {errors.imagenesEmpresa && errors.imagenesEmpresa.length > 0 && (
+                        <FormHelperText style={{ color: 'red', marginTop: 10 }}>
+                            {errors.imagenesEmpresa.map((error, index) => (
+                                <div key={index}>{error}</div>
+                            ))}
+                        </FormHelperText>
+                    )}
+                </FormControl>
             </DialogContent>
             <DialogActions>
                 <Button variant="outlined" color="secondary" onClick={handleClose}>
