@@ -155,3 +155,13 @@ input[type="text"].form-control {
     max-height: 100px;
     object-fit: cover;
 }
+
+.smooth-scrollbar::-webkit-scrollbar {
+  width: 0;
+  background: transparent; /* For Chrome, Safari, and Opera */
+}
+  
+.smooth-scrollbar {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}

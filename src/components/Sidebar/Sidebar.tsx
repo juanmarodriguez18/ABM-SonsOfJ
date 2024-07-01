@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Box, Button, List, ListItem, Badge } from "@mui/material";
 import {
-  Dashboard as DashboardIcon,
   RestaurantMenu as RestaurantMenuIcon,
   Fastfood as FastfoodIcon,
   MonetizationOn as MonetizationOnIcon,
@@ -153,9 +152,6 @@ const Sidebar: React.FC = () => {
           }}
         />
         <List sx={{ width: "100%" }}>
-          {empleado && empleado.tipoEmpleado === Rol.ADMIN && (
-            <SidebarItem icon={<DashboardIcon />} text="Dashboard" />
-          )}
           {empleado && empleado.tipoEmpleado === Rol.ADMIN && (
             <>
               <SidebarItem icon={<RestaurantMenuIcon />} text="Menú">
