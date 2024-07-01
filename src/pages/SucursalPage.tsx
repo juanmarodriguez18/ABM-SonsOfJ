@@ -121,7 +121,7 @@ const SucursalPage: React.FC = () => {
                       component="img"
                       height="350"
                       image={
-                        sucursal.imagenesSucursal && sucursal.imagenesSucursal.length > 0
+                        sucursal.imagenesSucursal.length > 0
                           ? sucursal.imagenesSucursal[0].url
                           : "https://via.placeholder.com/150"
                       }

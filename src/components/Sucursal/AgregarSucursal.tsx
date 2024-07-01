@@ -2,23 +2,12 @@ import React, { useState, useEffect } from 'react';
 import { Button, TextField, DialogTitle, DialogContent, DialogActions, Dialog, MenuItem } from '@mui/material';
 import { Sucursal } from '../../types/Sucursal';
 import { ImagenSucursal } from '../../types/ImagenSucursal';
-import { Domicilio } from '../../types/Domicilio';
+//import { Domicilio } from '../../types/Domicilio';
 import { Localidad } from '../../types/Localidad';
 import { Empresa } from '../../types/Empresa';
 import { crearSucursal, actualizarSucursal } from '../../services/SucursalService';
 import { getEmpresas } from '../../services/EmpresaService'; // Servicio para obtener empresas
 import { getLocalidades } from '../../services/LocalidadService';
-
-interface NuevaSucursal {
-    id: number;
-    nombre: string;
-    horarioApertura: string | null;
-    horarioCierre: string | null;
-    empresa: Empresa;
-    domicilio: Domicilio;
-    imagenesSucursal: ImagenSucursal[];
-    eliminado: boolean;
-}
 
 interface AgregarSucursalModalProps {
     show: boolean;
@@ -59,8 +48,8 @@ const AgregarSucursalModal: React.FC<AgregarSucursalModalProps> = ({
         piso?: string,
         nroDpto?: string,
         localidad?: string,
-        imagenesSucursal?: string[],
         empresa?: string
+        imagenesSucursal?: string[],
     }>({});
 
     useEffect(() => {
@@ -102,8 +91,12 @@ const AgregarSucursalModal: React.FC<AgregarSucursalModalProps> = ({
                 setNroDpto(sucursalInicial.domicilio.nroDpto);
                 setLocalidad(sucursalInicial.domicilio.localidad);
             }
-            setEmpresa(sucursalInicial.empresa);
-            setImagenesSucursal(sucursalInicial.imagenesSucursal.map(img => new ImagenSucursal(img.id, img.eliminado, img.url)));
+            if (sucursalInicial.empresa) {
+                setEmpresa(sucursalInicial.empresa);
+            }
+            if (sucursalInicial.imagenesSucursal) {
+                setImagenesSucursal(sucursalInicial.imagenesSucursal.map(img => new ImagenSucursal(img.id, img.eliminado, img.url)));
+            }
         } else {
             setNombre('');
             setHorarioApertura(null);
@@ -130,8 +123,8 @@ const AgregarSucursalModal: React.FC<AgregarSucursalModalProps> = ({
             piso?: string,
             nroDpto?: string,
             localidad?: string,
-            imagenesSucursal?: string[],
             empresa?: string
+            imagenesSucursal?: string[],
         } = {};
         if (!nombre) newErrors.nombre = 'El nombre es obligatorio';
         if (!horarioApertura) newErrors.horarioApertura = 'El horario de apertura es obligatorio';
@@ -154,11 +147,11 @@ const AgregarSucursalModal: React.FC<AgregarSucursalModalProps> = ({
     const handleGuardar = async () => {
         if (!validateFields()) return;
         
-        const nuevaSucursal: NuevaSucursal = {
+        const nuevaSucursal: Sucursal = {
             id: isEdit && sucursalInicial ? sucursalInicial.id : 0,
             nombre,
-            horarioApertura: horarioApertura, // Asegúrate de que horarioApertura sea Date | null
-            horarioCierre: horarioCierre, // Asegúrate de que horarioCierre sea Date | null
+            horarioApertura: horarioApertura!, // Asegúrate de que horarioApertura sea Date | null
+            horarioCierre: horarioCierre!, // Asegúrate de que horarioCierre sea Date | null
             empresa: empresa!,
             domicilio:
                 {
@@ -180,11 +173,11 @@ const AgregarSucursalModal: React.FC<AgregarSucursalModalProps> = ({
 
         try {
             if (isEdit && sucursalInicial) {
-                await actualizarSucursal(nuevaSucursal.id, nuevaSucursal as Sucursal);
+                await actualizarSucursal(nuevaSucursal.id, nuevaSucursal);
                 alert('La Sucursal se actualizó correctamente');
-                onSave(nuevaSucursal as Sucursal);
+                onSave(nuevaSucursal);
             } else {
-                const sucursalCreada = await crearSucursal(nuevaSucursal as Sucursal);
+                const sucursalCreada = await crearSucursal(nuevaSucursal);
                 alert('La Sucursal se guardó correctamente');
                 onSave(sucursalCreada);
             }

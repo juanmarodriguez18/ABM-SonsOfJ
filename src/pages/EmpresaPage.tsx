@@ -25,9 +25,7 @@ const EmpresaPage: React.FC = () => {
   const [showModal, setShowModal] = useState<boolean>(false);
   const [empresas, setEmpresas] = useState<Empresa[]>([]);
   const [loading, setLoading] = useState(false);
-  const [empresaSeleccionada, setEmpresaSeleccionada] = useState<
-    Empresa | undefined
-  >(undefined);
+  const [empresaSeleccionada, setEmpresaSeleccionada] = useState<Empresa | undefined>(undefined);
 
   useEffect(() => {
     const fetchEmpresas = async () => {
