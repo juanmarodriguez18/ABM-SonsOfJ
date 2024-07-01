@@ -239,10 +239,10 @@ const ReportePage: React.FC = () => {
   };
 
   return (
-    <Box sx={{ p: 3 }}>
+    <Box className="main-container" sx={{ p: 3 }}>
       <Grid container spacing={2}>
         {/* Ranking de comidas más pedidas */}
-        <Grid item xs={12} md={6}>
+        <Grid item xs={12} md={6} className="narrow-card">
           <Paper sx={{ p: 2 }}>
             <Typography variant="h6" gutterBottom>
               Ranking de comidas y bebidas más pedidas.
@@ -324,7 +324,7 @@ const ReportePage: React.FC = () => {
         </Grid>
 
         {/* Cantidad de pedidos por cliente */}
-        <Grid item xs={12} md={6}>
+        <Grid item xs={12} md={6} className="narrow-card">
           <Paper sx={{ p: 2 }}>
             <Typography variant="h6" gutterBottom>
               Cantidad de pedidos por cliente
@@ -591,7 +591,7 @@ const ReportePage: React.FC = () => {
 
       <Modal open={openGraficoIngresos} onClose={handleCloseGraficoIngresos}>
         <Box className="modal-box" sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-          <Typography variant="h6" component="h2" align="center">
+          <Typography variant="h2" component="h2" align="center">
             {formatTitle("Gráfico de Ingresos Diarios y Mensuales")}
           </Typography>
           <Typography variant="subtitle1" align="center">

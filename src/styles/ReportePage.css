@@ -1,42 +1,70 @@
+.main-container {
+  max-height: 100vh;
+  max-width: 1200px;
+  overflow-y: auto; /* Añade una barra de desplazamiento vertical */
+}
+
+.narrow-card {
+  padding: 16px;
+}
+
 .report-button {
-  background-color: #d21919; /* Rojo para los botones de generar reporte */
-  color: white;
-  transition: background-color 0.3s ease; /* Efecto de transición para hover */
+  font-size: 14px;
 }
 
 .report-button.excel {
-  background-color: #4caf50; /* Verde para los botones de Excel */
+  background-color: #4caf50;
   color: white;
   transition: background-color 0.3s ease; /* Efecto de transición para hover */
 }
 
 .report-button.graph {
-  background-color: #9c27b0; /* Violeta para los botones de gráficos */
+  background-color: #9c27b0;
   color: white;
   transition: background-color 0.3s ease; /* Efecto de transición para hover */
 }
 
-.report-button:hover {
-  background-color: #b71c1c; /* Color de fondo para el hover */
-}
-
+/* Hover effect that darkens the buttons */
 .report-button.excel:hover {
-  background-color: #388e3c; /* Color de fondo para el hover */
+  background-color: #388e3c; /* Color más oscuro para hover */
 }
 
 .report-button.graph:hover {
-  background-color: #7b1fa2; /* Color de fondo para el hover */
+  background-color: #7b1fa2; /* Color más oscuro para hover */
 }
 
 .modal-box {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 80%;
-  max-width: 1000px;
   background-color: white;
-  border: 2px solid #000;
-  box-shadow: 24px;
   padding: 16px;
+  margin: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  max-width: 20%; /* Ajusta este valor para cambiar el tamaño del modal */
+}
+
+.typography-custom {
+  font-size: 14px; /* Ajusta el tamaño de la fuente */
+  font-weight: bold; /* Ajusta el peso de la fuente */
+  color: #333; /* Ajusta el color del texto */
+  margin-bottom: 16px; /* Ajusta el margen inferior */
+}
+
+.custom-typography {
+  font-size: 16px;
+  font-weight: bold;
+}
+
+@media (max-width: 600px) {
+  .main-container {
+    padding: 8px;
+  }
+
+  .narrow-card {
+    padding: 8px;
+  }
+
+  .modal-box {
+    width: 90%;
+  }
 }
