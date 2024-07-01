@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Button, TextField, DialogTitle, DialogContent, DialogActions, Dialog, MenuItem } from '@mui/material';
+import { Button, TextField, DialogTitle, DialogContent, DialogActions, Dialog, MenuItem, FormControl, FormHelperText } from '@mui/material';
 import { Sucursal } from '../../types/Sucursal';
 import { ImagenSucursal } from '../../types/ImagenSucursal';
 //import { Domicilio } from '../../types/Domicilio';
@@ -8,6 +8,7 @@ import { Empresa } from '../../types/Empresa';
 import { crearSucursal, actualizarSucursal } from '../../services/SucursalService';
 import { getEmpresas } from '../../services/EmpresaService'; // Servicio para obtener empresas
 import { getLocalidades } from '../../services/LocalidadService';
+import uploadImage from '../../services/CloudinaryService';
 
 interface AgregarSucursalModalProps {
     show: boolean;
@@ -132,8 +133,8 @@ const AgregarSucursalModal: React.FC<AgregarSucursalModalProps> = ({
         if (!calle) newErrors.calle = 'La calle es obligatoria';
         if (!numero) newErrors.numero = 'El número es obligatorio';
         if (!cp) newErrors.cp = 'El código postal es obligatorio';
-        if (!piso) newErrors.piso = 'El piso es obligatorio';
-        if (!nroDpto) newErrors.nroDpto = 'El número de departamento es obligatorio';
+       // if (!piso) newErrors.piso = 'El piso es obligatorio';
+       // if (!nroDpto) newErrors.nroDpto = 'El número de departamento es obligatorio';
         if (!localidad) newErrors.localidad = 'La localidad es obligatoria';
         if (!empresa) newErrors.empresa = 'La empresa es obligatoria';
 
@@ -188,14 +189,29 @@ const AgregarSucursalModal: React.FC<AgregarSucursalModalProps> = ({
         }
     };
 
-    const handleAgregarImagen = () => {
-        setImagenesSucursal([...imagenesSucursal, new ImagenSucursal()]);
+    const handleAgregarImagen = async () => {
+        try {
+            const fileInput = document.createElement('input');
+            fileInput.setAttribute('type', 'file');
+            fileInput.setAttribute('accept', 'image/*');
+            fileInput.click();
+
+            fileInput.onchange = async () => {
+                const file = fileInput.files?.[0];
+                if (file) {
+                    const imageUrl = await uploadImage(file);
+                    setImagenesSucursal([...imagenesSucursal, new ImagenSucursal(0, false, imageUrl)]);
+                }
+            };
+        } catch (error) {
+            console.error('Error al agregar imagen:', error);
+        }
     };
 
-    const handleImagenChange = (index: number, url: string) => {
-        const nuevasImagenes = [...imagenesSucursal];
-        nuevasImagenes[index] = { ...nuevasImagenes[index], url };
-        setImagenesSucursal(nuevasImagenes);
+    const handleRemoveImagen = (index: number) => {
+        const newImages = [...imagenesSucursal];
+        newImages.splice(index, 1);
+        setImagenesSucursal(newImages);
     };
 
     return (
@@ -362,22 +378,32 @@ const AgregarSucursalModal: React.FC<AgregarSucursalModalProps> = ({
                         </MenuItem>
                     ))}
                 </TextField>
-                <Button variant="contained" color="primary" onClick={handleAgregarImagen}>
-                    Agregar Imagen
-                </Button>
-                {imagenesSucursal.map((imagen, index) => (
-                    <TextField
-                        key={index}
-                        margin="dense"
-                        label={`Imagen Sucursal ${index + 1}`}
-                        type="text"
-                        fullWidth
-                        value={imagen.url}
-                        onChange={(e) => handleImagenChange(index, e.target.value)}
-                        error={errors.imagenesSucursal && errors.imagenesSucursal[index] !== ''}
-                        helperText={errors.imagenesSucursal && errors.imagenesSucursal[index]}
-                    />
-                ))}
+                <FormControl fullWidth margin="dense">
+                    <Button variant="contained" color="primary" onClick={handleAgregarImagen}>
+                        Agregar Imagen
+                    </Button>
+                    <div style={{ marginTop: 10 }}>
+                        {imagenesSucursal.map((imagen, index) => (
+                            <div key={index} style={{ display: 'inline-block', marginRight: 10 }}>
+                                <img
+                                    src={imagen.url}
+                                    alt={`Imagen Empresa ${index + 1}`}
+                                    style={{ width: 100, height: 'auto', marginRight: 10 }}
+                                />
+                                <Button variant="outlined" color="secondary" onClick={() => handleRemoveImagen(index)}>
+                                    Eliminar
+                                </Button>
+                            </div>
+                        ))}
+                    </div>
+                    {errors.imagenesSucursal && errors.imagenesSucursal.length > 0 && (
+                        <FormHelperText style={{ color: 'red', marginTop: 10 }}>
+                            {errors.imagenesSucursal.map((error, index) => (
+                                <div key={index}>{error}</div>
+                            ))}
+                        </FormHelperText>
+                    )}
+                </FormControl>
             </DialogContent>
             <DialogActions>
                 <Button variant="outlined" color="secondary" onClick={handleClose}>
