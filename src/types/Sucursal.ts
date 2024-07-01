@@ -17,7 +17,7 @@ export class Sucursal extends Base {
     categorias?: Categoria[];
     empleados?: Empleado[];
     pedidos?: Pedido[];
-    imagenesSucursal?: ImagenSucursal[];
+    imagenesSucursal: ImagenSucursal[];
 
     constructor(
         id: number = 0,
