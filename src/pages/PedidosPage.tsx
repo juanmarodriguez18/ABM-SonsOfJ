@@ -28,6 +28,8 @@ import { Pedido } from "../types/Pedido";
 import { descargarFactura, getAllPedidos, getPedidosByFecha } from "../services/PedidoService";
 import axios from "axios";
 import { Estado } from "../types/enums/Estado";
+import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
 
 const PedidosPage: React.FC = () => {
   const [pedidos, setPedidos] = useState<Pedido[]>([]);
@@ -130,6 +132,23 @@ const PedidosPage: React.FC = () => {
     } catch (error) {
       console.error("Error al exportar a Excel:", error);
     }
+  };
+
+  const handleGenerarPDF = () => {
+    const doc = new jsPDF();
+    doc.text("El Buen Sabor / Lista de pedidos", 14, 16);
+    autoTable(doc, {
+      startY: 20, // Ajusta esta posición para que la tabla comience más abajo
+      head: [['Código', 'Total', 'Estado', 'Tipo Envío', 'Fecha']],
+      body: filteredPedidosByTipoEnvio.map(pedido => [
+        pedido.id.toString(),
+        `$${pedido.total}`,
+        pedido.estado,
+        pedido.tipoEnvio,
+        format(new Date(pedido.fechaPedido), "dd/MM/yyyy")
+      ]),
+    });
+    doc.save('pedidos.pdf');
   };
 
   const filteredPedidosByEstado = filtroEstado
@@ -393,13 +412,22 @@ const PedidosPage: React.FC = () => {
           </TableContainer>
           <Box mt={2} display="flex" justifyContent="center" gap={2}>
             {filteredPedidosByTipoEnvio.length > 0 && (
-              <Button
-                variant="contained"
-                style={{ backgroundColor: 'green', color: 'white' }}
-                onClick={handleExportarExcel}
-              >
-                Pedidos Excel
-              </Button>
+              <>
+                <Button
+                  variant="contained"
+                  style={{ backgroundColor: 'green', color: 'white' }}
+                  onClick={handleExportarExcel}
+                >
+                  Pedidos Excel
+                </Button>
+                <Button
+                  variant="contained"
+                  style={{ backgroundColor: 'blue', color: 'white' }}
+                  onClick={handleGenerarPDF}
+                >
+                  Generar PDF
+                </Button>
+              </>
             )}
             <Button
               variant="contained"
