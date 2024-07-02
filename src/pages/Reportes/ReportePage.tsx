@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Box, Typography, Button, TextField, Grid, Paper, Modal, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
+import { Box, Typography, Button, TextField, Grid, Paper, Modal, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Snackbar, Alert } from '@mui/material';
 import axios from 'axios';
 import { Chart } from 'react-google-charts';
 import '../../styles/ReportePage.css';
@@ -21,20 +21,22 @@ const ReportePage: React.FC = () => {
   const [openGraficoPedidosCliente, setOpenGraficoPedidosCliente] = useState(false);
   const [openGraficoIngresos, setOpenGraficoIngresos] = useState(false);
   const [openGraficoGanancia, setOpenGraficoGanancia] = useState(false);
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState('');
 
   const filterRankingData = (data: [string | null, number][]): [string, number][] => {
     return data.filter((item): item is [string, number] => item[0] !== null);
   };
 
   const handleGenerarRanking = async () => {
+    if (!fechaInicio || !fechaFin) {
+      showSnackbar('Debe seleccionar una fecha de inicio y fin.');
+      return;
+    }
     try {
       const response = await axios.get('http://localhost:8080/api/reportes/ranking-comidas', {
-        params: {
-          fechaInicio,
-          fechaFin
-        }
+        params: { fechaInicio, fechaFin }
       });
-      console.log("Datos recibidos para el ranking de comidas:", response.data);
       setRankingComidas(filterRankingData(response.data));
       setOpenRanking(true);
     } catch (error) {
@@ -43,14 +45,14 @@ const ReportePage: React.FC = () => {
   };
 
   const handleOpenGraficoRanking = async () => {
+    if (!fechaInicio || !fechaFin) {
+      showSnackbar('Debe seleccionar una fecha de inicio y fin.');
+      return;
+    }
     try {
       const response = await axios.get('http://localhost:8080/api/reportes/ranking-comidas', {
-        params: {
-          fechaInicio,
-          fechaFin
-        }
+        params: { fechaInicio, fechaFin }
       });
-      console.log("Datos preparados para el gráfico de ranking de comidas:", response.data);
       setRankingComidas(filterRankingData(response.data));
       setOpenGraficoRanking(true);
     } catch (error) {
@@ -59,12 +61,13 @@ const ReportePage: React.FC = () => {
   };
 
   const handleDescargarExcel = async (endpoint: string, filenamePrefix: string) => {
+    if (!fechaInicio || !fechaFin) {
+      showSnackbar('Debe seleccionar una fecha de inicio y fin.');
+      return;
+    }
     try {
       const response = await axios.get(`http://localhost:8080/api/reportes/excel/${endpoint}`, {
-        params: {
-          fechaInicio,
-          fechaFin
-        },
+        params: { fechaInicio, fechaFin },
         responseType: 'blob'
       });
       const url = window.URL.createObjectURL(new Blob([response.data]));
@@ -80,14 +83,14 @@ const ReportePage: React.FC = () => {
   };
 
   const handleGenerarPedidosPorCliente = async () => {
+    if (!fechaInicio || !fechaFin) {
+      showSnackbar('Debe seleccionar una fecha de inicio y fin.');
+      return;
+    }
     try {
       const response = await axios.get('http://localhost:8080/api/reportes/cantidad-pedidos-cliente', {
-        params: {
-          fechaInicio,
-          fechaFin
-        }
+        params: { fechaInicio, fechaFin }
       });
-      console.log("Datos recibidos para pedidos por cliente:", response.data);
       setPedidosPorCliente(response.data);
       setOpenPedidosCliente(true);
     } catch (error) {
@@ -96,12 +99,13 @@ const ReportePage: React.FC = () => {
   };
 
   const handleGenerarIngresosDiarios = async () => {
+    if (!fechaInicio || !fechaFin) {
+      showSnackbar('Debe seleccionar una fecha de inicio y fin.');
+      return;
+    }
     try {
       const response = await axios.get('http://localhost:8080/api/reportes/ingresos-diarios', {
-        params: {
-          fechaInicio,
-          fechaFin
-        }
+        params: { fechaInicio, fechaFin }
       });
       setIngresosDiarios(response.data);
       setOpenIngresosDiarios(true);
@@ -111,12 +115,13 @@ const ReportePage: React.FC = () => {
   };
 
   const handleGenerarIngresosMensuales = async () => {
+    if (!fechaInicio || !fechaFin) {
+      showSnackbar('Debe seleccionar una fecha de inicio y fin.');
+      return;
+    }
     try {
       const response = await axios.get('http://localhost:8080/api/reportes/ingresos-mensuales', {
-        params: {
-          fechaInicio,
-          fechaFin
-        }
+        params: { fechaInicio, fechaFin }
       });
       setIngresosMensuales(response.data);
       setOpenIngresosMensuales(true);
@@ -126,12 +131,13 @@ const ReportePage: React.FC = () => {
   };
 
   const handleGenerarGanancia = async () => {
+    if (!fechaInicio || !fechaFin) {
+      showSnackbar('Debe seleccionar una fecha de inicio y fin.');
+      return;
+    }
     try {
       const response = await axios.get('http://localhost:8080/api/reportes/ganancia', {
-        params: {
-          fechaInicio,
-          fechaFin
-        }
+        params: { fechaInicio, fechaFin }
       });
       setGanancia(response.data);
       setOpenGanancia(true);
@@ -141,14 +147,14 @@ const ReportePage: React.FC = () => {
   };
 
   const handleOpenGraficoPedidosCliente = async () => {
+    if (!fechaInicio || !fechaFin) {
+      showSnackbar('Debe seleccionar una fecha de inicio y fin.');
+      return;
+    }
     try {
       const response = await axios.get('http://localhost:8080/api/reportes/cantidad-pedidos-cliente', {
-        params: {
-          fechaInicio,
-          fechaFin
-        }
+        params: { fechaInicio, fechaFin }
       });
-      console.log("Datos preparados para el gráfico de pedidos por cliente:", response.data);
       setPedidosPorCliente(response.data);
       setOpenGraficoPedidosCliente(true);
     } catch (error) {
@@ -157,18 +163,16 @@ const ReportePage: React.FC = () => {
   };
 
   const handleOpenGraficoIngresos = async () => {
+    if (!fechaInicio || !fechaFin) {
+      showSnackbar('Debe seleccionar una fecha de inicio y fin.');
+      return;
+    }
     try {
       const responseDiarios = await axios.get('http://localhost:8080/api/reportes/ingresos-diarios', {
-        params: {
-          fechaInicio,
-          fechaFin
-        }
+        params: { fechaInicio, fechaFin }
       });
       const responseMensuales = await axios.get('http://localhost:8080/api/reportes/ingresos-mensuales', {
-        params: {
-          fechaInicio,
-          fechaFin
-        }
+        params: { fechaInicio, fechaFin }
       });
       setIngresosDiarios(responseDiarios.data);
       setIngresosMensuales(responseMensuales.data);
@@ -179,12 +183,13 @@ const ReportePage: React.FC = () => {
   };
 
   const handleOpenGraficoGanancia = async () => {
+    if (!fechaInicio || !fechaFin) {
+      showSnackbar('Debe seleccionar una fecha de inicio y fin.');
+      return;
+    }
     try {
       const response = await axios.get('http://localhost:8080/api/reportes/ganancia', {
-        params: {
-          fechaInicio,
-          fechaFin
-        }
+        params: { fechaInicio, fechaFin }
       });
       setGanancia(response.data);
       setOpenGraficoGanancia(true);
@@ -227,6 +232,15 @@ const ReportePage: React.FC = () => {
 
   const handleCloseGraficoGanancia = () => {
     setOpenGraficoGanancia(false);
+  };
+
+  const showSnackbar = (message: string) => {
+    setSnackbarMessage(message);
+    setSnackbarOpen(true);
+  };
+
+  const handleCloseSnackbar = () => {
+    setSnackbarOpen(false);
   };
 
   const formatDate = (epochTime: number) => {
@@ -304,35 +318,34 @@ const ReportePage: React.FC = () => {
               onChange={(e) => setFechaFin(e.target.value)}
             />
             <Box>
-  <Grid container spacing={1}>
-    <Grid item xs={6}>
-      <Button sx={{ backgroundColor: '#1976d2', color: 'white', width: '100%', '&:hover': { backgroundColor: '#115293' } }} onClick={handleGenerarIngresosDiarios}>
-        Reporte Diario
-      </Button>
-    </Grid>
-    <Grid item xs={6}>
-      <Button sx={{ backgroundColor: '#1976d2', color: 'white', width: '100%', '&:hover': { backgroundColor: '#115293' } }} onClick={handleGenerarIngresosMensuales}>
-        Reporte Mensual
-      </Button>
-    </Grid>
-    <Grid item xs={4}>
-      <Button className="report-button excel" sx={{ backgroundColor: '#4caf50', color: 'white', width: '100%', '&:hover': { backgroundColor: '#388e3c' } }} onClick={() => handleDescargarExcel('ingresos-diarios', 'ingresosdiarios')}>
-        Excel Diario
-      </Button>
-    </Grid>
-    <Grid item xs={4}>
-      <Button className="report-button excel" sx={{ backgroundColor: '#4caf50', color: 'white', width: '100%', '&:hover': { backgroundColor: '#388e3c' } }} onClick={() => handleDescargarExcel('ingresos-mensuales', 'ingresosmensuales')}>
-        Excel Mensual
-      </Button>
-    </Grid>
-    <Grid item xs={4}>
-      <Button className="report-button graph" sx={{ backgroundColor: '#9c27b0', color: 'white', width: '100%', '&:hover': { backgroundColor: '#7b1fa2' } }} onClick={handleOpenGraficoIngresos}>
-        Gráfico
-      </Button>
-    </Grid>
-  </Grid>
-</Box>
-
+              <Grid container spacing={1}>
+                <Grid item xs={6}>
+                  <Button sx={{ backgroundColor: '#1976d2', color: 'white', width: '100%', '&:hover': { backgroundColor: '#115293' } }} onClick={handleGenerarIngresosDiarios}>
+                    Reporte Diario
+                  </Button>
+                </Grid>
+                <Grid item xs={6}>
+                  <Button sx={{ backgroundColor: '#1976d2', color: 'white', width: '100%', '&:hover': { backgroundColor: '#115293' } }} onClick={handleGenerarIngresosMensuales}>
+                    Reporte Mensual
+                  </Button>
+                </Grid>
+                <Grid item xs={4}>
+                  <Button className="report-button excel" sx={{ backgroundColor: '#4caf50', color: 'white', width: '100%', '&:hover': { backgroundColor: '#388e3c' } }} onClick={() => handleDescargarExcel('ingresos-diarios', 'ingresosdiarios')}>
+                    Excel Diario
+                  </Button>
+                </Grid>
+                <Grid item xs={4}>
+                  <Button className="report-button excel" sx={{ backgroundColor: '#4caf50', color: 'white', width: '100%', '&:hover': { backgroundColor: '#388e3c' } }} onClick={() => handleDescargarExcel('ingresos-mensuales', 'ingresosmensuales')}>
+                    Excel Mensual
+                  </Button>
+                </Grid>
+                <Grid item xs={4}>
+                  <Button className="report-button graph" sx={{ backgroundColor: '#9c27b0', color: 'white', width: '100%', '&:hover': { backgroundColor: '#7b1fa2' } }} onClick={handleOpenGraficoIngresos}>
+                    Gráfico
+                  </Button>
+                </Grid>
+              </Grid>
+            </Box>
           </Paper>
         </Grid>
 
@@ -652,6 +665,17 @@ const ReportePage: React.FC = () => {
           <Button onClick={handleCloseGraficoGanancia} sx={{ mt: 2, alignSelf: 'center' }}>Cerrar</Button>
         </Box>
       </Modal>
+
+      <Snackbar
+        open={snackbarOpen}
+        autoHideDuration={6000}
+        onClose={handleCloseSnackbar}
+        sx={{ width: '100%'}}
+      >
+        <Alert onClose={handleCloseSnackbar} severity="error">
+          {snackbarMessage}
+        </Alert>
+      </Snackbar>
     </Box>
   );
 };
