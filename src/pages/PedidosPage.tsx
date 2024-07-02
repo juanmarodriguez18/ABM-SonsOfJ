@@ -22,7 +22,7 @@ import {
   Snackbar,
   Alert,
 } from "@mui/material";
-import { KeyboardArrowDown, KeyboardArrowUp } from "@mui/icons-material";
+import { KeyboardArrowDown, KeyboardArrowUp, PictureAsPdf, Close, GetApp } from "@mui/icons-material";
 import { format } from "date-fns";
 import { Pedido } from "../types/Pedido";
 import { descargarFactura, getAllPedidos, getPedidosByFecha } from "../services/PedidoService";
@@ -136,9 +136,10 @@ const PedidosPage: React.FC = () => {
 
   const handleGenerarPDF = () => {
     const doc = new jsPDF();
-    doc.text("El Buen Sabor / Lista de pedidos", 14, 16);
+    doc.text("El buen sabor / Lista de pedidos", 14, 16);
+    doc.text(`Rango de Fechas: ${filtroFechaInicio} al ${filtroFechaFin}`, 14, 24);
     autoTable(doc, {
-      startY: 20, // Ajusta esta posición para que la tabla comience más abajo
+      startY: 30, // Ajusta esta posición para que la tabla comience más abajo
       head: [['Código', 'Total', 'Estado', 'Tipo Envío', 'Fecha']],
       body: filteredPedidosByTipoEnvio.map(pedido => [
         pedido.id.toString(),
@@ -257,10 +258,10 @@ const PedidosPage: React.FC = () => {
                   <TableCell align="center">
                     {pedido.estado === Estado.FACTURADO && (
                       <Button
-                      variant="contained"
-                      color="primary"
-                      onClick={() => descargarFactura(pedido)}
-                      style={{ marginRight: 8 }}
+                        variant="contained"
+                        color="primary"
+                        onClick={() => descargarFactura(pedido)}
+                        style={{ marginRight: 8 }}
                       >
                         Descargar factura
                       </Button>
@@ -416,22 +417,25 @@ const PedidosPage: React.FC = () => {
                 <Button
                   variant="contained"
                   style={{ backgroundColor: 'green', color: 'white' }}
+                  startIcon={<GetApp />}
                   onClick={handleExportarExcel}
                 >
-                  Pedidos Excel
+                  Excel
                 </Button>
                 <Button
                   variant="contained"
                   style={{ backgroundColor: 'blue', color: 'white' }}
+                  startIcon={<PictureAsPdf />}
                   onClick={handleGenerarPDF}
                 >
-                  Generar PDF
+                  PDF
                 </Button>
               </>
             )}
             <Button
               variant="contained"
               style={{ backgroundColor: 'red', color: 'white' }}
+              startIcon={<Close />}
               onClick={handleCloseModal}
             >
               Cerrar
