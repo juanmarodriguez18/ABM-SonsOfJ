@@ -303,23 +303,36 @@ const ReportePage: React.FC = () => {
               value={fechaFin}
               onChange={(e) => setFechaFin(e.target.value)}
             />
-            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
-              <Button sx={{ backgroundColor: '#1976d2', color: 'white', '&:hover': { backgroundColor: '#115293' } }} onClick={handleGenerarIngresosDiarios}>
-                Reporte Diario
-              </Button>
-              <Button sx={{ backgroundColor: '#1976d2', color: 'white', '&:hover': { backgroundColor: '#115293' } }} onClick={handleGenerarIngresosMensuales}>
-                Reporte Mensual
-              </Button>
-              <Button className="report-button excel" onClick={() => handleDescargarExcel('ingresos-diarios', 'ingresosdiarios')}>
-                Excel Diario
-              </Button>
-              <Button className="report-button excel" onClick={() => handleDescargarExcel('ingresos-mensuales', 'ingresosmensuales')}>
-                Excel Mensual
-              </Button>
-              <Button className="report-button graph" onClick={handleOpenGraficoIngresos}>
-                Gráfico
-              </Button>
-            </Box>
+            <Box>
+  <Grid container spacing={1}>
+    <Grid item xs={6}>
+      <Button sx={{ backgroundColor: '#1976d2', color: 'white', width: '100%', '&:hover': { backgroundColor: '#115293' } }} onClick={handleGenerarIngresosDiarios}>
+        Reporte Diario
+      </Button>
+    </Grid>
+    <Grid item xs={6}>
+      <Button sx={{ backgroundColor: '#1976d2', color: 'white', width: '100%', '&:hover': { backgroundColor: '#115293' } }} onClick={handleGenerarIngresosMensuales}>
+        Reporte Mensual
+      </Button>
+    </Grid>
+    <Grid item xs={4}>
+      <Button className="report-button excel" sx={{ backgroundColor: '#4caf50', color: 'white', width: '100%', '&:hover': { backgroundColor: '#388e3c' } }} onClick={() => handleDescargarExcel('ingresos-diarios', 'ingresosdiarios')}>
+        Excel Diario
+      </Button>
+    </Grid>
+    <Grid item xs={4}>
+      <Button className="report-button excel" sx={{ backgroundColor: '#4caf50', color: 'white', width: '100%', '&:hover': { backgroundColor: '#388e3c' } }} onClick={() => handleDescargarExcel('ingresos-mensuales', 'ingresosmensuales')}>
+        Excel Mensual
+      </Button>
+    </Grid>
+    <Grid item xs={4}>
+      <Button className="report-button graph" sx={{ backgroundColor: '#9c27b0', color: 'white', width: '100%', '&:hover': { backgroundColor: '#7b1fa2' } }} onClick={handleOpenGraficoIngresos}>
+        Gráfico
+      </Button>
+    </Grid>
+  </Grid>
+</Box>
+
           </Paper>
         </Grid>
 
@@ -494,7 +507,7 @@ const ReportePage: React.FC = () => {
       </Modal>
 
       <Modal open={openIngresosMensuales} onClose={handleCloseIngresosMensuales}>
-        <Box className="modal-box" sx={{ width: '80%', maxWidth: 1000 }}>
+        <Box className="modal-box ingresos" sx={{ width: '80%', maxWidth: 1000 }}>
           <Typography variant="h6" component="h2" align="center">
             {formatTitle("Ingresos Mensuales")}
           </Typography>
@@ -564,7 +577,7 @@ const ReportePage: React.FC = () => {
             data={[['Comida', 'Pedidos'], ...rankingComidas.map((row) => [row[0], row[1]])]}
             options={{ title: 'Ranking de Comidas Más Pedidas' }}
             width="100%"
-            height="500px"
+            height="400px"
           />
           <Button onClick={handleCloseGraficoRanking} sx={{ mt: 2, alignSelf: 'center' }}>Cerrar</Button>
         </Box>
@@ -583,15 +596,15 @@ const ReportePage: React.FC = () => {
             data={[['Cliente', 'Pedidos'], ...pedidosPorCliente.map((row) => [`${row[0]} ${row[1]}`, row[2]])]}
             options={{ title: 'Pedidos por Cliente' }}
             width="100%"
-            height="500px"
+            height="400px"
           />
           <Button onClick={handleCloseGraficoPedidosCliente} sx={{ mt: 2, alignSelf: 'center' }}>Cerrar</Button>
         </Box>
       </Modal>
 
       <Modal open={openGraficoIngresos} onClose={handleCloseGraficoIngresos}>
-        <Box className="modal-box" sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-          <Typography variant="h2" component="h2" align="center">
+        <Box className="modal-box ingresos" sx={{ width: '80%', maxWidth: 1000 }}>
+          <Typography variant="h6" component="h2" align="center">
             {formatTitle("Gráfico de Ingresos Diarios y Mensuales")}
           </Typography>
           <Typography variant="subtitle1" align="center">
@@ -604,7 +617,7 @@ const ReportePage: React.FC = () => {
                 data={[['Día', 'Ingresos'], ...ingresosDiarios.map((row) => [formatDate(row[0]), row[1]])]}
                 options={{ title: 'Ingresos Diarios' }}
                 width="100%"
-                height="500px"
+                height="400px" /* Ajusta esta altura */
               />
             </Box>
             <Box sx={{ flex: 1 }}>
@@ -613,7 +626,7 @@ const ReportePage: React.FC = () => {
                 data={[['Mes', 'Ingresos'], ...ingresosMensuales.map((row) => [`${row[0]}-${row[1]}`, row[2]])]}
                 options={{ title: 'Ingresos Mensuales' }}
                 width="100%"
-                height="500px"
+                height="400px" /* Ajusta esta altura */
               />
             </Box>
           </Box>
@@ -634,7 +647,7 @@ const ReportePage: React.FC = () => {
             data={[['Fecha', 'Ganancia'], ['Ganancia', ganancia]]}
             options={{ title: 'Monto de Ganancia' }}
             width="100%"
-            height="500px"
+            height="400px"
           />
           <Button onClick={handleCloseGraficoGanancia} sx={{ mt: 2, alignSelf: 'center' }}>Cerrar</Button>
         </Box>

@@ -22,12 +22,14 @@ import {
   Snackbar,
   Alert,
 } from "@mui/material";
-import { KeyboardArrowDown, KeyboardArrowUp } from "@mui/icons-material";
+import { KeyboardArrowDown, KeyboardArrowUp, PictureAsPdf, Close, GetApp } from "@mui/icons-material";
 import { format } from "date-fns";
 import { Pedido } from "../types/Pedido";
 import { descargarFactura, getAllPedidos, getPedidosByFecha } from "../services/PedidoService";
 import axios from "axios";
 import { Estado } from "../types/enums/Estado";
+import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
 
 const PedidosPage: React.FC = () => {
   const [pedidos, setPedidos] = useState<Pedido[]>([]);
@@ -130,6 +132,24 @@ const PedidosPage: React.FC = () => {
     } catch (error) {
       console.error("Error al exportar a Excel:", error);
     }
+  };
+
+  const handleGenerarPDF = () => {
+    const doc = new jsPDF();
+    doc.text("El buen sabor / Lista de pedidos", 14, 16);
+    doc.text(`Rango de Fechas: ${filtroFechaInicio} al ${filtroFechaFin}`, 14, 24);
+    autoTable(doc, {
+      startY: 30, // Ajusta esta posición para que la tabla comience más abajo
+      head: [['Código', 'Total', 'Estado', 'Tipo Envío', 'Fecha']],
+      body: filteredPedidosByTipoEnvio.map(pedido => [
+        pedido.id.toString(),
+        `$${pedido.total}`,
+        pedido.estado,
+        pedido.tipoEnvio,
+        format(new Date(pedido.fechaPedido), "dd/MM/yyyy")
+      ]),
+    });
+    doc.save('pedidos.pdf');
   };
 
   const filteredPedidosByEstado = filtroEstado
@@ -238,10 +258,10 @@ const PedidosPage: React.FC = () => {
                   <TableCell align="center">
                     {pedido.estado === Estado.FACTURADO && (
                       <Button
-                      variant="contained"
-                      color="primary"
-                      onClick={() => descargarFactura(pedido)}
-                      style={{ marginRight: 8 }}
+                        variant="contained"
+                        color="primary"
+                        onClick={() => descargarFactura(pedido)}
+                        style={{ marginRight: 8 }}
                       >
                         Descargar factura
                       </Button>
@@ -393,17 +413,29 @@ const PedidosPage: React.FC = () => {
           </TableContainer>
           <Box mt={2} display="flex" justifyContent="center" gap={2}>
             {filteredPedidosByTipoEnvio.length > 0 && (
-              <Button
-                variant="contained"
-                style={{ backgroundColor: 'green', color: 'white' }}
-                onClick={handleExportarExcel}
-              >
-                Pedidos Excel
-              </Button>
+              <>
+                <Button
+                  variant="contained"
+                  style={{ backgroundColor: 'green', color: 'white' }}
+                  startIcon={<GetApp />}
+                  onClick={handleExportarExcel}
+                >
+                  Excel
+                </Button>
+                <Button
+                  variant="contained"
+                  style={{ backgroundColor: 'blue', color: 'white' }}
+                  startIcon={<PictureAsPdf />}
+                  onClick={handleGenerarPDF}
+                >
+                  PDF
+                </Button>
+              </>
             )}
             <Button
               variant="contained"
               style={{ backgroundColor: 'red', color: 'white' }}
+              startIcon={<Close />}
               onClick={handleCloseModal}
             >
               Cerrar
