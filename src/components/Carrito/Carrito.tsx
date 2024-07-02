@@ -14,6 +14,7 @@ import { ArticuloManufacturado } from '../../types/ArticuloManufacturado';
 import { useDatosSeleccion } from './useDatosSeleccion';
 import CheckoutMP from './MercadoPago/CheckoutMP';
 import { ArticuloInsumo } from '../../types/ArticuloInsumo';
+import { useNavigate } from 'react-router-dom';
 
 interface CartItemProps {
   detalle: PedidoDetalle;
@@ -59,10 +60,7 @@ export function Carrito() {
 
   const [loading, setLoading] = useState(false);
   const [pedido, setPedido] = useState<Pedido | null>(null);
-
-  const mostrarCarritoJSON = () => {
-    console.log(cart);
-  };
+  const navigate = useNavigate(); // Inicializa useNavigate
 
   const confirmarCompra = async () => {
     if (cart.length === 0) {
@@ -131,6 +129,7 @@ export function Carrito() {
       if (formaPago === FormaPago.EFECTIVO) {
         alert('El pedido se guardó correctamente.');
         limpiarCarrito();
+        navigate('/pedidos'); // Redirige a /pedidos
       } else {
         alert('El pedido se guardó correctamente. Complete el pago con Mercado Pago.');
       }
@@ -144,6 +143,7 @@ export function Carrito() {
 
   const handlePagoCompleto = () => {
     limpiarCarrito();
+    navigate('/pedidos'); // Redirige a /pedidos
   };
 
   const montoCarrito = typeof totalPedido === 'number' ? totalPedido : 0;
@@ -255,13 +255,6 @@ export function Carrito() {
           onClick={limpiarCarrito}
         >
           Limpiar Carrito
-        </Button>
-        <Button
-          variant="contained"
-          color="primary"
-          onClick={mostrarCarritoJSON}
-        >
-          Mostrar Cart Json
         </Button>
         <Button
           variant="contained"
