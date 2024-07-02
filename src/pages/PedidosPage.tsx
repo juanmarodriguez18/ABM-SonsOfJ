@@ -94,7 +94,7 @@ const PedidosPage: React.FC = () => {
         console.error("Error al buscar pedidos:", error);
       }
     } else {
-      alert("Por favor, selecciona las fechas de inicio y fin.");
+      setSnackbarOpen(true);
     }
   };
 
@@ -135,6 +135,10 @@ const PedidosPage: React.FC = () => {
   };
 
   const handleGenerarPDF = () => {
+    const estado = filtroEstado ? filtroEstado.toLowerCase() : "todos";
+    const tipoEnvio = filtroTipoEnvio ? filtroTipoEnvio.toLowerCase() : "todos";
+    const filename = `pedidos_${estado}_${tipoEnvio}_${filtroFechaInicio}_a_${filtroFechaFin}.pdf`;
+
     const doc = new jsPDF();
     doc.text("El buen sabor / Lista de pedidos", 14, 16);
     doc.text(`Rango de Fechas: ${filtroFechaInicio} al ${filtroFechaFin}`, 14, 24);
@@ -149,7 +153,7 @@ const PedidosPage: React.FC = () => {
         format(new Date(pedido.fechaPedido), "dd/MM/yyyy")
       ]),
     });
-    doc.save('pedidos.pdf');
+    doc.save(filename);
   };
 
   const filteredPedidosByEstado = filtroEstado
@@ -367,6 +371,7 @@ const PedidosPage: React.FC = () => {
                   <MenuItem value="ENTREGADO">Entregado</MenuItem>
                   <MenuItem value="PREPARACION">Preparación</MenuItem>
                   <MenuItem value="RECHAZADO">Rechazado</MenuItem>
+                  <MenuItem value="EN_DELIVERY">En Delivery</MenuItem> {/* Añadido filtro de estado */}
                 </Select>
               </FormControl>
               <FormControl variant="outlined" size="small" style={{ minWidth: 150 }}>
